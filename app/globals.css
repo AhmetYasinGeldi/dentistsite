@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/*
+ * Ortak renkler (site + panel). Kullanım: bg-primary, text-primary-foreground,
+ * border-danger, bg-success/15 ...
+ * Geçici, klinik rengi belirlenince değişecek (sakin mavi-turkuaz palet).
+ */
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+
+  --color-primary: #0e7490;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #e0f4f4;
+  --color-accent: #14b8a6;
+  --color-muted: #f1f5f9;
+  --color-danger: #dc2626;
+  --color-success: #15803d;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
