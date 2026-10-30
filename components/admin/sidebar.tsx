@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,7 +18,7 @@ const NAV_ITEMS: NavItem[] = [
     exact: true,
     icon: (active) => (
       <svg
-        className={`w-5 h-5 flex-shrink-0 ${active ? "text-primary-foreground" : "text-slate-500"}`}
+        className={`w-5 h-5 flex-shrink-0 ${active ? "text-primary-foreground" : "text-foreground/50"}`}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -36,7 +37,7 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/takvim",
     icon: (active) => (
       <svg
-        className={`w-5 h-5 flex-shrink-0 ${active ? "text-primary-foreground" : "text-slate-500"}`}
+        className={`w-5 h-5 flex-shrink-0 ${active ? "text-primary-foreground" : "text-foreground/50"}`}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -55,7 +56,7 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/ayarlar",
     icon: (active) => (
       <svg
-        className={`w-5 h-5 flex-shrink-0 ${active ? "text-primary-foreground" : "text-slate-500"}`}
+        className={`w-5 h-5 flex-shrink-0 ${active ? "text-primary-foreground" : "text-foreground/50"}`}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -85,6 +86,18 @@ interface SidebarProps {
 export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
 
+  // Mobil menü açıkken Escape tuşuyla kapatma desteği
+  useEffect(() => {
+    if (!isOpen || !onClose) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   const isLinkActive = (item: NavItem) => {
     if (item.exact) {
       return pathname === item.href;
@@ -93,9 +106,9 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
   };
 
   const navContent = (
-    <div className="flex flex-col h-full bg-white border-r border-slate-200">
+    <div className="flex flex-col h-full bg-background border-r border-foreground/10">
       {/* Üst Logo ve Panel Başlığı */}
-      <div className="flex items-center gap-3 px-6 h-16 border-b border-slate-200">
+      <div className="flex items-center gap-3 px-6 h-16 border-b border-foreground/10">
         <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-secondary text-primary font-bold shadow-xs">
           <svg
             className="w-5 h-5"
@@ -113,7 +126,7 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
           <span className="text-sm font-bold text-foreground truncate">
             {clinicName}
           </span>
-          <span className="text-xs text-slate-500">Yönetim Paneli</span>
+          <span className="text-xs text-foreground/60">Yönetim Paneli</span>
         </div>
       </div>
 
@@ -129,7 +142,7 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
                 active
                   ? "bg-primary text-primary-foreground shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-foreground"
+                  : "text-foreground/70 hover:bg-muted hover:text-foreground"
               }`}
             >
               {item.icon(active)}
@@ -138,11 +151,6 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
           );
         })}
       </nav>
-
-      {/* Alt Bilgi */}
-      <div className="p-4 border-t border-slate-100 text-xs text-slate-400">
-        v0.1.0 • Randevu Sistemi
-      </div>
     </div>
   );
 
@@ -158,7 +166,7 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
         <div className="fixed inset-0 z-40 md:hidden">
           {/* Karartma arka planı */}
           <div
-            className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-foreground/40 backdrop-blur-xs transition-opacity"
             onClick={onClose}
           />
           {/* Menü çekmecesi */}

@@ -18,7 +18,7 @@ export function PanelShell({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-foreground">
+    <div className="min-h-screen bg-muted text-foreground">
       {/* Yan Menü (Sidebar) */}
       <Sidebar
         clinicName={clinicName}

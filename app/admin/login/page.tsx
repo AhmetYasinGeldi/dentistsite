@@ -20,7 +20,7 @@ export default async function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-muted px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         {/* Logo ve Başlık */}
         <div className="text-center mb-8">
@@ -42,13 +42,13 @@ export default async function AdminLoginPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Klinik Yönetim Paneli
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-foreground/70">
             Randevuları ve takvimi yönetmek için giriş yapın
           </p>
         </div>
 
         {/* Giriş Kartı */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 shadow-sm">
+        <div className="bg-background rounded-2xl border border-foreground/10 p-8 shadow-sm">
           <LoginForm />
         </div>
       </div>

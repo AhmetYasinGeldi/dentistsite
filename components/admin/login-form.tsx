@@ -52,7 +52,7 @@ export function LoginForm() {
             required
             disabled={isPending}
             placeholder="admin@klinik.com"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-foreground shadow-sm placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
+            className="w-full rounded-lg border border-foreground/20 bg-background px-3.5 py-2.5 text-sm text-foreground shadow-sm placeholder:text-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-muted disabled:text-foreground/40"
           />
         </div>
         {state?.fieldErrors?.email?.[0] && (
@@ -78,14 +78,14 @@ export function LoginForm() {
             required
             disabled={isPending}
             placeholder="••••••••"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 pr-10 text-sm text-foreground shadow-sm placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
+            className="w-full rounded-lg border border-foreground/20 bg-background px-3.5 py-2.5 pr-10 text-sm text-foreground shadow-sm placeholder:text-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-muted disabled:text-foreground/40"
           />
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
             tabIndex={-1}
             disabled={isPending}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 focus:outline-none"
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-foreground/40 hover:text-foreground/70 focus:outline-none"
             aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
           >
             {showPassword ? (
@@ -139,7 +139,7 @@ export function LoginForm() {
         {isPending ? (
           <>
             <svg
-              className="h-4 w-4 animate-spin text-white"
+              className="h-4 w-4 animate-spin text-primary-foreground"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -164,7 +164,7 @@ export function LoginForm() {
         )}
       </button>
 
-      <div className="pt-2 text-center text-xs text-slate-500">
+      <div className="pt-2 text-center text-xs text-foreground/60">
         Bu panel yalnızca yetkili klinik personeline açıktır.
       </div>
     </form>

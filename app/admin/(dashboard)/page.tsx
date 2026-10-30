@@ -7,19 +7,19 @@ export const metadata: Metadata = {
 export default function AppointmentsPage() {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-foreground/10 pb-5">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Randevular
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-foreground/60">
             Bekleyen talepler ve onaylanmış randevuların yönetimi
           </p>
         </div>
       </div>
 
       {/* Randevu içerik alanı iskeleti */}
-      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+      <div className="rounded-xl border border-dashed border-foreground/20 bg-background p-12 text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-primary">
           <svg
             className="h-6 w-6"
@@ -38,7 +38,7 @@ export default function AppointmentsPage() {
         <h3 className="mt-4 text-sm font-semibold text-foreground">
           Randevu Listesi Hazırlanıyor
         </h3>
-        <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+        <p className="mt-1 text-xs text-foreground/60 max-w-sm mx-auto">
           Giriş ve panel iskeleti başarıyla kuruldu. Randevu onay/red ve filtreleme özellikleri sonraki görev kartında eklenecektir.
         </p>
       </div>

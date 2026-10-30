@@ -18,7 +18,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       disabled={isPending}
       title="Oturumu Kapat"
-      className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-xs hover:bg-slate-50 hover:text-danger focus:outline-none focus:ring-2 focus:ring-danger/20 disabled:opacity-50 transition"
+      className="inline-flex items-center gap-2 rounded-lg border border-foreground/15 bg-background px-3 py-1.5 text-xs font-medium text-foreground/80 shadow-xs hover:bg-muted hover:text-danger focus:outline-none focus:ring-2 focus:ring-danger/20 disabled:opacity-50 transition"
     >
       <svg
         className="w-4 h-4"

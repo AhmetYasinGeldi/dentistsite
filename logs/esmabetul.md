@@ -20,3 +20,13 @@
 - **Nasıl test edildi:** `npm run build` ve `npm run lint` hatasız tamamlandı.
 - **Açık konular:** Yok.
 - **Başka ekipten istek:** Yok (ortak tema renkleri site ve bot ile uyumlu kullanılabilir).
+
+## 2026-10-30 10:10 — Zod 4 Uyumluluğu, Supabase Hata Yönetimi ve Tema İyileştirmeleri
+- **Kişi / araç:** Esma / Antigravity
+- **Dal:** feat/admin-auth-layout
+- **Ne yapıldı:** Yönetici incelemesi doğrultusunda `actions.ts` içinde Zod 4 sözdizimine (`z.email()`, `z.flattenError()`) geçildi. Giriş hata yakalaması `error.code === 'invalid_credentials'` olarak netleştirildi ve `logoutAction` içerisindeki Supabase `signOut` hatası sunucu loguna eklendi. Panel bileşenlerindeki sabit renkler tema token'larına (`bg-background`, `bg-muted`, `text-foreground`, `text-primary-foreground`) dönüştürüldü. Yan menüdeki sürüm bilgisi kaldırıldı ve mobil menüye Escape tuşuyla kapanma eklendi.
+- **Değişen dosyalar:** `app/admin/actions.ts`, `app/admin/login/page.tsx`, `app/admin/(dashboard)/page.tsx`, `app/admin/(dashboard)/takvim/page.tsx`, `app/admin/(dashboard)/ayarlar/page.tsx`, `components/admin/header.tsx`, `components/admin/login-form.tsx`, `components/admin/logout-button.tsx`, `components/admin/panel-shell.tsx`, `components/admin/sidebar.tsx`, `logs/esmabetul.md`
+- **Neden:** PR kod incelemesinde belirtilen düzeltmeleri ve iyileştirmeleri tamamlamak.
+- **Nasıl test edildi:** `npm run lint` ve `npm run build` hatasız tamamlandı.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Yok.
