@@ -3,17 +3,17 @@
 /*
  * Ortak renkler (site + panel). Kullanım: bg-primary, text-primary-foreground,
  * border-danger, bg-success/15 ...
- * Geçici, klinik rengi belirlenince değişecek (sakin mavi-turkuaz palet).
+ * Esma'nın diş hekimi randevu sistemi referans alınarak ferah medikal gök mavisi paletine güncellendi.
  */
 @theme {
   --color-background: #ffffff;
   --color-foreground: #0f172a;
 
-  --color-primary: #0e7490;
+  --color-primary: #0284c7;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #e0f4f4;
-  --color-accent: #14b8a6;
-  --color-muted: #f1f5f9;
+  --color-secondary: #e0f2fe;
+  --color-accent: #38b6ff;
+  --color-muted: #f8fafc;
   --color-danger: #dc2626;
   --color-success: #15803d;
 }
