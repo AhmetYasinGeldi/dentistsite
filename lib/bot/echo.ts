@@ -8,7 +8,7 @@ import type { IncomingMessage } from "@/lib/whatsapp/payload";
 export async function handleEcho(message: IncomingMessage): Promise<void> {
   const reply =
     message.type === "text" && message.text
-               ? message.text.body
+      ? message.text.body
       : "Şu an yalnızca yazılı mesajları anlayabiliyorum.";
 
   await sendTextMessage(message.from, reply);
