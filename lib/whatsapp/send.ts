@@ -1,22 +1,82 @@
 import "server-only";
 
+import type { Json } from "@/lib/database.types";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  buttonMessageSchema,
+  listMessageSchema,
+  toButtonInteractive,
+  toListInteractive,
+  type ButtonMessage,
+  type ListMessage,
+} from "@/lib/whatsapp/interactive";
 
 export type SendResult =
   | { ok: true; waMessageId: string | null }
   | {
       ok: false;
-      reason: "WINDOW_CLOSED" | "API_ERROR" | "NETWORK_ERROR" | "CONFIG_ERROR";
+      reason:
+        | "WINDOW_CLOSED"
+        | "API_ERROR"
+        | "NETWORK_ERROR"
+        | "CONFIG_ERROR"
+        | "INVALID_MESSAGE";
     };
 
 // Meta'nın "24 saat penceresi dışında" hata kodu.
 const WINDOW_CLOSED_CODE = 131047;
+const TEXT_MAX = 4096;
+
+/** Düz metin mesaj gönderir. */
+export async function sendText(to: string, body: string): Promise<SendResult> {
+  if (body.trim().length === 0 || body.length > TEXT_MAX) {
+    console.error("[whatsapp/send] Geçersiz metin uzunluğu:", body.length);
+    return { ok: false, reason: "INVALID_MESSAGE" };
+  }
+  return send(to, { type: "text", text: { body } }, body);
+}
+
+/** En fazla 3 butonlu mesaj gönderir (buton başlığı en fazla 20 karakter). */
+export async function sendButtons(to: string, message: ButtonMessage): Promise<SendResult> {
+  const parsed = buttonMessageSchema.safeParse(message);
+  if (!parsed.success) {
+    console.error("[whatsapp/send] Geçersiz butonlu mesaj:", parsed.error.issues);
+    return { ok: false, reason: "INVALID_MESSAGE" };
+  }
+  return send(
+    to,
+    { type: "interactive", interactive: toButtonInteractive(parsed.data) },
+    parsed.data.body,
+  );
+}
 
 /**
- * Hastaya düz metin mesaj gönderir ve başarılıysa wa_messages'a "out" kaydı düşer.
+ * Listeli mesaj gönderir (toplam en fazla 10 satır, satır başlığı en fazla 24,
+ * açıklama en fazla 72 karakter). 10'dan fazla seçenek varsa önce
+ * `paginateRows` ile sayfalayın.
+ */
+export async function sendList(to: string, message: ListMessage): Promise<SendResult> {
+  const parsed = listMessageSchema.safeParse(message);
+  if (!parsed.success) {
+    console.error("[whatsapp/send] Geçersiz listeli mesaj:", parsed.error.issues);
+    return { ok: false, reason: "INVALID_MESSAGE" };
+  }
+  return send(
+    to,
+    { type: "interactive", interactive: toListInteractive(parsed.data) },
+    parsed.data.body,
+  );
+}
+
+/**
+ * Ortak gönderim: Graph API'ye yollar, başarılıysa wa_messages'a "out" kaydı düşer.
  * Hata fırlatmaz; sonucu döndürür, ayrıntıyı sunucu log'una yazar.
  */
-export async function sendTextMessage(to: string, body: string): Promise<SendResult> {
+async function send(
+  to: string,
+  content: Record<string, unknown>,
+  bodyForLog: string,
+): Promise<SendResult> {
   const version = process.env.WHATSAPP_API_VERSION;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
@@ -33,6 +93,12 @@ export async function sendTextMessage(to: string, body: string): Promise<SendRes
   }
 
   const url = `https://graph.facebook.com/${version}/${phoneNumberId}/messages`;
+  const requestBody = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    ...content,
+  };
 
   let response: Response;
   try {
@@ -42,13 +108,7 @@ export async function sendTextMessage(to: string, body: string): Promise<SendRes
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        messaging_product: "whatsapp",
-        recipient_type: "individual",
-        to,
-        type: "text",
-        text: { body },
-      }),
+      body: JSON.stringify(requestBody),
     });
   } catch (error) {
     console.error("[whatsapp/send] Ağ hatası:", error);
@@ -67,7 +127,13 @@ export async function sendTextMessage(to: string, body: string): Promise<SendRes
   const waMessageId = getSentMessageId(data);
   const { error } = await createAdminClient()
     .from("wa_messages")
-    .insert({ phone: to, direction: "out", wa_message_id: waMessageId, body });
+    .insert({
+      phone: to,
+      direction: "out",
+      wa_message_id: waMessageId,
+      body: bodyForLog,
+      payload: content as Json,
+    });
   if (error) console.error("[whatsapp/send] Giden mesaj kaydedilemedi:", error);
 
   return { ok: true, waMessageId };

@@ -19,3 +19,13 @@
 - **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. Sahte anahtarlarla yerelde: şablon durum güncellemesi 200 döndü ve log'a hata düşmedi; geçersiz `from` içeren mesaj 200 döndü, log'a yazıldı ve işlenmedi.
 - **Açık konular:** Gerçek telefon testi Meta webhook kaydını bekliyor. Gemini eklenince cevabı hemen dönüp işi `after()` ile arka planda yapma konuşulacak.
 - **Başka ekipten istek:** Yok.
+
+## 2026-10-31 20:10 — WhatsApp gönderim yardımcıları: metin, buton, liste
+- **Kişi / araç:** Sevde / Claude
+- **Dal:** feat/bot-gonderim
+- **Ne yapıldı:** `sendText`, `sendButtons` ve `sendList` yazıldı; Meta sınırları (en fazla 3 buton ve 20 karakter, toplam 10 satır, satır 24, açıklama 72, liste butonu 20) gönderimden önce zod ile kontrol ediliyor, sınırı aşan mesaj gönderilmiyor (`INVALID_MESSAGE`). 10'dan fazla seçenek için `paginateRows` ("Diğer ..." satırı, id `more:<sayfa>`) ve `parseMoreRowId` eklendi. Gönderilen her mesaj `wa_messages`'a `direction = 'out'` ve gövdesiyle (`payload`) yazılıyor; 24 saat penceresi hatası `WINDOW_CLOSED` olarak dönüyor, uygulama çökmüyor. Yankı botu yeni `sendText` adını kullanıyor.
+- **Değişen dosyalar:** `lib/whatsapp/send.ts`, `lib/whatsapp/interactive.ts`, `lib/bot/echo.ts`, `logs/sevde.md`
+- **Neden:** Trello kartı "[Sevde] WhatsApp gönderim yardımcıları: metin, buton, liste".
+- **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. Node ile birim testi: 3 butonlu mesaj geçerli; 4 buton, 21 karakterlik başlık, aynı başlıklı iki buton, 11 satır, başlıksız ikinci bölüm, 25 karakterlik satır ve 73 karakterlik açıklama reddediliyor. 25 saat 9+Diğer / 9+Diğer / 7 olarak sayfalanıyor ve her sayfa liste sınırına uyuyor. Graph API buton gövdesi beklenen biçimde.
+- **Açık konular:** Üç mesaj türünün test telefonuna ulaşması (kartın "bitti" şartı) Meta webhook kaydını bekliyor.
+- **Başka ekipten istek:** Yok.

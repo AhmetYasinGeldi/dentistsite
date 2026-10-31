@@ -1,6 +1,6 @@
 import "server-only";
 
-import { sendTextMessage } from "@/lib/whatsapp/send";
+import { sendText } from "@/lib/whatsapp/send";
 import type { IncomingMessage } from "@/lib/whatsapp/payload";
 
 // Geçici yankı botu: gelen metni geri yollar. Gerçek sohbet akışı gelince
@@ -11,5 +11,5 @@ export async function handleEcho(message: IncomingMessage): Promise<void> {
       ? message.text.body
       : "Şu an yalnızca yazılı mesajları anlayabiliyorum.";
 
-  await sendTextMessage(message.from, reply);
+  await sendText(message.from, reply);
 }
