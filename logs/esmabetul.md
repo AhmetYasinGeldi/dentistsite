@@ -40,3 +40,13 @@
 - **Açık konular:** `doctor_name` ve `procedure_name` alanlarının Supabase’den nasıl getirileceği (join vs. view) netleştirilecek.
 - **Başka ekipten istek:** (yok)
 - **Alınan hatalar:** Yok.
+
+## 2026-10-31 15:18 — Randevu listesini ana panele taşıma
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments` (önceki log kaydına göre; Git ile doğrulanamadı)
+- **Ne yapıldı:** Bekleyen randevuların filtrelerden bağımsız üstte gösterildiği; diğer randevuların tarih, doktor ve durumla filtrelendiği liste `/admin` ana sayfasına taşındı. Ayrı `/admin/appointments` sayfası kaldırıldı ve Sidebar güncel PR tabanındaki `main` sürümüyle eşleştirilerek Randevular bağlantısı `/admin` yapıldı.
+- **Değişen dosyalar:** `app/admin/(dashboard)/page.tsx`, `app/admin/(dashboard)/appointments/page.tsx` (silindi), `components/admin/sidebar.tsx`, `logs/esmabetul.md`
+- **Neden:** Randevu listesi görevini ana panel üzerinde tamamlamak ve Sidebar bağlantısını yöneticinin oluşturduğu `/admin` rotasına geri almak.
+- **Nasıl test edildi:** VS Code tanılamasında değiştirilen TypeScript dosyalarında hata görülmedi. `npm run lint` / `npm run build` sandbox yerel proxy erişimini engellediği için çalıştırılamadı; sahte Supabase verisiyle elle test yapılamadı.
+- **Açık konular:** GitHub'da PR #6 hâlâ eski commit için `dirty` durumda görünüyor; bu yerel değişiklikler commit/push edilmedi. Güncel `main` logundaki 29-30 Ekim kayıtları korunarak mevcut 31 Ekim kayıtları ardına eklendi; PR durumu yeni commit gönderildikten sonra tekrar kontrol edilmeli.
+- **Başka ekipten istek:** Yok.

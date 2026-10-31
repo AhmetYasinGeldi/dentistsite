@@ -14,7 +14,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     name: "Randevular",
-    href: "/admin/appointments",
+    href: "/admin",
     exact: true,
     icon: (active) => (
       <svg
@@ -139,10 +139,11 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${active
-                ? "bg-primary text-primary-foreground shadow-xs"
-                : "text-foreground/70 hover:bg-muted hover:text-foreground"
-                }`}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
+                active
+                  ? "bg-primary text-primary-foreground shadow-xs"
+                  : "text-foreground/70 hover:bg-muted hover:text-foreground"
+              }`}
             >
               {item.icon(active)}
               <span>{item.name}</span>
@@ -150,6 +151,7 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
           );
         })}
       </nav>
+
     </div>
   );
 
@@ -177,4 +179,3 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
     </>
   );
 }
-
