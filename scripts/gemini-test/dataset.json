@@ -24,7 +24,7 @@
     {"id": 21, "message": "dolgum düştü 😭 yarın sabah gelebilir miyim", "expected": {"intent": "book", "procedure": "Dolgu", "date": "2026-11-03", "time_of_day": "morning", "time": null}},
     {"id": 22, "message": "beyazlatma yaptırmak istiyorum 🦷✨", "expected": {"intent": "book", "procedure": "Diş Beyazlatma", "date": null, "time_of_day": null, "time": null}},
     {"id": 23, "message": "yarın 11 de yer varmı", "expected": {"intent": "book", "procedure": null, "date": "2026-11-03", "time_of_day": null, "time": "11:00"}},
-    {"id": 24, "message": "muayeneye gelmek istiyorum ama işteyim 17 den sonra uygun musunuz", "expected": {"intent": "book", "procedure": "Muayene", "date": null, "time_of_day": "afternoon", "time": "17:00"}},
+    {"id": 24, "message": "muayeneye gelmek istiyorum ama işteyim 17 den sonra uygun musunuz", "expected": {"intent": "book", "procedure": "Muayene", "date": null, "time_of_day": null, "time": "17:00"}},
     {"id": 25, "message": "merhaba, yarın sabah muayene için yer var mı", "expected": {"intent": "book", "procedure": "Muayene", "date": "2026-11-03", "time_of_day": "morning", "time": null}},
     {"id": 26, "message": "dişim çok ağrıyor 😭😭 bugün gelebilir miyim", "expected": {"intent": "book", "procedure": "Muayene", "date": "2026-11-02", "time_of_day": null, "time": null}},
     {"id": 27, "message": "randevum ne zaman", "expected": {"intent": "view", "procedure": null, "date": null, "time_of_day": null, "time": null}},
