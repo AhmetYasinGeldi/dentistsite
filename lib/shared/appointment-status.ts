@@ -54,3 +54,16 @@ export function getAppointmentStatusClasses(status: string): string {
     ? APPOINTMENT_STATUS_CLASSES[status]
     : APPOINTMENT_STATUS_CLASSES.cancelled;
 }
+
+/**
+ * Durum etiketi ve ilgili Tailwind sınıflarını bir arada döndürür.
+ * Kullanım: `const { text, className } = statusLabel(status);`
+ */
+export function statusLabel(status: string) {
+  return {
+    text: getAppointmentStatusLabel(status),
+    className: getAppointmentStatusClasses(status),
+  };
+}
+
+
