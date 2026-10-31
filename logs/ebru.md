@@ -27,3 +27,13 @@
 - **Nasıl test edildi:** `npm run lint` ve `npm run build` hatasız tamamlandı. Buton (≤20) ve liste satırı (≤24) uzunlukları elle kontrol edildi. WhatsApp üzerinden deneme yapılmadı.
 - **Açık konular:** Sevde'nin `lib/bot/steps.ts` dosyasıyla isimler henüz karşılaştırılmadı. Klinik telefonu parametre olarak bırakıldı. Eski sürümdeki "Randevuyu koru" butonu ve geçersiz ad mesajı eklenmedi.
 - **Başka ekipten istek:** Sevde: tarih ve saat fonksiyonlara hazır metin olarak ("5 Kasım 2026 Perşembe, 10:30") verilecek.
+
+## 2026-10-31 23:55 — Gemini test veri seti (dataset.json)
+- **Kişi / araç:** Ebru / Claude (web sohbeti)
+- **Dal:** feature/gemini-dataset
+- **Ne yapıldı:** `scripts/gemini-test/dataset.json` oluşturuldu. 68 gerçekçi hasta mesajı ve her biri için beklenen sonuç var: intent, procedure, date, time_of_day, time. Mesajlar yazım hatalı, kısaltmalı, emojili, dolaylı ("dişim zonkluyor") ve alakasız ("fiyatınız ne kadar?") örnekler içeriyor. Gerçek isim ve telefon numarası yok.
+- **Değişen dosyalar:** `scripts/gemini-test/dataset.json`, `logs/ebru.md`
+- **Neden:** Gemini test seti görev kartı. Alan adları Sevde ile birlikte sabitlendi (expected.intent, expected.procedure, expected.date, expected.time_of_day, expected.time).
+- **Nasıl test edildi:** Dosya Node ile okunup geçerli JSON olduğu ve 68 kayıt içerdiği doğrulandı. `npm run lint` ve `npm run build` hatasız tamamlandı. Gemini ile çalıştırılmadı.
+- **Açık konular:** Test kodu henüz yazılmadı (Sevde yazacak). "Bu hafta", "haftaya" gibi tek bir günü göstermeyen ifadelerde date null bırakıldı.
+- **Başka ekipten istek:** Sevde: dosyanın başındaki `today` değeri (2026-11-02) Gemini'ye "bugün" olarak verilecek. Kayıtlar `cases` listesinde.
