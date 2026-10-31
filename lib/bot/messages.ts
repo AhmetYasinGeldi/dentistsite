@@ -1,84 +1,113 @@
-export const messages = {
-  // Karşılama ve ana menü
-  welcome: "Merhaba, randevu asistanına hoş geldiniz. ✨",
-  mainMenu: "Size nasıl yardımcı olabiliriz?",
-  menuHint: "Ana menüye dönmek için istediğiniz zaman menü yazabilirsiniz.",
+// lib/bot/messages.ts
+// Botun tüm Türkçe metinleri bu dosyada. Metin değişirse sadece burası değişir.
+// Adım isimleri (menu, ask_name, ...) lib/bot/steps.ts ile birebir aynıdır.
+//
+// Kurallar: "siz" dili, kısa, bir mesajda tek soru, en fazla 1 emoji.
+// Limitler: buton başlığı en fazla 20, liste satırı en fazla 24,
+// açıklama en fazla 72 karakter.
+// Tarih biçimi: "5 Kasım 2026 Perşembe, 10:30". Bu biçimi çağıran taraf
+// hazırlar, buradaki fonksiyonlara hazır metin olarak verilir.
 
-  // Randevu alma adımları
-  askFullName: "Adınızı ve soyadınızı paylaşır mısınız?",
-  invalidFullName: "Lütfen adınızı ve soyadınızı birlikte yazınız.",
-  chooseProcedure: "Hangi işlem için randevu almak istersiniz?",
-  chooseDoctor: "Hangi doktorumuzdan randevu almak istersiniz?",
-  chooseDate: "Hangi tarihte gelmek istersiniz?",
-  chooseTime: "Uygun saatlerden hangisini tercih edersiniz?",
-  confirmBooking: "İşlem: [islem]\nDoktor: [doktor]\nTarih: [tarih]\nSaat: [saat]\n\nRandevu talebinizi onaylıyor musunuz?",
-  chooseChange: "Hangi bilgiyi değiştirmek istersiniz?",
-  requestReceived: "Talebiniz alındı. Klinik onayladığında bilgilendirileceksiniz. ⏳",
-  bookingAbandoned: "Randevu oluşturma işleminden vazgeçtiniz.",
-
-  // Randevu görüntüleme
-  currentAppointment: "İşlem: [islem]\nDoktor: [doktor]\nTarih: [tarih]\nSaat: [saat]\nDurum: [durum] 📅",
-  noActiveAppointment: "Aktif bir randevunuz bulunmuyor. 🔍",
-  activeAppointmentExists: "Zaten aktif bir randevunuz var.",
-  chooseAppointmentAction: "Randevunuz için hangi işlemi yapmak istersiniz?",
-
-  // İptal ve erteleme
-  confirmCancellation: "[tarih], [saat] için randevunuzu iptal etmek istediğinize emin misiniz?",
-  appointmentCancelled: "Randevunuz iptal edildi. 🗑️",
-  appointmentKept: "Randevunuz korunuyor. Herhangi bir değişiklik yapılmadı.",
-  chooseRescheduleDate: "Randevunuzu hangi tarihe ertelemek istersiniz?",
-  chooseRescheduleTime: "Yeni randevunuz için hangi saati tercih edersiniz?",
-  confirmReschedule: "Yeni randevu talebiniz:\nİşlem: [islem]\nDoktor: [doktor]\nTarih: [tarih]\nSaat: [saat]\n\nBu değişikliği onaylıyor musunuz?",
-  rescheduleReceived: "Eski randevunuz iptal edildi ve yeni talebiniz alındı. Klinik onayladığında bilgilendirileceksiniz. 🔄",
-  rescheduleAbandoned: "Erteleme işleminden vazgeçtiniz. Mevcut randevunuz korunuyor.",
-  cancellationLimitPassed: "Randevunuza kalan süre nedeniyle bot üzerinden iptal veya erteleme yapılamıyor. Lütfen kliniği arayınız. 📞",
-
-  // Klinik işlemi tamamladıktan sonra gönderilecek bildirimler
-  appointmentApproved: "[tarih], [saat] için [doktor] ile [islem] randevunuz onaylandı. ✅",
-  appointmentRejected: "[tarih], [saat] için randevu talebiniz klinik tarafından reddedildi. Başka bir saat için yeni talep oluşturabilirsiniz. ❌",
-  appointmentCancelledByClinic: "[tarih], [saat] için randevunuz klinik tarafından iptal edildi. Bilgi almak için lütfen kliniği arayınız. 📞",
-
-  // Hata ve uygun seçenek bulunamaması
-  slotTaken: "Bu saat az önce doldu, lütfen başka bir saat seçiniz. ⚠️",
-  slotUnavailable: "Seçilen saat müsait değildir.",
-  appointmentNotFound: "Randevu bulunamadı.",
-  appointmentNotActive: "Bu randevu artık aktif değildir.",
-  noProcedures: "Şu anda randevu alınabilecek bir işlem bulunmuyor. Lütfen kliniği arayınız.",
-  noDoctors: "Bu işlem için şu anda uygun doktor bulunmuyor. Lütfen başka bir işlem seçiniz veya kliniği arayınız.",
-  noSlotsOnDate: "Bu tarihte uygun saat bulunmuyor. Lütfen başka bir tarih seçiniz.",
-  noSlotsInWindow: "Randevu alınabilecek tarihlerde uygun saat bulunmuyor. Lütfen kliniği arayınız.",
-  bookingWindow: "Lütfen [ilkTarih] ile [sonTarih] arasındaki tarihlerden birini seçiniz.",
-  invalidSelection: "Lütfen gösterilen seçeneklerden birini seçiniz.",
-  invalidDate: "Lütfen geçerli bir tarih belirtiniz veya listeden bir tarih seçiniz.",
-  invalidTime: "Lütfen listede gösterilen uygun saatlerden birini seçiniz.",
-  notUnderstood: "Mesajınızı anlayamadım. Lütfen menüden bir seçenek seçiniz. 🤖",
-  unsupportedMessage: "Bu mesaj türüyle işlem yapılamıyor. Lütfen metin yazınız veya menüden bir seçenek seçiniz.",
-  serviceError: "Bir hata oluştu, lütfen tekrar deneyiniz.",
-  contactClinic: "Lütfen kliniği arayınız: [telefon] 📞",
-  medicalQuestion: "Tıbbi değerlendirme için lütfen kliniği arayınız: [telefon] 📞",
-  priceQuestion: "Ücret bilgisi için lütfen kliniği arayınız: [telefon] 📞",
-};
-
-// Akışta her seferinde en fazla 3 buton gösterilecek.
+// ---------- Ortak butonlar ----------
 export const buttons = {
   book: "Randevu al",
   view: "Randevumu gör",
-  manage: "İptal / Ertele",
+  cancelOrReschedule: "İptal / Ertele",
   confirm: "Onayla",
   change: "Değiştir",
-  abandon: "Vazgeç",
+  giveUp: "Vazgeç",
   cancel: "İptal et",
   reschedule: "Ertele",
-  menu: "Ana menü",
-  confirmCancellation: "Evet, iptal et",
-  keepAppointment: "Randevuyu koru",
-};
+  yesCancel: "Evet, iptal et",
+  show: "Gör",
+} as const;
 
-export const listLabels = {
-  procedures: "İşlem seç",
-  doctors: "Doktor seç",
-  dates: "Tarih seç",
-  times: "Saat seç",
-  moreDates: "Diğer tarihler",
-  moreTimes: "Diğer saatler",
-};
+// ---------- Liste satırları (en fazla 24 karakter) ----------
+export const listRows = {
+  otherDays: "Diğer günler",
+  otherTimes: "Diğer saatler",
+  morning: "Sabah",
+  afternoon: "Öğleden sonra",
+} as const;
+
+// Liste mesajlarında listeyi açan butonun başlığı (en fazla 20 karakter)
+export const listOpenButtons = {
+  procedure: "İşlemleri gör",
+  doctor: "Doktorları gör",
+  date: "Günleri gör",
+  time: "Saatleri gör",
+} as const;
+
+// ---------- Karşılama ----------
+export const greeting =
+  'Merhaba, diş kliniğimizin randevu asistanına hoş geldiniz 🦷 İstediğiniz zaman "menü" yazarak ana menüye dönebilirsiniz.';
+
+// ---------- A) Randevu alma ----------
+export const steps = {
+  menu: "Size nasıl yardımcı olabilirim?",
+  ask_name: "Adınızı ve soyadınızı yazar mısınız?",
+  choose_procedure: "Hangi işlem için randevu almak istiyorsunuz?",
+  choose_doctor: "Hangi doktorumuzu tercih edersiniz?",
+  choose_date: "Hangi gün gelmek istersiniz?",
+  choose_time: "Hangi saat size uygun?",
+  choose_time_period: "Sabah mı, öğleden sonra mı tercih edersiniz?",
+
+  // ---------- C) İptal / Ertele ----------
+  manage_appointment: "Randevunuz için ne yapmak istersiniz?",
+  confirm_cancel: "Randevunuzu iptal etmek istediğinize emin misiniz?",
+  reschedule_date: "Yeni randevunuz için hangi gün uygun?",
+  reschedule_time: "Hangi saati tercih edersiniz?",
+} as const;
+
+// confirm: özet + Onayla / Değiştir / Vazgeç
+export const confirmSummary = (p: {
+  islem: string;
+  doktor: string;
+  tarihSaat: string;
+}): string =>
+  `Randevu özetiniz:\nİşlem: ${p.islem}\nDoktor: ${p.doktor}\nTarih: ${p.tarihSaat}\n\nOnaylıyor musunuz?`;
+
+export const requestReceived =
+  "Talebiniz alındı, klinik onayladığında bilgilendirileceksiniz.";
+
+// confirm_reschedule: Onayla / Vazgeç
+export const confirmReschedule = (yeniTarihSaat: string): string =>
+  `Randevunuz ${yeniTarihSaat} tarihine taşınacak. Onaylıyor musunuz?`;
+
+export const rescheduleRequestReceived =
+  "Erteleme talebiniz alındı, klinik onayladığında bilgilendirileceksiniz.";
+
+export const cancelDone = "Randevunuz iptal edildi.";
+
+// ---------- B) Randevumu gör (tek mesaj) ----------
+export const appointmentInfo = (p: {
+  tarihSaat: string;
+  doktor: string;
+  islem: string;
+  durum: string;
+}): string =>
+  `Randevunuz:\nTarih: ${p.tarihSaat}\nDoktor: ${p.doktor}\nİşlem: ${p.islem}\nDurum: ${p.durum}`;
+
+export const noActiveAppointment = "Aktif randevunuz bulunmuyor.";
+
+// ---------- Panel bildirimleri ----------
+export const notifications = {
+  approved: (tarihSaat: string): string =>
+    `Randevunuz onaylandı: ${tarihSaat}. Sizi bekliyoruz.`,
+  rejected:
+    'Üzgünüz, bu saat için randevunuz onaylanamadı. Yeni randevu için "menü" yazabilirsiniz.',
+  clinicCancelled: (tarihSaat: string): string =>
+    `Üzgünüz, ${tarihSaat} tarihli randevunuz klinik tarafından iptal edildi.`,
+} as const;
+
+// ---------- Hata ve özel durum mesajları ----------
+export const errors = {
+  notUnderstood: 'Anlayamadım, menüden seçer misiniz? "menü" yazarak menüye dönebilirsiniz.',
+  hasActiveAppointment: "Zaten aktif bir randevunuz var. Ne yapmak istersiniz?",
+  cancelDeadlinePassed: (klinikTelefonu: string): string =>
+    `İptal süresi geçtiği için bu işlemi buradan yapamıyoruz. Lütfen kliniği arayın: ${klinikTelefonu}`,
+  slotTaken: "Seçtiğiniz saat az önce doldu. Başka bir saat seçebilir misiniz?",
+  noSlotsOnDate: "Bu gün için boş saat kalmadı. Başka bir gün seçebilir misiniz?",
+  medicalOrPrice: (klinikTelefonu: string): string =>
+    `Bu konuda en doğru bilgiyi kliniğimiz verebilir. Lütfen arayın: ${klinikTelefonu}`,
+} as const;
