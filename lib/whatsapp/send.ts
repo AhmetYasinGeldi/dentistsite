@@ -4,7 +4,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export type SendResult =
   | { ok: true; waMessageId: string | null }
-  | { ok: false; reason: "WINDOW_CLOSED" | "API_ERROR" | "NETWORK_ERROR" };
+  | {
+      ok: false;
+      reason: "WINDOW_CLOSED" | "API_ERROR" | "NETWORK_ERROR" | "CONFIG_ERROR";
+    };
 
 // Meta'nın "24 saat penceresi dışında" hata kodu.
 const WINDOW_CLOSED_CODE = 131047;
@@ -16,6 +19,19 @@ const WINDOW_CLOSED_CODE = 131047;
 export async function sendTextMessage(to: string, body: string): Promise<SendResult> {
   const version = process.env.WHATSAPP_API_VERSION;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+
+  if (!version || !phoneNumberId || !accessToken) {
+    // Sadece eksik değişkenlerin ADLARI loglanır, değerleri asla.
+    const missing = [
+      !version && "WHATSAPP_API_VERSION",
+      !phoneNumberId && "WHATSAPP_PHONE_NUMBER_ID",
+      !accessToken && "WHATSAPP_ACCESS_TOKEN",
+    ].filter(Boolean);
+    console.error("[whatsapp/send] Eksik ortam değişkeni:", missing.join(", "));
+    return { ok: false, reason: "CONFIG_ERROR" };
+  }
+
   const url = `https://graph.facebook.com/${version}/${phoneNumberId}/messages`;
 
   let response: Response;
@@ -23,7 +39,7 @@ export async function sendTextMessage(to: string, body: string): Promise<SendRes
     response = await fetch(url, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
