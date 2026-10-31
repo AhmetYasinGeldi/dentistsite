@@ -127,9 +127,9 @@ export default async function AppointmentsPage({
     );
   }
 
-  const pendingAppointments = pendingResult.data;
-  const otherAppointments = othersResult.data;
-  const doctors = doctorsResult.data;
+  const pendingAppointments = pendingResult.data ?? [];
+  const otherAppointments = othersResult.data ?? [];
+  const doctors = doctorsResult.data ?? [];
 
   const renderAppointments = (rows: typeof pendingAppointments) =>
     rows.length === 0 ? (

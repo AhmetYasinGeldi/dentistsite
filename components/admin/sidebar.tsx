@@ -151,7 +151,6 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
           );
         })}
       </nav>
-
     </div>
   );
 
@@ -179,3 +178,4 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
     </>
   );
 }
+
