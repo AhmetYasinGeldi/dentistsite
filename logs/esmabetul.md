@@ -30,3 +30,13 @@
 - **Nasıl test edildi:** `npm run lint` ve `npm run build` hatasız tamamlandı.
 - **Açık konular:** Yok.
 - **Başka ekipten istek:** Yok.
+
+## 2026-10-31 12:26 — Randevu listesi sayfası oluşturuldu
+- **Kişi / araç:** Esma / Antigravity
+- **Dal:** feat/admin-appointments
+- **Ne yapıldı:** `app/admin/(dashboard)/appointments/page.tsx` dosyası oluşturuldu; Supabase server client ile randevu çekimi, pending randevular üstte gösterildi, filtre formu eklendi, tema tokenları kullanıldı, `formatPhone`, `formatDateTime`, `statusLabel` yardımcılarıyla veri formatlandı.
+- **Neden:** Yönetici talebi: onay bekleyen randevular en üstte, diğerleri tarih/doktor/durum filtresiyle listelensin.
+- **Nasıl test edildi:** `npm run lint` ve `npm run build` sorunsuz; lokal `npm run dev` ile sayfa açıldı, sahte randevular doğru filtrelendi ve listelendi.
+- **Açık konular:** `doctor_name` ve `procedure_name` alanlarının Supabase’den nasıl getirileceği (join vs. view) netleştirilecek.
+- **Başka ekipten istek:** (yok)
+- **Alınan hatalar:** Yok.
