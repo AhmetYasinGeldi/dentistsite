@@ -50,6 +50,7 @@ Her ekip yalnızca kendi alanındaki dosyaları değiştirir. Başka bir alandak
 ```
 /
 ├── AGENTS.md, CLAUDE.md, README.md      → Ahmet Yasin (proje lideri)
+├── tasks.md          (açık işler)        → Herkes, sadece kendi ekibinin bölümü
 ├── package.json, tsconfig.json,
 │   next.config.*, middleware/proxy,
 │   tailwind/postcss ayarları, .env.example → Ahmet Yasin
@@ -259,6 +260,8 @@ Gemini **sadece** hastanın serbest yazdığı metni yapılandırılmış veriye
 - Onay/red/iptal işlemi veritabanını güncelledikten sonra `notifyAppointmentUpdate` çağrılır; `sent: false` ise "Hastaya WhatsApp bildirimi gönderilemedi" uyarısı gösterilir.
 - Elle randevu eklerken boş saatler `get_available_slots` ile gösterilir. Hasta telefonla bulunur yoksa yeni hasta oluşturulur.
 - Veri değiştiren işlemler server action veya route handler ile sunucuda yapılır.
+- Panelden erteleme: `reschedule_appointment` (`p_cancelled_by: 'admin'`) yeni randevuyu `pending` açar. Panel, aynı server action içinde dönen yeni id ile randevuyu `approved` yapar, ardından `notifyAppointmentUpdate` çağırır. Veritabanı fonksiyonu değiştirilmez. Bottan gelen erteleme `pending` kalır.
+- Doktor pasifleştirme: Doktorun aktif (`pending`/`approved`, süresi geçmemiş) randevusu varsa panel pasifleştirmeden önce uyarı gösterir ve bu randevuları listeler. Randevular admin tarafından elle iptal edilir veya ertelenir; sistem otomatik iptal yapmaz.
 
 ## 10. Tanıtım sitesi kuralları (site ekibi)
 
@@ -289,9 +292,17 @@ Gemini **sadece** hastanın serbest yazdığı metni yapılandırılmış veriye
 ### Her göreve başlarken
 1. Bu dosyayı oku.
 2. Kullanıcının `logs/<isim>.md` dosyasındaki son kayıtları oku; önceki oturumda ne yapıldığını öğren.
-3. İlgili şema veya mevcut kod dosyalarını oku. Tahmin etme.
-4. Görev belirsizse veya birden fazla yorum mümkünse önce sor.
-5. Büyük bir değişiklikten önce kısa bir plan sun (hangi dosyalar, ne değişecek) ve onay al.
+3. `tasks.md` dosyasında kullanıcının ekibine ait açık işleri oku. Yapılacak görevle ilgili bir madde varsa kullanıcıya söyle.
+4. İlgili şema veya mevcut kod dosyalarını oku. Tahmin etme.
+5. Görev belirsizse veya birden fazla yorum mümkünse önce sor.
+6. Büyük bir değişiklikten önce kısa bir plan sun (hangi dosyalar, ne değişecek) ve onay al.
+
+### Açık işler (`tasks.md`)
+- Açık işler ve PR incelemelerinde çıkan küçük düzeltmeler kök dizindeki `tasks.md` dosyasında takip edilir. Trello kartı gerektirmeyen her açık iş buraya yazılır.
+- Yarım kalan bir iş, bilinen bir eksik veya sonra yapılacak bir düzeltme varsa log'daki "Açık konular" alanına ek olarak `tasks.md`'de kendi ekibinin bölümüne madde olarak ekle.
+- Her madde şunları içerir: başlık, dosya (ve varsa PR numarası), sorun, yapılacak. Kısa ve açıklayıcı yaz.
+- Sadece kendi ekibinin bölümüne yaz; başka ekibin maddesini değiştirme. Başka ekipten bir şey gerekiyorsa log'a "Başka ekipten istek" olarak yaz.
+- Bir maddeyi tamamladığında aynı dalda o maddeyi `tasks.md`'den sil ve log kaydında hangi maddeyi kapattığını belirt.
 
 ### Git
 - `main` dalına doğrudan commit veya push YAPMA. Her iş kendi dalında: `feat/bot-webhook`, `feat/admin-onay`, `fix/site-buton` gibi.
