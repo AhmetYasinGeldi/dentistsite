@@ -10,12 +10,21 @@ const incomingMessageSchema = z.object({
   timestamp: z.string(),
   type: z.string(),
   text: z.object({ body: z.string() }).optional(),
+  // Hasta bir butona veya liste satırına bastığında gelir.
+  interactive: z
+    .object({
+      type: z.string(),
+      button_reply: z.object({ id: z.string(), title: z.string() }).optional(),
+      list_reply: z.object({ id: z.string(), title: z.string() }).optional(),
+    })
+    .optional(),
 });
 
 // Sadece field === "messages" olan değişikliklerin içeriği.
 const messagesValueSchema = z.object({
   messaging_product: z.literal("whatsapp"),
-  messages: z.array(incomingMessageSchema).optional(),
+  // Mesajlar tek tek doğrulanır (extractMessages); geçersiz biri diğerlerini düşürmez.
+  messages: z.array(z.unknown()).optional(),
   // İletildi/okundu bildirimleri: işlenmez, sadece varlıkları bilinir.
   statuses: z.array(z.unknown()).optional(),
 });
@@ -47,7 +56,26 @@ export function extractMessages(payload: WebhookPayload): IncomingMessage[] {
         console.error("[webhook] Beklenmeyen mesaj gövdesi:", parsed.error.issues);
         return [];
       }
-      return parsed.data.messages ?? [];
+      return (parsed.data.messages ?? []).flatMap((raw) => {
+        const message = incomingMessageSchema.safeParse(raw);
+        if (!message.success) {
+          console.error("[webhook] Geçersiz mesaj atlandı:", message.error.issues);
+          return [];
+        }
+        return [message.data];
+      });
     }),
   );
+}
+
+/** Seçilen buton/liste satırının id'si; düz metin mesajda null. */
+export function getReplyId(message: IncomingMessage): string | null {
+  const reply = message.interactive?.button_reply ?? message.interactive?.list_reply;
+  return reply?.id ?? null;
+}
+
+/** Mesajın okunabilir metni: yazılan metin ya da seçilen buton/satır başlığı. */
+export function getMessageText(message: IncomingMessage): string | null {
+  const reply = message.interactive?.button_reply ?? message.interactive?.list_reply;
+  return message.text?.body ?? reply?.title ?? null;
 }
