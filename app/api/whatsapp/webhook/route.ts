@@ -1,6 +1,12 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { handleEcho } from "@/lib/bot/echo";
-import { extractMessages, webhookPayloadSchema, type IncomingMessage } from "@/lib/whatsapp/payload";
+import { touchSession } from "@/lib/bot/session";
+import {
+  extractMessages,
+  getMessageText,
+  webhookPayloadSchema,
+  type IncomingMessage,
+} from "@/lib/whatsapp/payload";
 import { isValidSignature } from "@/lib/whatsapp/verify";
 
 // GET: Meta'nın webhook doğrulaması.
@@ -60,7 +66,7 @@ async function processMessage(message: IncomingMessage): Promise<void> {
     phone: message.from,
     direction: "in",
     wa_message_id: message.id,
-    body: message.text?.body ?? null,
+    body: getMessageText(message),
     payload: message,
   });
   if (insertError) {
@@ -70,13 +76,8 @@ async function processMessage(message: IncomingMessage): Promise<void> {
     return;
   }
 
-  const { error: sessionError } = await supabase
-    .from("wa_sessions")
-    .upsert(
-      { phone: message.from, last_inbound_at: new Date().toISOString() },
-      { onConflict: "phone" },
-    );
-  if (sessionError) console.error("[webhook] Oturum güncellenemedi:", sessionError);
+  // Numara ilk kez yazıyorsa oturum "idle" adımıyla oluşur.
+  await touchSession(message.from);
 
   await handleEcho(message);
 }

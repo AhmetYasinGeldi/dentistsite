@@ -34,16 +34,6 @@ Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7 incelemesi)
 
 ## Bot ekibi (Sevde, Ebru)
 
-### 5. Geçersiz tek mesaj bütün grubu düşürmesin
-- **Dosya:** `lib/whatsapp/payload.ts` (PR #5)
-- **Sorun:** Bir `change` içindeki mesajlardan birinin `from` alanı geçersizse `messagesValueSchema` bütün değeri reddediyor, aynı gruptaki geçerli mesajlar da işlenmiyor. Pratikte Meta genelde tek mesaj gönderdiği için risk düşük.
-- **Yapılacak:** Mesajları tek tek `safeParse` et, sadece geçersiz olanı logla ve atla.
-
-### 6. Log'daki dal adı
-- **Dosya:** `logs/sevde.md` (PR #5)
-- **Sorun:** Son kayıtta dal `feat/bot-webhook` yazıyor, PR'ın dalı `fix/bot-webhook-inceleme`.
-- **Yapılacak:** Sonraki kayıtta doğru dal adını kullan.
-
 ### 7. `messages.ts` içindeki Türkçe değişken adları
 - **Dosya:** `lib/bot/messages.ts` (PR #7)
 - **Sorun:** Parametre adları Türkçe (`islem`, `doktor`, `tarihSaat`, `durum`, `klinikTelefonu`, `yeniTarihSaat`). AGENTS.md'ye göre kod içi isimler İngilizce olmalı. Ayrıca dosyanın sonunda satır sonu yok.

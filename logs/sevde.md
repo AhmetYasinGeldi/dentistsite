@@ -29,3 +29,13 @@
 - **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. Node ile birim testi: 3 butonlu mesaj geçerli; 4 buton, 21 karakterlik başlık, aynı başlıklı iki buton, 11 satır, başlıksız ikinci bölüm, 25 karakterlik satır ve 73 karakterlik açıklama reddediliyor. 25 saat 9+Diğer / 9+Diğer / 7 olarak sayfalanıyor ve her sayfa liste sınırına uyuyor. Graph API buton gövdesi beklenen biçimde.
 - **Açık konular:** Üç mesaj türünün test telefonuna ulaşması (kartın "bitti" şartı) Meta webhook kaydını bekliyor.
 - **Başka ekipten istek:** Yok.
+
+## 2026-10-31 20:30 — Mesaj kaydı, tekrar engelleme ve oturum durumu
+- **Kişi / araç:** Sevde / Claude
+- **Dal:** feat/bot-oturum
+- **Ne yapıldı:** Adım isimleri `lib/bot/steps.ts` içinde tek listede tanımlandı (Ebru'nun `messages.ts` anahtarlarıyla aynı). `lib/bot/session.ts` eklendi: `touchSession` (numara yoksa `idle` ile oluşturur, `last_inbound_at`'i günceller), `getSession` (bilinmeyen adımı ve bozuk taslağı güvenli varsayılana çevirir), `setSession`, `resetSession`; taslak seçimler (`context`) zod şemasıyla tanımlı. Buton ve liste cevapları okunuyor (`getReplyId`, `getMessageText`) ve `wa_messages.body`'ye seçilen başlık yazılıyor. Tekrar engelleme (23505) önceki PR'dan beri çalışıyor. `tasks.md` 5. madde kapatıldı: bir gruptaki mesajlar tek tek doğrulanıyor, geçersiz olan loglanıp atlanıyor, diğerleri işleniyor. 6. madde (log'daki dal adı) bu kayıttan itibaren doğru dal adlarıyla kapatıldı.
+- **Değişen dosyalar:** `lib/bot/steps.ts`, `lib/bot/session.ts`, `lib/whatsapp/payload.ts`, `app/api/whatsapp/webhook/route.ts`, `tasks.md`, `logs/sevde.md`
+- **Neden:** Trello kartı "[Sevde] Mesaj kaydı, tekrar engelleme ve oturum durumu".
+- **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. Sahte bir Supabase (PostgREST taklidi) ile yerelde: aynı webhook iki kez gönderildi, ikincisi atlandı ve bot bir kez cevap vermeye çalıştı; butona basma mesajı `body = "Randevu al"` olarak kaydedildi; `wa_sessions` satırı `step = idle` ve dolu `last_inbound_at` ile oluştu. Biri geçersiz numaralı iki mesajlık grupta geçerli mesaj işlendi, geçersiz olan loglanıp atlandı.
+- **Açık konular:** `getSession`/`setSession` gerçek veritabanında denenmedi; sohbet akışı yazılırken kullanılacak. Gerçek telefon testi Meta webhook kaydını bekliyor.
+- **Başka ekipten istek:** Yok.
