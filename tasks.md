@@ -17,11 +17,6 @@ Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7 incelemesi)
 - **Sorun:** "Durum" açılır listesindeki seçenekler (`Onaylandı`, `İptal Edildi` vb.) elle yazılmış. Ortak eşlemede `İptal edildi` küçük harfle geçiyor; tabloda ve filtrede aynı durum farklı yazılıyor. Sayfadaki `appointmentStatuses` dizisi de `lib/shared/appointment-status.ts` içindeki `APPOINTMENT_STATUSES` listesinin kopyası.
 - **Yapılacak:** Seçenekleri `APPOINTMENT_STATUSES` (pending hariç) ve `APPOINTMENT_STATUS_LABELS` üzerinden üret.
 
-### 2. "Diğer randevular" listesine sınır
-- **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #6)
-- **Sorun:** Filtre seçilmediğinde geçmiş dahil bütün randevular tek seferde çekiliyor. Veri biriktikçe sayfa yavaşlar.
-- **Yapılacak:** Varsayılan olarak bugünden itibaren listele veya `.limit()` ile sayfalama ekle.
-
 ### 3. Log kaydının güncellenmesi
 - **Dosya:** `logs/esmabetul.md` (PR #6)
 - **Sorun:** 31 Ekim 15:18 kaydında "lint/build çalıştırılamadı" ve "commit/push edilmedi" yazıyor; PR açıklamasında ise ikisinin de çalıştığı söyleniyor. `lib/shared/appointment-status.ts` değişikliği "Değişen dosyalar" içinde yok.
