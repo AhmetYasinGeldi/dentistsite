@@ -11,7 +11,7 @@ Kodun neredeyse tamamı yapay zeka ajanlarıyla yazılır. Bu yüzden bu dosyada
 | Lider, veritabanı, entegrasyon | Ahmet Yasin | ayar dosyaları, `supabase/`, `lib/supabase/`, `lib/shared/` |
 | Bot (WhatsApp + sohbet + Gemini) | Sevde, Ebru | `app/api/whatsapp/`, `lib/whatsapp/`, `lib/bot/`, `lib/ai/`, `scripts/gemini-test/` |
 | Admin paneli | Esma, Merve | `app/admin/`, `components/admin/` |
-| Tanıtım sitesi | Ahmet Çiçek, Ömer, Ebrar | `app/(site)/`, `components/site/` |
+| Tanıtım sitesi | Ahmet Çiçek, Ebrar | `app/(site)/`, `components/site/` |
 | Test ve kalite | Tuğba, Nezahat | `docs/test/` |
 | Sunum | Belinay | `docs/sunum/` |
 
