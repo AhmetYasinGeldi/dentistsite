@@ -29,3 +29,13 @@
 - **Nasıl test edildi:** Dört PR ayrı ayrı ve birlikte origin/main üzerinde `npm run lint` ve `npm run build` ile denendi, hepsi hatasız. PR #5 webhook'u sahte secret ile yerelde denendi (şablon durumu, statuses ve geçersiz `from` 200; yanlış imza 401; yanlış verify token 403). PR #6'da girişsiz `/admin` isteğinin `/admin/login`'e yönlendirildiği görüldü; girişli liste görünümü denenmedi.
 - **Açık konular:** PR #6 randevu listesi admin girişiyle elle kontrol edilecek.
 - **Başka ekipten istek:** Panel ekibi: 14 ve 15 numaralı kararlar erteleme ve doktor yönetimi yazılırken uygulanacak. Test ekibi: P8 ve P9 senaryoları bu kararlara göre güncellenecek.
+
+## 2026-10-31 23:35 — PR #11 ve #12 incelemesi, site ekibi güncellemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/site-ekibi-guncelleme
+- **Ne yapıldı:** PR #11 (bot oturum durumu) ve PR #12 (site hero bölümü) incelendi; birleştirmeyi engellemeyen düzeltmeler `tasks.md`'ye yazıldı (bot ekibi 16-18, site ekibi 19-22). Ömer projeden ayrıldığı için AGENTS.md ve README'deki ekip listelerinden çıkarıldı; Trello'da doktorlar/tedaviler kartı Ahmet Çiçek'e, üst menü/hero kartı Ebrar'a verildi.
+- **Değişen dosyalar:** `tasks.md`, `AGENTS.md`, `README.md`, `logs/ahmetyasin.md`
+- **Neden:** PR incelemelerinden çıkan küçük işleri takip etmek; site ekibindeki kişi değişikliğini dokümanlara ve karta yansıtmak.
+- **Nasıl test edildi:** PR #11'de `npm run lint` ve `npm run build` hatasız. PR #12'de build başarılı, lint `HeroSection.tsx:38`'de `react/no-unescaped-entities` hatası verdi; PR'a değişiklik istendi. Bu daldaki değişiklik sadece doküman.
+- **Açık konular:** PR #12'nin düzeltmeleri bekleniyor (lint hatası, `package-lock.json` geri alınması, tema renkleri).
+- **Başka ekipten istek:** Site ekibi: 19-22 numaralı maddeler. Bot ekibi: 16-18 numaralı maddeler.

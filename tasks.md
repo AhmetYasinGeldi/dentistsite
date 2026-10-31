@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7 incelemesi)
+Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7, #11, #12 incelemesi)
 
 ---
 
@@ -52,6 +52,43 @@ Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7 incelemesi)
 ### 10. Ebru'nun eski log kayıtları
 - **Dosya:** `logs/ebru.md` (PR #7)
 - **Not:** İlk iki kayıtta dal `main` ve saat yok; kayıtlar silinmez ama bundan sonraki kayıtlarda saat ve doğru dal yazılmalı. Dosya başlığı (`# Ebru - ...`) eklenebilir.
+
+### 16. Boş oturum için paylaşılan nesne
+- **Dosya:** `lib/bot/session.ts` (PR #11)
+- **Sorun:** `getSession` kayıt yokken veya hata olduğunda hep aynı `EMPTY_SESSION` nesnesini döndürüyor; `{ ...EMPTY_SESSION }` kopyasında da `context` aynı `{}` nesnesi. Akış kodu `session.context.date = ...` gibi doğrudan değiştirirse değer sabite yazılır ve sonraki hastaların oturumuna sızar.
+- **Yapılacak:** Sabit yerine her çağrıda yeni nesne döndüren `emptySession()` fonksiyonu kullan.
+
+### 17. `setSession` satır yoksa sessizce hiçbir şey yapmıyor
+- **Dosya:** `lib/bot/session.ts` (PR #11)
+- **Sorun:** `setSession` sadece `update` yapıyor. `touchSession` hata verip satır oluşmadıysa güncelleme 0 satırı etkiler, hata da dönmez; hasta aynı adımda takılır ve log'da iz kalmaz.
+- **Yapılacak:** `update` yerine `upsert({ phone, step, context }, { onConflict: "phone" })` kullan veya `.select("phone")` ile dönen satır sayısını kontrol edip 0 ise logla.
+
+### 18. `slotStart` doğrulaması gevşek
+- **Dosya:** `lib/bot/session.ts` (PR #11)
+- **Sorun:** `slotStart: z.string()` her metni kabul ediyor. Bu değer randevu oluşturmada ve `reschedule_appointment` çağrısında kullanılacak; bozuk bir değer veritabanı hatasına kadar fark edilmez.
+- **Yapılacak:** zod'un saat dilimi (offset) içeren datetime doğrulamasını kullan (ör. `2026-11-05T10:30:00+03:00` geçmeli).
+
+## Site ekibi (Ahmet Çiçek, Ebrar)
+
+### 19. Hero metni gerçek akışla uyuşmuyor
+- **Dosya:** `components/site/HeroSection.tsx` (PR #12)
+- **Sorun:** "Saniyeler içinde randevunuzu oluşturun" yazıyor; oysa bottan gelen randevu `pending` açılır ve klinik onayını bekler. "Ağrısız diş tedavileri" ifadesi de tıbbi bir vaat; "modern, güvenilir" gibi kalıp ifadeler metni sıradanlaştırıyor.
+- **Yapılacak:** Metni "WhatsApp'tan yazın, randevu talebiniz kliniğe iletilsin" gibi gerçek akışa uygun ve vaat içermeyen bir cümleyle değiştir.
+
+### 20. WhatsApp numarası tanımlı değilse bozuk link
+- **Dosya:** `components/site/HeroSection.tsx` (PR #12)
+- **Sorun:** `NEXT_PUBLIC_WHATSAPP_NUMBER` boşsa `|| ''` ile `https://wa.me/?text=...` gibi numarasız bir link üretiliyor, hata fark edilmiyor.
+- **Yapılacak:** Numara yoksa sunucu log'una uyarı yaz ve butonu gösterme (veya pasif göster).
+
+### 21. Dosya biçimi ve artık yorumlar
+- **Dosya:** `app/(site)/page.tsx`, `components/site/HeroSection.tsx` (PR #12)
+- **Sorun:** `// app/(site)/page.tsx veya app/page.tsx` ve `// components/site/HeroSection.tsx` gibi yapay zekadan kalma yorumlar, satır sonlarında boşluklar, dosya sonunda satır sonu yok; `HeroSection.tsx` 4 boşluk girintili, projenin geri kalanı 2.
+- **Yapılacak:** Yorumları sil, girintiyi 2 boşluğa çek, dosya sonlarına satır sonu ekle.
+
+### 22. Log ve dal adı
+- **Dosya:** `logs/ebrar.md` (PR #12)
+- **Sorun:** Dal adı `ebrar-site-taslak`, kural `feat/site-...` biçiminde. Log'da `package-lock.json` değişen dosyalarda yok, "Nasıl test edildi" kısmında `npm run lint` ve `npm run build` geçmiyor, dosyanın sonunda satır sonu yok. PR açıklaması boş.
+- **Yapılacak:** Sonraki işlerde `feat/site-...` dalı aç, log'a lint/build sonucunu yaz, PR açıklamasına ne yapıldığını ve nasıl test edildiğini ekle.
 
 ## Test ekibi (Tuğba, Nezahat)
 

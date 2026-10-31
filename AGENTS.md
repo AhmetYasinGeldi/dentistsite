@@ -79,7 +79,7 @@ Her ekip yalnızca kendi alanındaki dosyaları değiştirir. Başka bir alandak
 └── logs/              (her kişinin kendi log dosyası) → Herkes, sadece kendi dosyası
 ```
 
-Ekipler: **Bot ekibi** Sevde, Ebru · **Panel ekibi** Esma, Merve · **Site ekibi** Ahmet Çiçek, Ömer, Ebrar · **Test** Tuğba, Nezahat · **Sunum** Belinay · **Lider, veritabanı, entegrasyon** Ahmet Yasin.
+Ekipler: **Bot ekibi** Sevde, Ebru · **Panel ekibi** Esma, Merve · **Site ekibi** Ahmet Çiçek, Ebrar · **Test** Tuğba, Nezahat · **Sunum** Belinay · **Lider, veritabanı, entegrasyon** Ahmet Yasin.
 
 Kullanıcının hangi ekipte olduğunu bilmiyorsan, değişiklik yapmadan önce sor.
 
