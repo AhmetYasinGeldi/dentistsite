@@ -39,3 +39,13 @@
 - **Nasıl test edildi:** PR #11'de `npm run lint` ve `npm run build` hatasız. PR #12'de build başarılı, lint `HeroSection.tsx:38`'de `react/no-unescaped-entities` hatası verdi; PR'a değişiklik istendi. Bu daldaki değişiklik sadece doküman.
 - **Açık konular:** PR #12'nin düzeltmeleri bekleniyor (lint hatası, `package-lock.json` geri alınması, tema renkleri).
 - **Başka ekipten istek:** Site ekibi: 19-22 numaralı maddeler. Bot ekibi: 16-18 numaralı maddeler.
+
+## 2026-11-01 10:35 — PR #12, #14 ve #15 incelemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr12-14-15
+- **Ne yapıldı:** PR #14 (Gemini test veri seti), PR #15 (panel filtreleri) ve PR #12 (site hero bölümü, düzeltilmiş hali) incelendi ve birleştirildi. PR #12'deki `tasks.md` değişikliği (Panel ekibinin 2. maddesinin silinmesi) PR'ı tekrar geri göndermemek için kabul edildi; madde PR #15'te zaten yapılmıştı. `tasks.md` güncellendi: PR #15 ile kapanan panel maddeleri 1-4 silindi, panel 23-24 ve bot 25 eklendi, site 21-22 güncellendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR incelemelerinden çıkan küçük işleri takip etmek, kapanan maddeleri listeden çıkarmak.
+- **Nasıl test edildi:** Üç PR ayrı ayrı `npm run lint` ve `npm run build` ile denendi, hepsi hatasız. Üçü origin/main üzerinde `git merge-tree` ile sırayla birleştirildi, çakışma çıkmadı; birleşik ağaçta ayrıca build alınmadı. Bu daldaki değişiklik sadece doküman.
+- **Açık konular:** Panel ekibi 23 (durum filtresi seçiliyken geçmiş kayıtların gizlenmesi) ve 24 (log notu); bot ekibi 25 (test setindeki belirsiz beklentiler); site ekibi 19-22. Bot ekibinin 10. maddesi Ebru'nun yeni log kaydıyla karşılandı, Ebru silebilir.
+- **Başka ekipten istek:** Panel ekibi: 23-24. Bot ekibi: 25. Site ekibi: 19-22 (kapatılan maddeler kendi bölümlerinden silinecek).
