@@ -6,31 +6,21 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7, #11, #12 incelemesi)
+Son güncelleme: 1 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15 incelemesi)
 
 ---
 
 ## Panel ekibi (Esma, Merve)
 
-### 1. Durum filtresindeki metinler ortak eşlemeden gelmeli
-- **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #6)
-- **Sorun:** "Durum" açılır listesindeki seçenekler (`Onaylandı`, `İptal Edildi` vb.) elle yazılmış. Ortak eşlemede `İptal edildi` küçük harfle geçiyor; tabloda ve filtrede aynı durum farklı yazılıyor. Sayfadaki `appointmentStatuses` dizisi de `lib/shared/appointment-status.ts` içindeki `APPOINTMENT_STATUSES` listesinin kopyası.
-- **Yapılacak:** Seçenekleri `APPOINTMENT_STATUSES` (pending hariç) ve `APPOINTMENT_STATUS_LABELS` üzerinden üret.
+### 23. Durum filtresi seçiliyken geçmiş randevular görünmüyor
+- **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #15)
+- **Sorun:** Tarih boşken uygulanan "bugünden itibaren" sınırı durum filtresi seçiliyken de geçerli. "Tamamlandı", "İptal edildi" ve "Reddedildi" filtreleri geçmiş kayıtları göstermiyor; "Tamamlandı" filtresi pratikte hep boş kalır.
+- **Yapılacak:** Sınırı yalnızca durum filtresi boşken uygula. Durum seçiliyse en yeni kayıtlar önce gelecek şekilde sırala ve `.limit()` ile üst sınır koy.
 
-### 2. "Diğer randevular" listesine sınır
-- **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #6)
-- **Sorun:** Filtre seçilmediğinde geçmiş dahil bütün randevular tek seferde çekiliyor. Veri biriktikçe sayfa yavaşlar.
-- **Yapılacak:** Varsayılan olarak bugünden itibaren listele veya `.limit()` ile sayfalama ekle.
-
-### 3. Log kaydının güncellenmesi
-- **Dosya:** `logs/esmabetul.md` (PR #6)
-- **Sorun:** 31 Ekim 15:18 kaydında "lint/build çalıştırılamadı" ve "commit/push edilmedi" yazıyor; PR açıklamasında ise ikisinin de çalıştığı söyleniyor. `lib/shared/appointment-status.ts` değişikliği "Değişen dosyalar" içinde yok.
-- **Yapılacak:** Yeni bir kayıtla güncel durumu yaz (eski kayıt değiştirilmez).
-
-### 4. Fazla boş satırlar
-- **Dosya:** `lib/shared/appointment-status.ts` (PR #6)
-- **Sorun:** `statusLabel` yardımcısından sonra dosyanın sonunda fazladan boş satırlar var.
-- **Yapılacak:** Tek satır sonu bırak.
+### 24. PR #15 log kaydındaki eksikler
+- **Dosya:** `logs/esmabetul.md` (PR #15)
+- **Sorun:** 31 Ekim 23:42 kaydında dal `feat/admin-appointment-decisions` yazıyor, gerçek dal `feat/admin-appointments-v2`. `lib/shared/appointment-status.ts` "Değişen dosyalar" içinde yok; PR açıklamasında geçen build sonucu log'da yok. Ayrıca PR #15'te kapatılan 1-4 numaralı maddeler `tasks.md`'den silinmemişti (bu güncellemede silindi).
+- **Yapılacak:** Sonraki kayıtta dal adını ve değişen dosyaları doğru yaz, kapatılan maddeleri aynı dalda `tasks.md`'den sil.
 
 ## Bot ekibi (Sevde, Ebru)
 
@@ -68,6 +58,11 @@ Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7, #11, #12 incelemesi)
 - **Sorun:** `slotStart: z.string()` her metni kabul ediyor. Bu değer randevu oluşturmada ve `reschedule_appointment` çağrısında kullanılacak; bozuk bir değer veritabanı hatasına kadar fark edilmez.
 - **Yapılacak:** zod'un saat dilimi (offset) içeren datetime doğrulamasını kullan (ör. `2026-11-05T10:30:00+03:00` geçmeli).
 
+### 25. Gemini test setinde belirsiz beklentiler ve eksik senaryolar
+- **Dosya:** `scripts/gemini-test/dataset.json` (PR #14)
+- **Sorun:** id 24 ("17 den sonra uygun musunuz") için `time: "17:00"` bekleniyor; mesaj bir saat değil alt sınır veriyor. id 13 ("diş çekimi") için `Basit Diş Çekimi` bekleniyor; basit mi gömülü mü olduğu belli değil. "menü", geçmiş tarih ("dün"), randevu penceresi dışı tarih ("3 ay sonra") ve saat aralığı ("10-12 arası") senaryoları yok. Dosya sonunda satır sonu yok.
+- **Yapılacak:** id 24 ve 13'ün beklenen değerini netleştir (ör. `time: null`, `procedure: null` veya `Muayene`), eksik senaryoları ekle.
+
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
 ### 19. Hero metni gerçek akışla uyuşmuyor
@@ -82,13 +77,13 @@ Son güncelleme: 31 Ekim 2026 (PR #4, #5, #6, #7, #11, #12 incelemesi)
 
 ### 21. Dosya biçimi ve artık yorumlar
 - **Dosya:** `app/(site)/page.tsx`, `components/site/HeroSection.tsx` (PR #12)
-- **Sorun:** `// app/(site)/page.tsx veya app/page.tsx` ve `// components/site/HeroSection.tsx` gibi yapay zekadan kalma yorumlar, satır sonlarında boşluklar, dosya sonunda satır sonu yok; `HeroSection.tsx` 4 boşluk girintili, projenin geri kalanı 2.
-- **Yapılacak:** Yorumları sil, girintiyi 2 boşluğa çek, dosya sonlarına satır sonu ekle.
+- **Sorun:** `// app/(site)/page.tsx veya app/page.tsx` ve `// components/site/HeroSection.tsx` gibi yapay zekadan kalma yorumlar, satır sonlarında boşluklar, dosya sonunda satır sonu yok; `HeroSection.tsx` 4 boşluk girintili, projenin geri kalanı 2. `page.tsx` içindeki yorumda "Ahmet Çiçek ve Ömer" yazıyor; Ömer projeden ayrıldı, Doktorlar ve Tedaviler bölümleri Ahmet Çiçek'te.
+- **Yapılacak:** Yorumları sil (veya Ömer'in adını düzelt), girintiyi 2 boşluğa çek, dosya sonlarına satır sonu ekle.
 
-### 22. Log ve dal adı
-- **Dosya:** `logs/ebrar.md` (PR #12)
-- **Sorun:** Dal adı `ebrar-site-taslak`, kural `feat/site-...` biçiminde. Log'da `package-lock.json` değişen dosyalarda yok, "Nasıl test edildi" kısmında `npm run lint` ve `npm run build` geçmiyor, dosyanın sonunda satır sonu yok. PR açıklaması boş.
-- **Yapılacak:** Sonraki işlerde `feat/site-...` dalı aç, log'a lint/build sonucunu yaz, PR açıklamasına ne yapıldığını ve nasıl test edildiğini ekle.
+### 22. Log, dal adı ve `tasks.md` bölümü
+- **Dosya:** `logs/ebrar.md`, `tasks.md` (PR #12)
+- **Sorun:** Dal adı `ebrar-site-taslak`, kural `feat/site-...` biçiminde. Log'da "Nasıl test edildi" kısmında `npm run lint` ve `npm run build` geçmiyor, dosyanın sonunda satır sonu yok. PR #12'de Panel ekibinin bir maddesi `tasks.md`'den silinmişti; her ekip yalnızca kendi bölümüne yazar.
+- **Yapılacak:** Sonraki işlerde `feat/site-...` dalı aç, log'a lint/build sonucunu yaz, `tasks.md`'de sadece Site ekibi bölümünü değiştir.
 
 ## Test ekibi (Tuğba, Nezahat)
 
