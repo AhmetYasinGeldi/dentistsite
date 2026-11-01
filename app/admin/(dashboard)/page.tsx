@@ -3,24 +3,32 @@ import Link from "next/link";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhone } from "@/lib/shared/phone";
-import { formatDateTime, istanbulLocalToIso } from "@/lib/shared/datetime";
-import { statusLabel } from "@/lib/shared/appointment-status";
+import {
+  formatDateTime,
+  istanbulLocalToIso,
+  todayInIstanbul,
+} from "@/lib/shared/datetime";
+import {
+  APPOINTMENT_STATUSES,
+  APPOINTMENT_STATUS_LABELS,
+  statusLabel,
+} from "@/lib/shared/appointment-status";
 
 export const metadata: Metadata = {
   title: "Randevular | Klinik Yönetim Paneli",
 };
 
-const appointmentStatuses = [
-  "approved",
-  "rejected",
-  "cancelled",
-  "completed",
-] as const;
-
 const filtersSchema = z.object({
   date: z.union([z.literal(""), z.iso.date()]).default(""),
   doctorId: z.union([z.literal(""), z.string().regex(/^[1-9]\d*$/)]).default(""),
-  status: z.enum(["", ...appointmentStatuses]).default(""),
+  status: z
+    .union([
+      z.literal(""),
+      z
+        .enum(APPOINTMENT_STATUSES)
+        .refine((status) => status !== "pending"),
+    ])
+    .default(""),
 });
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -84,6 +92,11 @@ export default async function AppointmentsPage({
     othersQuery = othersQuery
       .gte("starts_at", istanbulLocalToIso(filters.date, "00:00"))
       .lt("starts_at", istanbulLocalToIso(nextDate(filters.date), "00:00"));
+  } else {
+    othersQuery = othersQuery.gte(
+      "starts_at",
+      istanbulLocalToIso(todayInIstanbul(), "00:00"),
+    );
   }
   if (filters.doctorId) {
     othersQuery = othersQuery.eq("doctor_id", Number(filters.doctorId));
@@ -255,10 +268,13 @@ export default async function AppointmentsPage({
               className="w-full rounded border border-foreground/20 bg-background p-2 text-foreground"
             >
               <option value="">Tüm Durumlar</option>
-              <option value="approved">Onaylandı</option>
-              <option value="rejected">Reddedildi</option>
-              <option value="cancelled">İptal Edildi</option>
-              <option value="completed">Tamamlandı</option>
+              {APPOINTMENT_STATUSES.filter(
+                (status) => status !== "pending",
+              ).map((status) => (
+                <option key={status} value={status}>
+                  {APPOINTMENT_STATUS_LABELS[status]}
+                </option>
+              ))}
             </select>
           </label>
           <div className="flex items-end gap-3">

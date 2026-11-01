@@ -50,3 +50,23 @@
 - **Nasıl test edildi:** VS Code tanılamasında değiştirilen TypeScript dosyalarında hata görülmedi. `npm run lint` / `npm run build` sandbox yerel proxy erişimini engellediği için çalıştırılamadı; sahte Supabase verisiyle elle test yapılamadı.
 - **Açık konular:** GitHub'da PR #6 hâlâ eski commit için `dirty` durumda görünüyor; bu yerel değişiklikler commit/push edilmedi. Güncel `main` logundaki 29-30 Ekim kayıtları korunarak mevcut 31 Ekim kayıtları ardına eklendi; PR durumu yeni commit gönderildikten sonra tekrar kontrol edilmeli.
 - **Başka ekipten istek:** Yok.
+
+## 2026-10-31 22:12 — PR #6 çalışma durumu düzeltmesi
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments`
+- **Ne yapıldı:** `lib/shared/appointment-status.ts` içinde randevu durumlarının (pending, approved, rejected, cancelled ve completed) Türkçe etiketleri ile rozet renk/stil tanımları güncellendi; stiller uygulamanın tema tokenlarıyla uyumlu hale getirildi.
+- **Değişen dosyalar:** `lib/shared/appointment-status.ts`
+- **Neden:** Panelde tüm randevu durumlarının tutarlı Türkçe etiketlerle görünmesi ve durum rozetlerinin ortak uygulama temasıyla görsel olarak uyumlu olması amaçlandı. PR açıklamasıyla log kaydının farklı olmasının nedeni, ajanın önceki çalışma kayıtlarını karıştırıp yapılan değişikliği yanlış aktarmasıydı.
+- **Nasıl test edildi:** Ajan sandbox proxy kısıtı nedeniyle lint/build ve commit/push işlemlerini çalıştıramadı. Esma lint ve build kontrollerini elle çalıştırıp hata almadığını doğruladı; değişiklik commit edilip pushlandı ve PR'daki merge çatışmaları çözüldü.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Yok.
+
+## 2026-10-31 23:42 — Randevu listesi filtrelerinin iyileştirilmesi
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointment-decisions`
+- **Ne yapıldı:** Durum filtresindeki seçenekler ortak randevu durumları ve Türkçe etiket eşlemesinden oluşturuldu; böylece tablodaki durum etiketleriyle filtre seçenekleri tutarlı hale geldi. Tarih filtresi boş bırakıldığında diğer randevular İstanbul saatine göre bugünden itibaren listelenecek şekilde sorgu sınırlandı.
+- **Değişen dosyalar:** `app/admin/(dashboard)/page.tsx`
+- **Neden:** İlgili görev gereksinimleri incelendi; durum metinlerinin tek ortak kaynaktan gelmesi ve varsayılan randevu sorgusunun gereksiz geçmiş kayıtları çekmeyerek daha tutarlı ve verimli çalışması için sayfa güncellendi.
+- **Nasıl test edildi:** Değişen sayfa için `npm.cmd run lint -- "app/admin/(dashboard)/page.tsx"` ve `npx.cmd tsc --noEmit` başarılı. Arayüz Esma tarafından elle test edildi; hata görülmedi.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Yok.

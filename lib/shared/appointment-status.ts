@@ -65,5 +65,3 @@ export function statusLabel(status: string) {
     className: getAppointmentStatusClasses(status),
   };
 }
-
-
