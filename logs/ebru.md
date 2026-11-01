@@ -37,3 +37,13 @@
 - **Nasıl test edildi:** Dosya Node ile okunup geçerli JSON olduğu ve 68 kayıt içerdiği doğrulandı. `npm run lint` ve `npm run build` hatasız tamamlandı. Gemini ile çalıştırılmadı.
 - **Açık konular:** Test kodu henüz yazılmadı (Sevde yazacak). "Bu hafta", "haftaya" gibi tek bir günü göstermeyen ifadelerde date null bırakıldı.
 - **Başka ekipten istek:** Sevde: dosyanın başındaki `today` değeri (2026-11-02) Gemini'ye "bugün" olarak verilecek. Kayıtlar `cases` listesinde.
+
+## 2026-11-02 00:17 — İptal ve erteleme mesajı
+- **Kişi / araç:** Ebru / Codex
+- **Dal:** fix bot mesaj parametre isimleri
+- **Ne yapıldı:** İptal süresi mesajı, iptal ve erteleme işlemlerini kapsayacak şekilde güncellendi. Bot ekibinin tasks.md içindeki 9. maddesi kapatıldı.
+- **Değişen dosyalar:** `lib/bot/messages.ts`, `tasks.md`
+- **Neden:** İptal süresi kuralı erteleme için de geçerli.
+- **Nasıl test edildi:** `npm run lint` ve `npm run build` başarılı.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Yok.
