@@ -24,20 +24,12 @@ Son güncelleme: 1 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15 incelemesi
 
 ## Bot ekibi (Sevde, Ebru)
 
-### 7. `messages.ts` içindeki Türkçe değişken adları
-- **Dosya:** `lib/bot/messages.ts` (PR #7)
-- **Sorun:** Parametre adları Türkçe (`islem`, `doktor`, `tarihSaat`, `durum`, `klinikTelefonu`, `yeniTarihSaat`). AGENTS.md'ye göre kod içi isimler İngilizce olmalı. Ayrıca dosyanın sonunda satır sonu yok.
-- **Yapılacak:** `procedure`, `doctor`, `dateTime`, `status`, `clinicPhone`, `newDateTime` olarak değiştir.
-
 ### 8. Adım isimlerini `steps.ts` ile eşleştirme
 - **Dosya:** `lib/bot/messages.ts` (PR #7)
 - **Sorun:** `steps` nesnesindeki anahtarlar Sevde'nin `lib/bot/steps.ts` dosyasıyla aynı olmalı, ancak `steps.ts` henüz main'de yok. İki ayrı listede aynı isimler elle tutulursa zamanla ayrışır.
 - **Yapılacak:** `steps.ts` gelince `steps` nesnesinin tipini oradaki adım listesine bağla (ör. `satisfies Partial<Record<Step, string>>`).
 
-### 9. İptal süresi mesajı erteleme için de kullanılacak
-- **Dosya:** `lib/bot/messages.ts` (PR #7)
-- **Sorun:** `cancelDeadlinePassed` metni "İptal süresi geçtiği için" diyor; aynı kural erteleme için de geçerli.
-- **Yapılacak:** "Randevunuza az süre kaldığı için iptal veya erteleme işlemini buradan yapamıyoruz." gibi iki durumu da kapsayan bir metin.
+
 
 ### 10. Ebru'nun eski log kayıtları
 - **Dosya:** `logs/ebru.md` (PR #7)

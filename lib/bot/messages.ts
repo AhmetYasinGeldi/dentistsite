@@ -61,18 +61,18 @@ export const steps = {
 
 // confirm: özet + Onayla / Değiştir / Vazgeç
 export const confirmSummary = (p: {
-  islem: string;
-  doktor: string;
-  tarihSaat: string;
+  procedure: string;
+  doctor: string;
+  dateTime: string;
 }): string =>
-  `Randevu özetiniz:\nİşlem: ${p.islem}\nDoktor: ${p.doktor}\nTarih: ${p.tarihSaat}\n\nOnaylıyor musunuz?`;
+  `Randevu özetiniz:\nİşlem: ${p.procedure}\nDoktor: ${p.doctor}\nTarih: ${p.dateTime}\n\nOnaylıyor musunuz?`;
 
 export const requestReceived =
   "Talebiniz alındı, klinik onayladığında bilgilendirileceksiniz.";
 
 // confirm_reschedule: Onayla / Vazgeç
-export const confirmReschedule = (yeniTarihSaat: string): string =>
-  `Randevunuz ${yeniTarihSaat} tarihine taşınacak. Onaylıyor musunuz?`;
+export const confirmReschedule = (newDateTime: string): string =>
+  `Randevunuz ${newDateTime} tarihine taşınacak. Onaylıyor musunuz?`;
 
 export const rescheduleRequestReceived =
   "Erteleme talebiniz alındı, klinik onayladığında bilgilendirileceksiniz.";
@@ -81,33 +81,32 @@ export const cancelDone = "Randevunuz iptal edildi.";
 
 // ---------- B) Randevumu gör (tek mesaj) ----------
 export const appointmentInfo = (p: {
-  tarihSaat: string;
-  doktor: string;
-  islem: string;
-  durum: string;
+  dateTime: string;
+  doctor: string;
+  procedure: string;
+  status: string;
 }): string =>
-  `Randevunuz:\nTarih: ${p.tarihSaat}\nDoktor: ${p.doktor}\nİşlem: ${p.islem}\nDurum: ${p.durum}`;
+  `Randevunuz:\nTarih: ${p.dateTime}\nDoktor: ${p.doctor}\nİşlem: ${p.procedure}\nDurum: ${p.status}`;
 
 export const noActiveAppointment = "Aktif randevunuz bulunmuyor.";
 
 // ---------- Panel bildirimleri ----------
 export const notifications = {
-  approved: (tarihSaat: string): string =>
-    `Randevunuz onaylandı: ${tarihSaat}. Sizi bekliyoruz.`,
+  approved: (dateTime: string): string =>
+    `Randevunuz onaylandı: ${dateTime}. Sizi bekliyoruz.`,
   rejected:
     'Üzgünüz, bu saat için randevunuz onaylanamadı. Yeni randevu için "menü" yazabilirsiniz.',
-  clinicCancelled: (tarihSaat: string): string =>
-    `Üzgünüz, ${tarihSaat} tarihli randevunuz klinik tarafından iptal edildi.`,
+  clinicCancelled: (dateTime: string): string =>
+    `Üzgünüz, ${dateTime} tarihli randevunuz klinik tarafından iptal edildi.`,
 } as const;
 
 // ---------- Hata ve özel durum mesajları ----------
 export const errors = {
   notUnderstood: 'Anlayamadım, menüden seçer misiniz? "menü" yazarak menüye dönebilirsiniz.',
   hasActiveAppointment: "Zaten aktif bir randevunuz var. Ne yapmak istersiniz?",
-  cancelDeadlinePassed: (klinikTelefonu: string): string =>
-    `İptal süresi geçtiği için bu işlemi buradan yapamıyoruz. Lütfen kliniği arayın: ${klinikTelefonu}`,
-  slotTaken: "Seçtiğiniz saat az önce doldu. Başka bir saat seçebilir misiniz?",
+  cancelDeadlinePassed: (clinicPhone: string): string =>
+`Randevunuza az süre kaldığı için iptal veya erteleme işlemini buradan yapamıyoruz. Lütfen kliniği arayın: ${clinicPhone}`,  slotTaken: "Seçtiğiniz saat az önce doldu. Başka bir saat seçebilir misiniz?",
   noSlotsOnDate: "Bu gün için boş saat kalmadı. Başka bir gün seçebilir misiniz?",
-  medicalOrPrice: (klinikTelefonu: string): string =>
-    `Bu konuda en doğru bilgiyi kliniğimiz verebilir. Lütfen arayın: ${klinikTelefonu}`,
+  medicalOrPrice: (clinicPhone: string): string =>
+    `Bu konuda en doğru bilgiyi kliniğimiz verebilir. Lütfen arayın: ${clinicPhone}`,
 } as const;
