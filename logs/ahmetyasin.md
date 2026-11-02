@@ -59,3 +59,13 @@
 - **Nasıl test edildi:** `npm run lint` ve `npm run build` hatasız, `/gizlilik` statik sayfa olarak üretildi. Canlı webhook dışarıdan denendi: yanlış verify token 403, imzasız POST 401.
 - **Açık konular:** Sayfa main'e alınıp Vercel'de yayınlandıktan sonra Meta'da Privacy policy URL ve User data deletion URL girilip uygulama yayına alınacak, ardından test numarasından gerçek mesajla uçtan uca denenecek. Klinik adı ve telefonu belli olunca sayfaya eklenmeli.
 - **Başka ekipten istek:** Site ekibi: sayfa `app/(site)/` altında, lider tarafından Meta şartı için eklendi. Site alt bilgisine (footer) "Gizlilik Politikası" linki eklenebilir.
+
+## 2026-11-02 10:56 — WhatsApp canlı bağlantısı, canlı ortam bilgileri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/canli-ortam
+- **Ne yapıldı:** Meta uygulaması yayına alındı (gizlilik ve veri silme URL'leri girildi, kategori Mesajlaşma). WABA'nın `subscribed_apps` listesinde sadece Meta'nın test aracı vardı; `dentist` uygulaması Graph API ile abone edildi. Vercel'deki `NEXT_PUBLIC_SUPABASE_URL` sonunda `/rest/v1/` olduğu için mesaj kaydı `PGRST125` ile düşüyordu; değer düzeltilip redeploy edildi. Canlı ortam bilgileri ve hata ayıklama adımları AGENTS.md (bölüm 7) ve README'ye, Supabase URL biçimi notu `.env.example`'a eklendi.
+- **Değişen dosyalar:** `AGENTS.md`, `README.md`, `.env.example`, `logs/ahmetyasin.md`
+- **Neden:** Bot gerçek mesajlara cevap vermiyordu; ekip ve ajanları canlı ortam bilgilerine ve hata ayıklama sırasına erişebilsin.
+- **Nasıl test edildi:** Kayıtlı test numarasından mesaj atıldı, Vercel loglarında `POST /api/whatsapp/webhook` 200 görüldü ve yankı cevabı telefona geldi. Bu daldaki değişiklik sadece doküman.
+- **Açık konular:** Sevde test alıcısı olarak eklenecek (Meta, numaraya doğrulama kodu gönderir). Site alt bilgisine gizlilik linki (site ekibi).
+- **Başka ekipten istek:** Bot ekibi: gerçek telefon testi artık yapılabilir; yankı botunun yerine sohbet akışı bağlanacak.
