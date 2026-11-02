@@ -70,3 +70,33 @@
 - **Nasıl test edildi:** Değişen sayfa için `npm.cmd run lint -- "app/admin/(dashboard)/page.tsx"` ve `npx.cmd tsc --noEmit` başarılı. Arayüz Esma tarafından elle test edildi; hata görülmedi.
 - **Açık konular:** Yok.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-02 14:05 — Durum filtresinde geçmiş kayıtları gösterme
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments-v2`
+- **Ne yapıldı:** Durum filtresi seçildiğinde geçmiş randevuların sorguya dahil olması sağlandı. Sonuçlar en yeni randevudan başlayacak şekilde sıralandı ve sorgu 100 kayıtla sınırlandırıldı; durum filtresi boşken bugünden itibaren listeleme davranışı korundu.
+- **Değişen dosyalar:** `app/admin/(dashboard)/page.tsx`
+- **Neden:** Durum filtresi açıkken de bugünden itibaren sınırının uygulanması tamamlanmış, iptal edilmiş ve reddedilmiş geçmiş randevuları görünmez yapıyordu. Geçmiş durum kayıtlarını bulabilmek ve aynı anda sorgu sonuçlarını sınırlı tutmak için filtre davranışı düzeltildi.
+- **Nasıl test edildi:** `npm.cmd run lint -- "app/admin/(dashboard)/page.tsx"` ve `npx.cmd tsc --noEmit` başarılı; `git diff --check` temiz.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Yok.
+
+## 2026-11-02 14:09 — PR #15 log düzeltmeleri
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments-v2`
+- **Ne yapıldı:** Düzeltme notu olarak 31 Ekim 22:12 ve 23:42 çalışmalarının gerçekte `feat/admin-appointments-v2` dalında yapıldığı kaydedildi. PR #15 değişen dosyalarına göre 23:42 kaydında eksik kalan `lib/shared/appointment-status.ts` dosyası belirtildi.
+- **Değişen dosyalar:** `logs/esmabetul.md`
+- **Neden:** PR #15 açıklamasıyla log kayıtlarındaki dal, değişen dosya ve build bilgilerini tutarlı hale getirmek; tamamlanan Panel ekibi 23 ve 24. maddelerini `tasks.md`'den kaldırmak.
+- **Nasıl test edildi:** PR #15 açıklamasına göre ESLint ve TypeScript kontrolleri başarılı, arayüz manuel testinde hata görülmedi. Build, Turbopack’in CSS derlemesi sırasında alt süreç hatası nedeniyle tamamlanmadı.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Yok.
+
+## 2026-11-02 14:14 — Build yeniden çalıştırıldı
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments-v2`
+- **Ne yapıldı:** PR #15 sırasında başarısız olan build daha sonra yeniden çalıştırıldı ve başarıyla tamamlandı.
+- **Değişen dosyalar:** `logs/esmabetul.md`
+- **Neden:** Önceki logdaki build başarısızlığı o denemeyi anlatıyordu; yeniden çalıştırmanın başarılı sonucunu ayrıca kayda geçirmek.
+- **Nasıl test edildi:** Esma `npm.cmd run build` çalıştırdı. Derleme, TypeScript, sayfa verilerinin toplanması, statik sayfaların üretilmesi ve optimizasyon başarıyla tamamlandı.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Yok.
