@@ -49,3 +49,13 @@
 - **Nasıl test edildi:** Üç PR ayrı ayrı `npm run lint` ve `npm run build` ile denendi, hepsi hatasız. Üçü origin/main üzerinde `git merge-tree` ile sırayla birleştirildi, çakışma çıkmadı; birleşik ağaçta ayrıca build alınmadı. Bu daldaki değişiklik sadece doküman.
 - **Açık konular:** Panel ekibi 23 (durum filtresi seçiliyken geçmiş kayıtların gizlenmesi) ve 24 (log notu); bot ekibi 25 (test setindeki belirsiz beklentiler); site ekibi 19-22. Bot ekibinin 10. maddesi Ebru'nun yeni log kaydıyla karşılandı, Ebru silebilir.
 - **Başka ekipten istek:** Panel ekibi: 23-24. Bot ekibi: 25. Site ekibi: 19-22 (kapatılan maddeler kendi bölümlerinden silinecek).
+
+## 2026-11-02 10:12 — Gizlilik politikası sayfası (Meta yayın şartı)
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** feat/site-gizlilik
+- **Ne yapıldı:** `/gizlilik` adresinde gizlilik politikası ve veri silme talimatı (`#veri-silme`) sayfası eklendi. Meta uygulaması yayında değilken gerçek WhatsApp mesajlarının webhook'a hiç gelmediği görüldü; yayın için tek eksik "Privacy policy URL" idi.
+- **Değişen dosyalar:** `app/(site)/gizlilik/page.tsx`, `logs/ahmetyasin.md`
+- **Neden:** Bot gerçek mesaj almıyordu. Meta'da webhook adresi ve `messages` aboneliği doğru; uygulamanın yayına alınması gerekiyor, bunun için herkese açık gizlilik sayfası şart.
+- **Nasıl test edildi:** `npm run lint` ve `npm run build` hatasız, `/gizlilik` statik sayfa olarak üretildi. Canlı webhook dışarıdan denendi: yanlış verify token 403, imzasız POST 401.
+- **Açık konular:** Sayfa main'e alınıp Vercel'de yayınlandıktan sonra Meta'da Privacy policy URL ve User data deletion URL girilip uygulama yayına alınacak, ardından test numarasından gerçek mesajla uçtan uca denenecek. Klinik adı ve telefonu belli olunca sayfaya eklenmeli.
+- **Başka ekipten istek:** Site ekibi: sayfa `app/(site)/` altında, lider tarafından Meta şartı için eklendi. Site alt bilgisine (footer) "Gizlilik Politikası" linki eklenebilir.
