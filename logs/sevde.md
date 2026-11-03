@@ -39,3 +39,13 @@
 - **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. Sahte bir Supabase (PostgREST taklidi) ile yerelde: aynı webhook iki kez gönderildi, ikincisi atlandı ve bot bir kez cevap vermeye çalıştı; butona basma mesajı `body = "Randevu al"` olarak kaydedildi; `wa_sessions` satırı `step = idle` ve dolu `last_inbound_at` ile oluştu. Biri geçersiz numaralı iki mesajlık grupta geçerli mesaj işlendi, geçersiz olan loglanıp atlandı.
 - **Açık konular:** `getSession`/`setSession` gerçek veritabanında denenmedi; sohbet akışı yazılırken kullanılacak. Gerçek telefon testi Meta webhook kaydını bekliyor.
 - **Başka ekipten istek:** Yok.
+
+## 2026-10-31 20:20 — Panel bildirimi: notifyAppointmentUpdate
+- **Kişi / araç:** Sevde / Claude
+- **Dal:** feat/bot-bildirim
+- **Ne yapıldı:** `notifyAppointmentUpdate` dolduruldu (imza aynı). Randevu ve hastanın telefonu okunuyor; onaylandı, reddedildi ve klinik iptal etti durumlarında Ebru'nun `messages.ts`'teki bildirim metni tarih `formatDateTime` ile yazılarak gönderiliyor. Hastanın son mesajı 24 saatten eskiyse Meta'ya istek atılmadan `WINDOW_CLOSED` dönüyor. Diğer sonuçlar: `NOT_FOUND`, `NO_NOTIFICATION` (ör. hasta kendisi iptal etti), `SEND_FAILED`, `DB_ERROR`.
+- **Değişen dosyalar:** `lib/whatsapp/notify.ts`, `logs/sevde.md`
+- **Neden:** AGENTS.md 7. bölüm ortak bildirim fonksiyonu; panelde onay/red/iptal sonrası hastaya bildirim (31 Ekim uçtan uca akış).
+- **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. Sahte Supabase ile geçici bir test adresinden: 2 saat önce yazmış hastanın onaylanan randevusunda gönderime geçildi (test ortamında WhatsApp anahtarı olmadığı için `SEND_FAILED`); 30 saat önce yazmışta `WINDOW_CLOSED`; hastanın kendi iptalinde `NO_NOTIFICATION`; olmayan randevuda `NOT_FOUND`. Geçici test adresi silindi.
+- **Açık konular:** Gerçek gönderim Meta webhook kaydını bekliyor. Red sebebi (`rejection_reason`) mesaja eklenmiyor; Ebru'nun metninde yer yok.
+- **Başka ekipten istek:** Panel ekibi (Esma, Merve): onay/red/iptal sonrası `notifyAppointmentUpdate(id)` çağrılmalı, `sent: false` ise "Hastaya WhatsApp bildirimi gönderilemedi" uyarısı gösterilmeli.
