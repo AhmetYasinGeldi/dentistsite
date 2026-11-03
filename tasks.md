@@ -62,26 +62,6 @@ Son güncelleme: 2 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17 incel
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
-### 19. Hero metni gerçek akışla uyuşmuyor
-- **Dosya:** `components/site/HeroSection.tsx` (PR #12)
-- **Sorun:** "Saniyeler içinde randevunuzu oluşturun" yazıyor; oysa bottan gelen randevu `pending` açılır ve klinik onayını bekler. "Ağrısız diş tedavileri" ifadesi de tıbbi bir vaat; "modern, güvenilir" gibi kalıp ifadeler metni sıradanlaştırıyor.
-- **Yapılacak:** Metni "WhatsApp'tan yazın, randevu talebiniz kliniğe iletilsin" gibi gerçek akışa uygun ve vaat içermeyen bir cümleyle değiştir.
-
-### 20. WhatsApp numarası tanımlı değilse bozuk link
-- **Dosya:** `components/site/HeroSection.tsx` (PR #12)
-- **Sorun:** `NEXT_PUBLIC_WHATSAPP_NUMBER` boşsa `|| ''` ile `https://wa.me/?text=...` gibi numarasız bir link üretiliyor, hata fark edilmiyor.
-- **Yapılacak:** Numara yoksa sunucu log'una uyarı yaz ve butonu gösterme (veya pasif göster).
-
-### 21. Dosya biçimi ve artık yorumlar
-- **Dosya:** `app/(site)/page.tsx`, `components/site/HeroSection.tsx` (PR #12)
-- **Sorun:** `// app/(site)/page.tsx veya app/page.tsx` ve `// components/site/HeroSection.tsx` gibi yapay zekadan kalma yorumlar, satır sonlarında boşluklar, dosya sonunda satır sonu yok; `HeroSection.tsx` 4 boşluk girintili, projenin geri kalanı 2. `page.tsx` içindeki yorumda "Ahmet Çiçek ve Ömer" yazıyor; Ömer projeden ayrıldı, Doktorlar ve Tedaviler bölümleri Ahmet Çiçek'te.
-- **Yapılacak:** Yorumları sil (veya Ömer'in adını düzelt), girintiyi 2 boşluğa çek, dosya sonlarına satır sonu ekle.
-
-### 22. Log, dal adı ve `tasks.md` bölümü
-- **Dosya:** `logs/ebrar.md`, `tasks.md` (PR #12)
-- **Sorun:** Dal adı `ebrar-site-taslak`, kural `feat/site-...` biçiminde. Log'da "Nasıl test edildi" kısmında `npm run lint` ve `npm run build` geçmiyor, dosyanın sonunda satır sonu yok. PR #12'de Panel ekibinin bir maddesi `tasks.md`'den silinmişti; her ekip yalnızca kendi bölümüne yazar.
-- **Yapılacak:** Sonraki işlerde `feat/site-...` dalı aç, log'a lint/build sonucunu yaz, `tasks.md`'de sadece Site ekibi bölümünü değiştir.
-
 ## Test ekibi (Tuğba, Nezahat)
 
 ### 11. Dosya adı yazım hatası
