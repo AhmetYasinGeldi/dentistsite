@@ -108,7 +108,7 @@ export default async function AppointmentsPage({
   }
 
   let orderedOthersQuery = othersQuery.order("starts_at", {
-    ascending: !filters.status,
+    ascending: !filters.status || filters.status === "approved",
   });
   if (filters.status) {
     orderedOthersQuery = orderedOthersQuery.limit(MAX_STATUS_FILTER_RESULTS);
@@ -152,6 +152,9 @@ export default async function AppointmentsPage({
   const pendingAppointments = pendingResult.data ?? [];
   const otherAppointments = othersResult.data ?? [];
   const doctors = doctorsResult.data ?? [];
+  const statusFilterLimitReached =
+    Boolean(filters.status) &&
+    otherAppointments.length === MAX_STATUS_FILTER_RESULTS;
 
   const renderAppointments = (rows: typeof pendingAppointments) =>
     rows.length === 0 ? (
@@ -301,6 +304,17 @@ export default async function AppointmentsPage({
             </Link>
           </div>
         </form>
+
+        {statusFilterLimitReached && (
+          <p
+            role="status"
+            className="rounded border border-accent bg-accent/10 p-3 text-sm text-foreground"
+          >
+            Bu filtrede en fazla {MAX_STATUS_FILTER_RESULTS} randevu gösteriliyor.
+            Daha fazla sonuç olabilir; listeyi daraltmak için tarih veya doktor
+            filtresi seçebilirsiniz.
+          </p>
+        )}
 
         {renderAppointments(otherAppointments)}
       </section>

@@ -100,3 +100,33 @@
 - **Nasıl test edildi:** Esma `npm.cmd run build` çalıştırdı. Derleme, TypeScript, sayfa verilerinin toplanması, statik sayfaların üretilmesi ve optimizasyon başarıyla tamamlandı.
 - **Açık konular:** Yok.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-03 17:40 — PR #15 log düzeltme notu
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments-v3`
+- **Ne yapıldı:** 2 Kasım tarihli 14:05, 14:09 ve 14:14 log kayıtlarının gerçek dalının `feat/admin-appointments-v3` olduğu düzeltme notu olarak eklendi. Önceki kayıtlardaki dal adları değiştirilmedi.
+- **Değişen dosyalar:** `logs/esmabetul.md`, `tasks.md`
+- **Neden:** PR geri bildiriminde belirtilen dal adı ve kapatılan görev bilgisini doğru kaydetmek; Panel ekibinin 23 ve 24 numaralı maddeleri kapatıldı.
+- **Nasıl test edildi:** Log ve görev kaydı metinleri gözden geçirildi.
+- **Açık konular:** Tamamlandı ve İptal edildi filtreleriyle manuel panel testi henüz yapılmadı.
+- **Başka ekipten istek:** Yok.
+
+## 2026-11-03 20:51 — Durum filtreleri manuel test notu
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments-v3`
+- **Ne yapıldı:** “Tamamlandı” ve “İptal edildi” durum filtreleri, tarih ve doktor filtresi boşken denendi. İki filtrede de ekranda “Filtrelere uygun randevu bulunamadı” mesajı görüldü; terminalde istekler HTTP 200 yanıtladı.
+- **Değişen dosyalar:** `logs/esmabetul.md`
+- **Neden:** PR geri bildiriminde bu iki durum filtresinin geçmiş randevularla manuel olarak doğrulanması istendi.
+- **Nasıl test edildi:** Panelde iki durum filtresi ayrı ayrı uygulandı. `supabase/02_seed.sql` içinde hasta veya randevu seed kaydı bulunmadığından, boş sonucun bağlı veritabanındaki eşleşen kayıtların yokluğundan kaynaklanıp kaynaklanmadığı doğrulanamadı.
+- **Açık konular:** Gerçek Supabase veritabanında bu durumlarda randevu kaydı olup olmadığı kontrol edilmedi; geçmiş randevuların listelendiği doğrulanamadı.
+- **Başka ekipten istek:** Yok.
+
+## 2026-11-03 20:58 — Onay sıralaması ve sonuç sınırı uyarısı
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointments-v3`
+- **Ne yapıldı:** “Onaylandı” filtresinde randevular en yakın tarih önce gelecek şekilde sıralandı. Durum filtresinde 100 kayıt sınırına ulaşıldığında, daha fazla sonuç olabileceğini ve tarih/doktor filtresiyle listenin daraltılabileceğini belirten uyarı eklendi.
+- **Değişen dosyalar:** `app/admin/(dashboard)/page.tsx`, `logs/esmabetul.md`
+- **Neden:** Onaylı randevularda en yakın randevunun önce görünmesini sağlamak ve durum filtresinde sonuçların 100 kayıtla sınırlı olduğunu kullanıcıya bildirmek.
+- **Nasıl test edildi:** ESLint ve TypeScript kontrolleri başarılı. Gerçek Supabase randevu verileriyle sonuç sıralaması ve 100 kayıt uyarısı manuel olarak doğrulanamadı.
+- **Açık konular:** Gerçek Supabase verisiyle manuel doğrulama bekleniyor.
+- **Başka ekipten istek:** Yok.
