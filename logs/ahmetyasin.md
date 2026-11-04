@@ -69,3 +69,13 @@
 - **Nasıl test edildi:** Kayıtlı test numarasından mesaj atıldı, Vercel loglarında `POST /api/whatsapp/webhook` 200 görüldü ve yankı cevabı telefona geldi. Bu daldaki değişiklik sadece doküman.
 - **Açık konular:** Sevde test alıcısı olarak eklenecek (Meta, numaraya doğrulama kodu gönderir). Site alt bilgisine gizlilik linki (site ekibi).
 - **Başka ekipten istek:** Bot ekibi: gerçek telefon testi artık yapılabilir; yankı botunun yerine sohbet akışı bağlanacak.
+
+## 2026-11-04 15:10 — PR #20-#23 sonrası tasks.md ve log düzeltmeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr20-23
+- **Ne yapıldı:** `tasks.md`'ye Panel 27 (durum filtrelerinin gerçek veriyle denenmesi, PR #21), Panel 28 (onay/red/iptal sonrası `notifyAppointmentUpdate` çağrısı, PR #22) ve Bot 29 (red mesajında red sebebi, PR #22) eklendi. Silinen Panel bölümü başlığı geri kondu, boş kalan Site bölümüne "Açık madde yok" yazıldı, "Son güncelleme" satırı güncellendi. `logs/ebrar.md`'de saat biçimi `13.28` yerine `13:28` yapıldı ve dosya sonuna satır sonu eklendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ebrar.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #21-#23 birleştikten sonra loglardaki açık konular ve "Başka ekipten istek" maddeleri `tasks.md`'de takip edilmiyordu.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi.
+- **Açık konular:** Ebrar'ın açık konusu (Header ve mobilde sabit WhatsApp butonu) yeni özellik olduğu için `tasks.md`'ye eklenmedi, Trello'da takip edilmeli.
+- **Başka ekipten istek:** Panel ekibi: 27 ve 28. Bot ekibi: 29.

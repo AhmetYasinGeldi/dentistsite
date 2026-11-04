@@ -6,9 +6,21 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 2 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17 incelemesi)
+Son güncelleme: 4 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22 incelemesi)
 
 ---
+
+## Panel ekibi (Esma, Merve)
+
+### 27. Durum filtrelerinin gerçek veriyle denenmesi
+- **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
+- **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
+- **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
+
+### 28. Onay/red/iptal sonrası WhatsApp bildirimi
+- **Dosya:** `app/admin/` (onay/red/iptal server action'ları), `lib/whatsapp/notify.ts` (PR #22)
+- **Sorun:** `notifyAppointmentUpdate` artık main'de çalışıyor, ancak panelde henüz çağrılmıyor (AGENTS.md bölüm 9).
+- **Yapılacak:** Onay, red ve iptal işlemleri veritabanını güncelledikten sonra aynı server action içinde `notifyAppointmentUpdate(id)` çağır; `sent: false` dönerse "Hastaya WhatsApp bildirimi gönderilemedi" uyarısını göster.
 
 ## Bot ekibi (Sevde, Ebru)
 
@@ -48,7 +60,14 @@ Son güncelleme: 2 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17 incel
 - **Sorun:** `errors` içinde `cancelDeadlinePassed` metni girintisiz yazılmış ve `slotTaken` aynı satıra yapışmış. Log kaydında dal `fix bot mesaj parametre isimleri` yazıyor, gerçek dal `fix/bot-mesaj-parametre-isimleri`; parametre adlarının İngilizceye çevrilmesi ve 7. maddenin kapatılması kayıtta yok, sadece 9. madde geçiyor. `tasks.md`'de silinen maddelerin yerinde fazladan boş satırlar kaldı; `logs/ebru.md` sonunda satır sonu yok.
 - **Yapılacak:** `cancelDeadlinePassed` metnini 4 boşlukla girintile, `slotTaken`'ı ayrı satıra al. Sonraki log kaydında dal adını doğru yaz, kapatılan tüm maddeleri belirt. Fazla boş satırları sil.
 
+### 29. Red bildiriminde red sebebi yok
+- **Dosya:** `lib/whatsapp/notify.ts`, `lib/bot/messages.ts` (PR #22)
+- **Sorun:** Panelde girilen `rejection_reason` hastaya giden red mesajına eklenmiyor; `messages.ts`'teki red metninde sebep için yer yok.
+- **Yapılacak:** Red metnine isteğe bağlı sebep parametresi ekle; `rejection_reason` doluysa mesajda göster, boşsa mevcut metin kalsın.
+
 ## Site ekibi (Ahmet Çiçek, Ebrar)
+
+Açık madde yok.
 
 ## Test ekibi (Tuğba, Nezahat)
 

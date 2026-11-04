@@ -8,7 +8,7 @@
 - **Açık konular:** Doktorlar ve Tedaviler bölümlerinin görev dağılımı yapılacak, Ahmet Çiçek page.tsx içinde birleştirmeleri sağlayacak.
 - **Başka ekipten istek:** Yok.
 
-## 2026-11-03 13.28 — Hero düzeltmeleri (tasks.md 19-22)
+## 2026-11-03 13:28 — Hero düzeltmeleri (tasks.md 19-22)
 - **Kişi / araç:** Ebrar / Claude
 - **Dal:** feat/site-hero-fixes
 - **Ne yapıldı:** tasks.md Site ekibi 19-22 numaralı maddeler kapatıldı. 19: Hero metni gerçek akışa uygun, vaat içermeyen bir metinle değiştirildi. 20: WhatsApp numarası tanımlı değilse sunucu log'una uyarı yazılıyor ve buton gösterilmiyor. 21: `HeroSection.tsx` ve `app/(site)/page.tsx` içindeki artık yorumlar silindi, girinti 2 boşluğa çekildi, dosya sonlarına satır sonu eklendi. 22: Dal `feat/site-...` kuralına göre açıldı, `tasks.md`'de yalnızca Site ekibi bölümü değiştirildi.
