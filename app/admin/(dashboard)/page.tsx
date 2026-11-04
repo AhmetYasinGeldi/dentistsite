@@ -13,6 +13,11 @@ import {
   APPOINTMENT_STATUS_LABELS,
   statusLabel,
 } from "@/lib/shared/appointment-status";
+import {
+  approveAppointmentAction,
+  cancelAppointmentAction,
+  rejectAppointmentAction,
+} from "@/app/admin/actions";
 
 export const metadata: Metadata = {
   title: "Randevular | Klinik Yönetim Paneli",
@@ -32,6 +37,19 @@ const filtersSchema = z.object({
 });
 
 const MAX_STATUS_FILTER_RESULTS = 100;
+const appointmentNoticeSchema = z.object({
+  notice: z.enum([
+    "approved",
+    "rejected",
+    "cancelled",
+    "invalid",
+    "update_failed",
+    "stale",
+  ]),
+  notification: z
+    .enum(["sent", "failed", "window_closed"])
+    .optional(),
+});
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -51,6 +69,10 @@ export default async function AppointmentsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
+  const appointmentNotice = appointmentNoticeSchema.safeParse({
+    notice: firstValue(params.notice),
+    notification: firstValue(params.notification),
+  });
   const parsedFilters = filtersSchema.safeParse({
     date: firstValue(params.date) ?? "",
     doctorId: firstValue(params.doctorId) ?? "",
@@ -172,6 +194,7 @@ export default async function AppointmentsPage({
               <th className="px-3 py-2">Doktor</th>
               <th className="px-3 py-2">Tarih-Saat</th>
               <th className="px-3 py-2">Durum</th>
+              <th className="px-3 py-2">İşlem</th>
             </tr>
           </thead>
           <tbody>
@@ -201,6 +224,71 @@ export default async function AppointmentsPage({
                   <td className="px-3 py-2">
                     <span className={status.className}>{status.text}</span>
                   </td>
+                  <td className="px-3 py-2">
+                    <div className="flex flex-wrap gap-2">
+                      {appointment.status === "pending" && (
+                        <>
+                          <form action={approveAppointmentAction}>
+                            <input
+                              type="hidden"
+                              name="appointmentId"
+                              value={appointment.id}
+                            />
+                            <button
+                              type="submit"
+                              className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
+                            >
+                              Onayla
+                            </button>
+                          </form>
+                          <form
+                            action={rejectAppointmentAction}
+                            className="flex flex-wrap items-center gap-2"
+                          >
+                            <input
+                              type="hidden"
+                              name="appointmentId"
+                              value={appointment.id}
+                            />
+                            <label>
+                              <span className="sr-only">
+                                İsteğe bağlı red sebebi
+                              </span>
+                              <input
+                                type="text"
+                                name="rejectionReason"
+                                maxLength={500}
+                                placeholder="Red sebebi (isteğe bağlı)"
+                                className="w-48 rounded border border-foreground/20 bg-background px-2 py-1.5 text-sm text-foreground"
+                              />
+                            </label>
+                            <button
+                              type="submit"
+                              className="rounded border border-danger/40 px-3 py-1.5 text-sm text-danger hover:bg-danger/10"
+                            >
+                              Reddet
+                            </button>
+                          </form>
+                        </>
+                      )}
+                      {(appointment.status === "pending" ||
+                        appointment.status === "approved") && (
+                        <form action={cancelAppointmentAction}>
+                          <input
+                            type="hidden"
+                            name="appointmentId"
+                            value={appointment.id}
+                          />
+                          <button
+                            type="submit"
+                            className="rounded border border-foreground/20 px-3 py-1.5 text-sm text-foreground hover:bg-muted"
+                          >
+                            İptal Et
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               );
             })}
@@ -211,6 +299,60 @@ export default async function AppointmentsPage({
 
   return (
     <div className="space-y-8">
+      {appointmentNotice.success &&
+        (() => {
+          const { notice, notification } = appointmentNotice.data;
+
+          if (notice === "invalid") {
+            return (
+              <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
+                İşlem bilgileri geçersiz. Lütfen tekrar deneyin.
+              </p>
+            );
+          }
+          if (notice === "update_failed") {
+            return (
+              <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
+                Randevu güncellenemedi. Lütfen tekrar deneyin.
+              </p>
+            );
+          }
+          if (notice === "stale") {
+            return (
+              <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
+                Randevu durumu değişmiş. Listeyi yenileyip tekrar kontrol edin.
+              </p>
+            );
+          }
+
+          const actionLabel =
+            notice === "approved"
+              ? "Onaylandı"
+              : notice === "rejected"
+                ? "Reddedildi"
+                : "İptal edildi";
+
+          if (notification === "sent") {
+            return (
+              <p
+                role="status"
+                className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-foreground"
+              >
+                Randevu {actionLabel.toLocaleLowerCase("tr-TR")}; hastaya
+                WhatsApp bildirimi gönderildi.
+              </p>
+            );
+          }
+
+          return (
+            <p role="alert" className="rounded-lg bg-accent/20 p-4 text-foreground">
+              Hastaya WhatsApp bildirimi gönderilemedi.
+              {notification === "window_closed" &&
+                " Hasta 24 saattir mesaj göndermediği için bildirim iletilemedi."}
+            </p>
+          );
+        })()}
+
       <div className="border-b border-foreground/10 pb-5">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Randevular

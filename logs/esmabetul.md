@@ -130,3 +130,27 @@
 - **Nasıl test edildi:** ESLint ve TypeScript kontrolleri başarılı. Gerçek Supabase randevu verileriyle sonuç sıralaması ve 100 kayıt uyarısı manuel olarak doğrulanamadı.
 - **Açık konular:** Gerçek Supabase verisiyle manuel doğrulama bekleniyor.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-04 15:23 — Onay/red/iptal bildirim entegrasyonu
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointment-notification-actions`
+- **Ne yapıldı:** Onay bekleyen randevulara onayla, isteğe bağlı red sebebiyle reddet ve iptal et server action’ları eklendi. İşlemler oturum kontrolü ve mevcut durum koşuluyla yapılır; veritabanı güncellemesinden sonra `notifyAppointmentUpdate` çağrılır ve gönderim/24 saat penceresi sonucu panelde gösterilir. Panel ekibinin `tasks.md` 28. maddesi kapatıldı.
+- **Değişen dosyalar:** `app/admin/actions.ts`, `app/admin/(dashboard)/page.tsx`, `tasks.md`, `logs/esmabetul.md`
+- **Neden:** Admin panelinden randevu onay/red/iptal akışlarını ve WhatsApp bildirim sonucu uyarılarını tamamlamak.
+- **Nasıl test edildi:** İlgili dosyalar için `npm.cmd run lint` ve `npx.cmd tsc --noEmit` başarılı; `git diff --check` temiz. Canlı WhatsApp teslimatı ve gerçek Supabase verisiyle manuel test yapılmadı.
+- **Açık konular:** Gerçek WhatsApp bildirimi test edilmedi. `rejection_reason` veritabanına kaydediliyor; mesaj içeriğine eklenmesi Bot ekibinin `tasks.md` 29. maddesinde.
+- **Başka ekipten istek:** Bot ekibinin 29. maddesi kapsamında red sebebinin WhatsApp bildirim metnine eklenmesi gerekiyor; bu değişiklikte Bot ekibine ait dosyalara dokunulmadı.
+
+## 2026-11-04 15:37 — Mevcut kod değişikliklerinin lokal testi
+- **Kişi / araç:** Esma / Antigravity
+- **Dal:** `feat/admin-appointment-notification-actions`
+- **Ne yapıldı:** Kod değiştirilmeden mevcut dalın tüm statik doğrulamaları yapıldı.
+- **Değişen dosyalar:** `logs/esmabetul.md`
+- **Neden:** Yöneticinin geri bildirimi doğrultusunda mevcut değişikliklerin lint/build/tip kontrolünden geçip geçmediğini doğrulamak.
+- **Nasıl test edildi:**
+  - `npm run lint` → hatasız tamamlandı.
+  - `npx tsc --noEmit` → tip hatası yok.
+  - `npm run build` → Next.js 16.4.3 Turbopack ile production build başarılı; `/admin` ƒ (Dynamic) olarak işaretlendi, `Date.now()` prerender hatası yok.
+  - Durum filtresi mantığı kod üzerinden doğrulandı: `cancelled`/`completed` seçilince tarih kısıtı kaldırılıyor, geçmiş kayıtlar dahil ediliyor; azalan sıra ve 100 kayıt sınırı aktif. Supabase'de seed randevu verisi bulunmadığından canlı veriyle manuel filtre testi yapılamadı.
+- **Açık konular:** Gerçek Supabase verisiyle `cancelled`/`completed` filtrelerinin ve 100 kayıt uyarısının manuel doğrulaması bekleniyor (seed verisi eklenince).
+- **Başka ekipten istek:** Yok.

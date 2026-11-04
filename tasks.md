@@ -17,11 +17,6 @@ Son güncelleme: 4 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
-### 28. Onay/red/iptal sonrası WhatsApp bildirimi
-- **Dosya:** `app/admin/` (onay/red/iptal server action'ları), `lib/whatsapp/notify.ts` (PR #22)
-- **Sorun:** `notifyAppointmentUpdate` artık main'de çalışıyor, ancak panelde henüz çağrılmıyor (AGENTS.md bölüm 9).
-- **Yapılacak:** Onay, red ve iptal işlemleri veritabanını güncelledikten sonra aynı server action içinde `notifyAppointmentUpdate(id)` çağır; `sent: false` dönerse "Hastaya WhatsApp bildirimi gönderilemedi" uyarısını göster.
-
 ## Bot ekibi (Sevde, Ebru)
 
 ### 8. Adım isimlerini `steps.ts` ile eşleştirme
