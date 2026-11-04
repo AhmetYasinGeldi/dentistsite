@@ -31,6 +31,8 @@ const filtersSchema = z.object({
     .default(""),
 });
 
+const MAX_STATUS_FILTER_RESULTS = 100;
+
 type SearchParams = Record<string, string | string[] | undefined>;
 
 function firstValue(value: string | string[] | undefined): string | undefined {
@@ -92,7 +94,7 @@ export default async function AppointmentsPage({
     othersQuery = othersQuery
       .gte("starts_at", istanbulLocalToIso(filters.date, "00:00"))
       .lt("starts_at", istanbulLocalToIso(nextDate(filters.date), "00:00"));
-  } else {
+  } else if (!filters.status) {
     othersQuery = othersQuery.gte(
       "starts_at",
       istanbulLocalToIso(todayInIstanbul(), "00:00"),
@@ -103,6 +105,13 @@ export default async function AppointmentsPage({
   }
   if (filters.status) {
     othersQuery = othersQuery.eq("status", filters.status);
+  }
+
+  let orderedOthersQuery = othersQuery.order("starts_at", {
+    ascending: !filters.status || filters.status === "approved",
+  });
+  if (filters.status) {
+    orderedOthersQuery = orderedOthersQuery.limit(MAX_STATUS_FILTER_RESULTS);
   }
 
   const [pendingResult, othersResult, doctorsResult] = await Promise.all([
@@ -120,7 +129,7 @@ export default async function AppointmentsPage({
       )
       .eq("status", "pending")
       .order("starts_at", { ascending: true }),
-    othersQuery.order("starts_at", { ascending: true }),
+    orderedOthersQuery,
     supabase.from("doctors").select("id, full_name").order("full_name"),
   ]);
 
@@ -143,6 +152,9 @@ export default async function AppointmentsPage({
   const pendingAppointments = pendingResult.data ?? [];
   const otherAppointments = othersResult.data ?? [];
   const doctors = doctorsResult.data ?? [];
+  const statusFilterLimitReached =
+    Boolean(filters.status) &&
+    otherAppointments.length === MAX_STATUS_FILTER_RESULTS;
 
   const renderAppointments = (rows: typeof pendingAppointments) =>
     rows.length === 0 ? (
@@ -292,6 +304,17 @@ export default async function AppointmentsPage({
             </Link>
           </div>
         </form>
+
+        {statusFilterLimitReached && (
+          <p
+            role="status"
+            className="rounded border border-accent bg-accent/10 p-3 text-sm text-foreground"
+          >
+            Bu filtrede en fazla {MAX_STATUS_FILTER_RESULTS} randevu gösteriliyor.
+            Daha fazla sonuç olabilir; listeyi daraltmak için tarih veya doktor
+            filtresi seçebilirsiniz.
+          </p>
+        )}
 
         {renderAppointments(otherAppointments)}
       </section>

@@ -10,18 +10,6 @@ Son güncelleme: 2 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17 incel
 
 ---
 
-## Panel ekibi (Esma, Merve)
-
-### 23. Durum filtresi seçiliyken geçmiş randevular görünmüyor
-- **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #15)
-- **Sorun:** Tarih boşken uygulanan "bugünden itibaren" sınırı durum filtresi seçiliyken de geçerli. "Tamamlandı", "İptal edildi" ve "Reddedildi" filtreleri geçmiş kayıtları göstermiyor; "Tamamlandı" filtresi pratikte hep boş kalır.
-- **Yapılacak:** Sınırı yalnızca durum filtresi boşken uygula. Durum seçiliyse en yeni kayıtlar önce gelecek şekilde sırala ve `.limit()` ile üst sınır koy.
-
-### 24. PR #15 log kaydındaki eksikler
-- **Dosya:** `logs/esmabetul.md` (PR #15)
-- **Sorun:** 31 Ekim 23:42 kaydında dal `feat/admin-appointment-decisions` yazıyor, gerçek dal `feat/admin-appointments-v2`. `lib/shared/appointment-status.ts` "Değişen dosyalar" içinde yok; PR açıklamasında geçen build sonucu log'da yok. Ayrıca PR #15'te kapatılan 1-4 numaralı maddeler `tasks.md`'den silinmemişti (bu güncellemede silindi).
-- **Yapılacak:** Sonraki kayıtta dal adını ve değişen dosyaları doğru yaz, kapatılan maddeleri aynı dalda `tasks.md`'den sil.
-
 ## Bot ekibi (Sevde, Ebru)
 
 ### 8. Adım isimlerini `steps.ts` ile eşleştirme
