@@ -49,3 +49,13 @@
 - **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. Sahte Supabase ile geçici bir test adresinden: 2 saat önce yazmış hastanın onaylanan randevusunda gönderime geçildi (test ortamında WhatsApp anahtarı olmadığı için `SEND_FAILED`); 30 saat önce yazmışta `WINDOW_CLOSED`; hastanın kendi iptalinde `NO_NOTIFICATION`; olmayan randevuda `NOT_FOUND`. Geçici test adresi silindi.
 - **Açık konular:** Gerçek gönderim Meta webhook kaydını bekliyor. Red sebebi (`rejection_reason`) mesaja eklenmiyor; Ebru'nun metninde yer yok.
 - **Başka ekipten istek:** Panel ekibi (Esma, Merve): onay/red/iptal sonrası `notifyAppointmentUpdate(id)` çağrılmalı, `sent: false` ise "Hastaya WhatsApp bildirimi gönderilemedi" uyarısı gösterilmeli.
+
+## 2026-11-04 21:30 — İnceleme düzeltmeleri (tasks.md 16, 17, 18, 29) ve gerçek telefon testi
+- **Kişi / araç:** Sevde / Claude
+- **Dal:** fix/bot-inceleme-duzeltmeleri
+- **Ne yapıldı:** `tasks.md` 16, 17, 18 ve 29. maddeler kapatıldı. 16: boş oturum için paylaşılan sabit yerine her çağrıda yeni nesne döndüren `emptySession()`. 17: `setSession` `update` yerine `upsert` yapıyor; satır yoksa oluşturuyor. 18: `slotStart` saat dilimi içeren ISO tarih-saat olarak doğrulanıyor (`z.iso.datetime({ offset: true })`). 29: red bildirimine panelde girilen `rejection_reason` ekleniyor ("Sebep: ..."); sebep boşsa eski metin aynen gidiyor. Bunun için `messages.ts`'teki `notifications.rejected` isteğe bağlı sebep alan bir fonksiyona çevrildi (Ebru'ya haber verildi).
+- **Değişen dosyalar:** `lib/bot/session.ts`, `lib/whatsapp/notify.ts`, `lib/bot/messages.ts`, `tasks.md`, `logs/sevde.md`
+- **Neden:** PR #11 ve #22 inceleme notları (`tasks.md`).
+- **Nasıl test edildi:** `eslint` ve `tsc --noEmit` hatasız. `slotStart`: `2026-11-05T10:30:00+03:00`, `...Z` ve `...+00:00` geçti; `2026-11-05 10:30`, `2026-11-05`, serbest metin ve boş metin reddedildi. Sahte Supabase ile: bir hastanın boş oturumuna yazılan tarih ikinci hastanın oturumuna sızmadı; satırı olmayan numarada `setSession` satırı oluşturdu. Red metni sebepli, boşluklu, boş ve `null` sebeple denendi; sondaki nokta çiftlenmiyor. **Gerçek telefon testi:** 3 Kasım 13:10'da kayıtlı test numarasından canlı bota "merhaba" yazıldı, yankı cevabı geldi; webhook, imza kontrolü ve metin gönderimi canlıda çalışıyor (önceki kayıtlardaki "gerçek telefon testi bekliyor" maddesi kapandı).
+- **Açık konular:** Buton ve liste mesajları gerçek telefonda randevu akışı birleşince denenecek.
+- **Başka ekipten istek:** Yok.

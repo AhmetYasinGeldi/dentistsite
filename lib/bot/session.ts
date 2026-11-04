@@ -13,7 +13,8 @@ export const sessionContextSchema = z
     doctorId: z.number().int(),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // İstanbul tarihi
     timePeriod: z.enum(["morning", "afternoon"]),
-    slotStart: z.string(), // timestamptz, ör. 2026-11-05T10:30:00+03:00
+    // timestamptz, saat dilimiyle: 2026-11-05T10:30:00+03:00 veya ...Z
+    slotStart: z.iso.datetime({ offset: true }),
     page: z.number().int().min(0), // liste sayfası ("Diğer ..." satırı)
     appointmentId: z.number().int(), // iptal/erteleme yapılan randevu
   })
@@ -27,7 +28,10 @@ export type Session = {
   patientId: number | null;
 };
 
-const EMPTY_SESSION: Session = { step: "idle", context: {}, patientId: null };
+/** Her çağrıda yeni nesne: akış kodu değiştirse bile başka hastaya sızmaz. */
+function emptySession(patientId: number | null = null): Session {
+  return { step: "idle", context: {}, patientId };
+}
 
 /**
  * Gelen her mesajda çağrılır: numaranın oturumu yoksa "idle" adımıyla oluşturur,
@@ -50,13 +54,13 @@ export async function getSession(phone: string): Promise<Session> {
 
   if (error) {
     console.error("[bot/session] Oturum okunamadı:", error);
-    return EMPTY_SESSION;
+    return emptySession();
   }
-  if (!data) return EMPTY_SESSION;
+  if (!data) return emptySession();
 
   if (!isStep(data.step)) {
     console.error("[bot/session] Bilinmeyen adım, idle'a dönülüyor:", data.step);
-    return { ...EMPTY_SESSION, patientId: data.patient_id };
+    return emptySession(data.patient_id);
   }
 
   const context = sessionContextSchema.safeParse(data.context);
@@ -71,7 +75,11 @@ export async function getSession(phone: string): Promise<Session> {
   };
 }
 
-/** Adımı ve taslağı birlikte kaydeder (taslak tamamen yenisiyle değişir). */
+/**
+ * Adımı ve taslağı birlikte kaydeder (taslak tamamen yenisiyle değişir).
+ * upsert: touchSession bir sebeple satır oluşturamadıysa burada oluşur;
+ * hasta aynı adımda sessizce takılı kalmaz.
+ */
 export async function setSession(
   phone: string,
   step: Step,
@@ -79,8 +87,7 @@ export async function setSession(
 ): Promise<void> {
   const { error } = await createAdminClient()
     .from("wa_sessions")
-    .update({ step, context: context as Json })
-    .eq("phone", phone);
+    .upsert({ phone, step, context: context as Json }, { onConflict: "phone" });
   if (error) console.error("[bot/session] Oturum kaydedilemedi:", error);
 }
 

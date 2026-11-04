@@ -24,7 +24,7 @@ export async function notifyAppointmentUpdate(
 
   const { data: appointment, error } = await supabase
     .from("appointments")
-    .select("status, starts_at, cancelled_by, patients(phone)")
+    .select("status, starts_at, cancelled_by, rejection_reason, patients(phone)")
     .eq("id", appointmentId)
     .maybeSingle();
 
@@ -34,11 +34,7 @@ export async function notifyAppointmentUpdate(
   }
   if (!appointment?.patients) return { sent: false, reason: "NOT_FOUND" };
 
-  const text = buildNotification(
-    appointment.status,
-    appointment.cancelled_by,
-    appointment.starts_at,
-  );
+  const text = buildNotification(appointment);
   if (!text) return { sent: false, reason: "NO_NOTIFICATION" };
 
   const phone = appointment.patients.phone;
@@ -65,15 +61,20 @@ export async function notifyAppointmentUpdate(
 }
 
 /** Durum için hastaya gidecek metin; bildirim gerekmiyorsa null. */
-function buildNotification(
-  status: string,
-  cancelledBy: string | null,
-  startsAt: string,
-): string | null {
-  const when = formatDateTime(startsAt);
-  if (status === "approved") return notifications.approved(when);
-  if (status === "rejected") return notifications.rejected;
-  if (status === "cancelled" && cancelledBy === "admin") {
+function buildNotification(appointment: {
+  status: string;
+  cancelled_by: string | null;
+  starts_at: string;
+  rejection_reason: string | null;
+}): string | null {
+  const when = formatDateTime(appointment.starts_at);
+  if (appointment.status === "approved") return notifications.approved(when);
+  if (appointment.status === "rejected") {
+    // Sondaki noktayı at; metin "Sebep: ...." diye çift noktayla bitmesin.
+    const reason = appointment.rejection_reason?.trim().replace(/[.\s]+$/, "");
+    return notifications.rejected(reason || null);
+  }
+  if (appointment.status === "cancelled" && appointment.cancelled_by === "admin") {
     return notifications.clinicCancelled(when);
   }
   return null;
