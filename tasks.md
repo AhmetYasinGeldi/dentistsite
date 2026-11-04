@@ -55,6 +55,11 @@ Son güncelleme: 4 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** `errors` içinde `cancelDeadlinePassed` metni girintisiz yazılmış ve `slotTaken` aynı satıra yapışmış. Log kaydında dal `fix bot mesaj parametre isimleri` yazıyor, gerçek dal `fix/bot-mesaj-parametre-isimleri`; parametre adlarının İngilizceye çevrilmesi ve 7. maddenin kapatılması kayıtta yok, sadece 9. madde geçiyor. `tasks.md`'de silinen maddelerin yerinde fazladan boş satırlar kaldı; `logs/ebru.md` sonunda satır sonu yok.
 - **Yapılacak:** `cancelDeadlinePassed` metnini 4 boşlukla girintile, `slotTaken`'ı ayrı satıra al. Sonraki log kaydında dal adını doğru yaz, kapatılan tüm maddeleri belirt. Fazla boş satırları sil.
 
+### 32. Akış için eksik metinler
+- **Dosya:** `lib/bot/messages.ts`, `lib/bot/flow.ts` (randevu alma akışı PR'ı)
+- **Sorun:** Geçersiz ad soyad yazıldığında ayrı bir uyarı metni yok; akış şimdilik soruyu tekrarlıyor. İşlem veya doktor listesi 10'u geçerse kullanılacak "Diğer" satırı için metin yok; akışta geçici olarak `MORE_OPTIONS_TITLE = "Diğer seçenekler"` yazılı.
+- **Yapılacak:** Ebru: `errors.invalidName` (ör. "Lütfen adınızı ve soyadınızı birlikte yazar mısınız?") ve `listRows.otherOptions` ekle. Sevde: eklenince `flow.ts`'te kullan, geçici sabiti sil.
+
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
 Açık madde yok.
