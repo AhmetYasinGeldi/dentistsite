@@ -79,3 +79,13 @@
 - **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi.
 - **Açık konular:** Ebrar'ın açık konusu (Header ve mobilde sabit WhatsApp butonu) yeni özellik olduğu için `tasks.md`'ye eklenmedi, Trello'da takip edilmeli.
 - **Başka ekipten istek:** Panel ekibi: 27 ve 28. Bot ekibi: 29.
+
+## 2026-11-04 16:30 — PR #25 incelemesi ve panel test verisi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr25-test-verisi
+- **Ne yapıldı:** PR #25 (onay/red/iptal bildirimleri) incelendi; küçük bulgular `tasks.md`'ye Panel 30 ve 31 olarak eklendi, "Son güncelleme" satırı güncellendi. Esma'nın 27. madde için istediği sahte hasta ve randevu verisi `supabase/test/` altına eklendi: 120 sahte hasta, 110 tamamlandı, 25 iptal, 15 red, 8 onaylı, 5 bekleyen randevu. Silmek için ayrı temizleme betiği var.
+- **Değişen dosyalar:** `tasks.md`, `supabase/test/panel-test-data.sql`, `supabase/test/panel-test-data-cleanup.sql`, `logs/ahmetyasin.md`
+- **Neden:** Panel ekibi durum filtrelerini, sıralamayı ve 100 kayıt uyarısını gerçek veriyle deneyemiyordu (tasks.md 27).
+- **Nasıl test edildi:** Yerelde geçici bir PostgreSQL 18 kümesinde `01_schema.sql` ve `02_seed.sql` kurulup test verisi yüklendi; durum sayıları beklenen değerlerle eşleşti. İkinci çalıştırmada betik kendini durdurdu. Temizleme betiği sadece test hastalarını ve randevularını sildi, başka kayda dokunmadı.
+- **Açık konular:** Test verisi Supabase'e henüz yüklenmedi. Veritabanı canlı ortamla ortak; test bitince temizleme betiği çalıştırılmalı.
+- **Başka ekipten istek:** Panel ekibi: 27. madde için veri `supabase/test/panel-test-data.sql` içinde. PR #25'te iptal onayı ve bildirim uyarısı metni düzeltilmeli; 30 ve 31. maddeler.
