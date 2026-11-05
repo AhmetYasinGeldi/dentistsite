@@ -1,18 +1,14 @@
 "use client";
 
-import type { FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useFormStatus } from "react-dom";
 import {
   approveAppointmentAction,
   cancelAppointmentAction,
   rejectAppointmentAction,
+  type AppointmentFilters,
 } from "@/app/admin/actions";
-
-type AppointmentFilters = {
-  date: string;
-  doctorId: string;
-  status: string;
-};
+import type { AppointmentStatus } from "@/lib/shared/appointment-status";
 
 type AppointmentAction = (
   formData: FormData,
@@ -53,24 +49,54 @@ function AppointmentActionForm({
   appointmentId,
   filters,
   confirmation,
+  confirmationAction,
   children,
   className,
 }: {
   action: AppointmentAction;
   appointmentId: number;
   filters: AppointmentFilters;
-  confirmation?: string;
+  confirmation: string;
+  confirmationAction: string;
   children: React.ReactNode;
   className?: string;
 }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+  const confirmedRef = useRef(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const titleId = `appointment-confirmation-title-${appointmentId}`;
+  const descriptionId = `appointment-confirmation-description-${appointmentId}`;
+
   function confirmSubmission(event: FormEvent<HTMLFormElement>) {
-    if (confirmation && !window.confirm(confirmation)) {
-      event.preventDefault();
+    if (confirmedRef.current) {
+      confirmedRef.current = false;
+      return;
     }
+
+    event.preventDefault();
+    if (document.activeElement instanceof HTMLElement) {
+      triggerRef.current = document.activeElement;
+    }
+    setIsConfirmationOpen(true);
+  }
+
+  function cancelSubmission() {
+    setIsConfirmationOpen(false);
+    triggerRef.current?.focus();
+  }
+
+  function confirmSubmissionAfterReview() {
+    confirmedRef.current = true;
+    setIsConfirmationOpen(false);
+    formRef.current?.requestSubmit();
   }
 
   return (
     <form
+      ref={formRef}
       action={action}
       onSubmit={confirmSubmission}
       className={className}
@@ -82,6 +108,66 @@ function AppointmentActionForm({
       />
       <FilterFields filters={filters} />
       {children}
+      {isConfirmationOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) cancelSubmission();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") cancelSubmission();
+            if (event.key === "Tab" && event.shiftKey &&
+                document.activeElement === cancelButtonRef.current) {
+              event.preventDefault();
+              confirmButtonRef.current?.focus();
+            } else if (event.key === "Tab" && !event.shiftKey &&
+                document.activeElement === confirmButtonRef.current) {
+              event.preventDefault();
+              cancelButtonRef.current?.focus();
+            }
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            aria-describedby={descriptionId}
+            className="w-full max-w-md rounded-xl border border-foreground/10 bg-background p-6 text-foreground shadow-xl"
+          >
+            <h2
+              id={titleId}
+              className="text-lg font-semibold"
+            >
+              İşlemi Onaylayın
+            </h2>
+            <p
+              id={descriptionId}
+              className="mt-3 text-sm text-foreground/70"
+            >
+              {confirmation}
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                ref={cancelButtonRef}
+                type="button"
+                autoFocus
+                onClick={cancelSubmission}
+                className="rounded border border-foreground/20 px-4 py-2 text-sm text-foreground hover:bg-muted"
+              >
+                Vazgeç
+              </button>
+              <button
+                ref={confirmButtonRef}
+                type="button"
+                onClick={confirmSubmissionAfterReview}
+                className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+              >
+                {confirmationAction}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
@@ -94,7 +180,7 @@ export function AppointmentActions({
 }: {
   appointmentId: number;
   isFuture: boolean;
-  status: string;
+  status: AppointmentStatus;
   filters: AppointmentFilters;
 }) {
   return (
@@ -105,6 +191,7 @@ export function AppointmentActions({
           appointmentId={appointmentId}
           filters={filters}
           confirmation="Randevuyu onaylamak istediğinize emin misiniz?"
+          confirmationAction="Onayla"
         >
           <PendingSubmitButton
             className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
@@ -119,6 +206,7 @@ export function AppointmentActions({
           appointmentId={appointmentId}
           filters={filters}
           confirmation="Randevuyu reddetmek istediğinize emin misiniz?"
+          confirmationAction="Reddet"
           className="flex flex-wrap items-center gap-2"
         >
           <label>
@@ -139,18 +227,19 @@ export function AppointmentActions({
         </AppointmentActionForm>
       )}
       {status === "approved" && isFuture && (
-          <AppointmentActionForm
-            action={cancelAppointmentAction}
-            appointmentId={appointmentId}
-            filters={filters}
-            confirmation="Randevuyu iptal etmek istediğinize emin misiniz?"
+        <AppointmentActionForm
+          action={cancelAppointmentAction}
+          appointmentId={appointmentId}
+          filters={filters}
+          confirmation="Randevuyu iptal etmek istediğinize emin misiniz?"
+          confirmationAction="İptal Et"
+        >
+          <PendingSubmitButton
+            className="rounded border border-foreground/20 px-3 py-1.5 text-sm text-foreground hover:bg-muted"
           >
-            <PendingSubmitButton
-              className="rounded border border-foreground/20 px-3 py-1.5 text-sm text-foreground hover:bg-muted"
-            >
-              İptal Et
-            </PendingSubmitButton>
-          </AppointmentActionForm>
+            İptal Et
+          </PendingSubmitButton>
+        </AppointmentActionForm>
       )}
     </div>
   );

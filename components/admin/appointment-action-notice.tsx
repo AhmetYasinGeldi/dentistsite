@@ -10,7 +10,12 @@ type AppointmentNotice =
   | "update_failed"
   | "stale";
 
-type NotificationStatus = "sent" | "failed" | "window_closed" | undefined;
+type NotificationStatus =
+  | "sent"
+  | "failed"
+  | "window_closed"
+  | "past"
+  | undefined;
 
 export function AppointmentActionNotice({
   notice,
@@ -67,6 +72,14 @@ export function AppointmentActionNotice({
         className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-foreground"
       >
         Randevu {actionLabel}; hastaya WhatsApp bildirimi gönderildi.
+      </p>
+    );
+  }
+
+  if (notification === "past") {
+    return (
+      <p role="status" className="rounded-lg bg-accent/20 p-4 text-foreground">
+        Randevu {actionLabel}. Bildirim gönderilmedi, randevu saati geçmiş.
       </p>
     );
   }
