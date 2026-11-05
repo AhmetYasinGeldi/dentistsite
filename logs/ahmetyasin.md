@@ -89,3 +89,13 @@
 - **Nasıl test edildi:** Yerelde geçici bir PostgreSQL 18 kümesinde `01_schema.sql` ve `02_seed.sql` kurulup test verisi yüklendi; durum sayıları beklenen değerlerle eşleşti. İkinci çalıştırmada betik kendini durdurdu. Temizleme betiği sadece test hastalarını ve randevularını sildi, başka kayda dokunmadı.
 - **Açık konular:** Test verisi Supabase'e henüz yüklenmedi. Veritabanı canlı ortamla ortak; test bitince temizleme betiği çalıştırılmalı.
 - **Başka ekipten istek:** Panel ekibi: 27. madde için veri `supabase/test/panel-test-data.sql` içinde. PR #25'te iptal onayı ve bildirim uyarısı metni düzeltilmeli; 30 ve 31. maddeler.
+
+## 2026-11-05 10:04 — PR #25 ikinci inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr25-tasks
+- **Ne yapıldı:** PR #25'in son hali incelendi ve birleştirildi. Birleşmeyi engellemeyen küçük bulgular `tasks.md`'ye Panel 33 (geçmiş bekleyen randevuda red bildirimi) ve 34 (tip ve girinti düzeltmeleri) olarak eklendi, "Son güncelleme" satırı güncellendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #25 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. İnceleme sırasında PR dalında `npm run lint` ve `npm run build` başarılı.
+- **Açık konular:** Esma'nın service role anahtarını yerelde tanımlama isteği değerlendirilecek.
+- **Başka ekipten istek:** Panel ekibi: 33 ve 34.

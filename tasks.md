@@ -6,11 +6,21 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 4 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25 incelemesi)
+Son güncelleme: 5 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25 incelemesi)
 
 ---
 
 ## Panel ekibi (Esma, Merve)
+
+### 33. Saati geçmiş bekleyen randevuda "Reddet" butonu
+- **Dosya:** `components/admin/appointment-actions.tsx` (satır 116), `app/admin/actions.ts` (`rejectAppointmentAction`) (PR #25)
+- **Sorun:** Saati geçmiş bekleyen randevularda "Onayla" gizleniyor ama "Reddet" görünmeye devam ediyor. Basılırsa hastaya geçmiş tarihli bir randevu için WhatsApp'tan red bildirimi gidiyor.
+- **Yapılacak:** Saati geçmiş bekleyen randevu reddedildiğinde `notifyAppointmentUpdate` çağrılmasın, panelde "Bildirim gönderilmedi, randevu saati geçmiş" bilgisi gösterilsin. Liste temizliği için butonun kalması yeterli.
+
+### 34. Randevu işlem bileşeninde tip ve biçim düzeltmeleri
+- **Dosya:** `components/admin/appointment-actions.tsx`, `app/admin/actions.ts` (PR #25)
+- **Sorun:** `status` prop'u (satır 97) ve filtre tipindeki `status` (satır 14) düz `string`; veritabanındaki durum tipi kullanılmıyor. `AppointmentFilters` tipi bileşende (satır 11) ve `actions.ts`'te (satır 108) ayrı ayrı tanımlı. İptal bloğunun girintisi (satır 141-154) kaymış.
+- **Yapılacak:** `status` için `lib/database.types.ts`'teki durum tipini kullan, `AppointmentFilters` tipini tek yerden `import type` ile al, iptal bloğunun girintisini düzelt.
 
 ### 27. Durum filtrelerinin gerçek veriyle denenmesi
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
