@@ -94,8 +94,9 @@ export const noActiveAppointment = "Aktif randevunuz bulunmuyor.";
 export const notifications = {
   approved: (dateTime: string): string =>
     `Randevunuz onaylandı: ${dateTime}. Sizi bekliyoruz.`,
-  rejected:
-    'Üzgünüz, bu saat için randevunuz onaylanamadı. Yeni randevu için "menü" yazabilirsiniz.',
+  // reason: panelde girilen red sebebi; boşsa mesajda gösterilmez.
+  rejected: (reason?: string | null): string =>
+    `Üzgünüz, bu saat için randevunuz onaylanamadı.${reason ? ` Sebep: ${reason}.` : ""} Yeni randevu için "menü" yazabilirsiniz.`,
   clinicCancelled: (dateTime: string): string =>
     `Üzgünüz, ${dateTime} tarihli randevunuz klinik tarafından iptal edildi.`,
 } as const;

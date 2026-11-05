@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { handleEcho } from "@/lib/bot/echo";
+import { handleIncoming } from "@/lib/bot/flow";
 import { touchSession } from "@/lib/bot/session";
 import {
   extractMessages,
@@ -79,7 +79,7 @@ async function processMessage(message: IncomingMessage): Promise<void> {
   // Numara ilk kez yazıyorsa oturum "idle" adımıyla oluşur.
   await touchSession(message.from);
 
-  await handleEcho(message);
+  await handleIncoming(message);
 }
 
 function ok() {

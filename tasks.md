@@ -30,21 +30,6 @@ Son güncelleme: 4 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Dosya:** `logs/ebru.md` (PR #7)
 - **Not:** İlk iki kayıtta dal `main` ve saat yok; kayıtlar silinmez ama bundan sonraki kayıtlarda saat ve doğru dal yazılmalı. Dosya başlığı (`# Ebru - ...`) eklenebilir.
 
-### 16. Boş oturum için paylaşılan nesne
-- **Dosya:** `lib/bot/session.ts` (PR #11)
-- **Sorun:** `getSession` kayıt yokken veya hata olduğunda hep aynı `EMPTY_SESSION` nesnesini döndürüyor; `{ ...EMPTY_SESSION }` kopyasında da `context` aynı `{}` nesnesi. Akış kodu `session.context.date = ...` gibi doğrudan değiştirirse değer sabite yazılır ve sonraki hastaların oturumuna sızar.
-- **Yapılacak:** Sabit yerine her çağrıda yeni nesne döndüren `emptySession()` fonksiyonu kullan.
-
-### 17. `setSession` satır yoksa sessizce hiçbir şey yapmıyor
-- **Dosya:** `lib/bot/session.ts` (PR #11)
-- **Sorun:** `setSession` sadece `update` yapıyor. `touchSession` hata verip satır oluşmadıysa güncelleme 0 satırı etkiler, hata da dönmez; hasta aynı adımda takılır ve log'da iz kalmaz.
-- **Yapılacak:** `update` yerine `upsert({ phone, step, context }, { onConflict: "phone" })` kullan veya `.select("phone")` ile dönen satır sayısını kontrol edip 0 ise logla.
-
-### 18. `slotStart` doğrulaması gevşek
-- **Dosya:** `lib/bot/session.ts` (PR #11)
-- **Sorun:** `slotStart: z.string()` her metni kabul ediyor. Bu değer randevu oluşturmada ve `reschedule_appointment` çağrısında kullanılacak; bozuk bir değer veritabanı hatasına kadar fark edilmez.
-- **Yapılacak:** zod'un saat dilimi (offset) içeren datetime doğrulamasını kullan (ör. `2026-11-05T10:30:00+03:00` geçmeli).
-
 ### 25. Gemini test setinde belirsiz beklentiler ve eksik senaryolar
 - **Dosya:** `scripts/gemini-test/dataset.json` (PR #14)
 - **Sorun:** id 24 ("17 den sonra uygun musunuz") için `time: "17:00"` bekleniyor; mesaj bir saat değil alt sınır veriyor. id 13 ("diş çekimi") için `Basit Diş Çekimi` bekleniyor; basit mi gömülü mü olduğu belli değil. "menü", geçmiş tarih ("dün"), randevu penceresi dışı tarih ("3 ay sonra") ve saat aralığı ("10-12 arası") senaryoları yok. Dosya sonunda satır sonu yok.
@@ -55,10 +40,10 @@ Son güncelleme: 4 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** `errors` içinde `cancelDeadlinePassed` metni girintisiz yazılmış ve `slotTaken` aynı satıra yapışmış. Log kaydında dal `fix bot mesaj parametre isimleri` yazıyor, gerçek dal `fix/bot-mesaj-parametre-isimleri`; parametre adlarının İngilizceye çevrilmesi ve 7. maddenin kapatılması kayıtta yok, sadece 9. madde geçiyor. `tasks.md`'de silinen maddelerin yerinde fazladan boş satırlar kaldı; `logs/ebru.md` sonunda satır sonu yok.
 - **Yapılacak:** `cancelDeadlinePassed` metnini 4 boşlukla girintile, `slotTaken`'ı ayrı satıra al. Sonraki log kaydında dal adını doğru yaz, kapatılan tüm maddeleri belirt. Fazla boş satırları sil.
 
-### 29. Red bildiriminde red sebebi yok
-- **Dosya:** `lib/whatsapp/notify.ts`, `lib/bot/messages.ts` (PR #22)
-- **Sorun:** Panelde girilen `rejection_reason` hastaya giden red mesajına eklenmiyor; `messages.ts`'teki red metninde sebep için yer yok.
-- **Yapılacak:** Red metnine isteğe bağlı sebep parametresi ekle; `rejection_reason` doluysa mesajda göster, boşsa mevcut metin kalsın.
+### 32. Akış için eksik metinler
+- **Dosya:** `lib/bot/messages.ts`, `lib/bot/flow.ts` (randevu alma akışı PR'ı)
+- **Sorun:** Geçersiz ad soyad yazıldığında ayrı bir uyarı metni yok; akış şimdilik soruyu tekrarlıyor. İşlem veya doktor listesi 10'u geçerse kullanılacak "Diğer" satırı için metin yok; akışta geçici olarak `MORE_OPTIONS_TITLE = "Diğer seçenekler"` yazılı.
+- **Yapılacak:** Ebru: `errors.invalidName` (ör. "Lütfen adınızı ve soyadınızı birlikte yazar mısınız?") ve `listRows.otherOptions` ekle. Sevde: eklenince `flow.ts`'te kullan, geçici sabiti sil.
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
