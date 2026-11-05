@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhone } from "@/lib/shared/phone";
@@ -13,15 +14,14 @@ import {
   APPOINTMENT_STATUS_LABELS,
   statusLabel,
 } from "@/lib/shared/appointment-status";
-import {
-  approveAppointmentAction,
-  cancelAppointmentAction,
-  rejectAppointmentAction,
-} from "@/app/admin/actions";
+import { AppointmentActionNotice } from "@/components/admin/appointment-action-notice";
+import { AppointmentActions } from "@/components/admin/appointment-actions";
 
 export const metadata: Metadata = {
   title: "Randevular | Klinik Yönetim Paneli",
 };
+
+export const instant = false;
 
 const filtersSchema = z.object({
   date: z.union([z.literal(""), z.iso.date()]).default(""),
@@ -63,11 +63,16 @@ function nextDate(date: string): string {
   return next.toISOString().slice(0, 10);
 }
 
+function appointmentIsFuture(startsAt: string): boolean {
+  return Date.parse(startsAt) > Date.now();
+}
+
 export default async function AppointmentsPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await connection();
   const params = await searchParams;
   const appointmentNotice = appointmentNoticeSchema.safeParse({
     notice: firstValue(params.notice),
@@ -194,7 +199,7 @@ export default async function AppointmentsPage({
               <th className="px-3 py-2">Doktor</th>
               <th className="px-3 py-2">Tarih-Saat</th>
               <th className="px-3 py-2">Durum</th>
-              <th className="px-3 py-2">İşlem</th>
+              <th className="px-3 py-2">İşlemler</th>
             </tr>
           </thead>
           <tbody>
@@ -225,69 +230,12 @@ export default async function AppointmentsPage({
                     <span className={status.className}>{status.text}</span>
                   </td>
                   <td className="px-3 py-2">
-                    <div className="flex flex-wrap gap-2">
-                      {appointment.status === "pending" && (
-                        <>
-                          <form action={approveAppointmentAction}>
-                            <input
-                              type="hidden"
-                              name="appointmentId"
-                              value={appointment.id}
-                            />
-                            <button
-                              type="submit"
-                              className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
-                            >
-                              Onayla
-                            </button>
-                          </form>
-                          <form
-                            action={rejectAppointmentAction}
-                            className="flex flex-wrap items-center gap-2"
-                          >
-                            <input
-                              type="hidden"
-                              name="appointmentId"
-                              value={appointment.id}
-                            />
-                            <label>
-                              <span className="sr-only">
-                                İsteğe bağlı red sebebi
-                              </span>
-                              <input
-                                type="text"
-                                name="rejectionReason"
-                                maxLength={500}
-                                placeholder="Red sebebi (isteğe bağlı)"
-                                className="w-48 rounded border border-foreground/20 bg-background px-2 py-1.5 text-sm text-foreground"
-                              />
-                            </label>
-                            <button
-                              type="submit"
-                              className="rounded border border-danger/40 px-3 py-1.5 text-sm text-danger hover:bg-danger/10"
-                            >
-                              Reddet
-                            </button>
-                          </form>
-                        </>
-                      )}
-                      {(appointment.status === "pending" ||
-                        appointment.status === "approved") && (
-                        <form action={cancelAppointmentAction}>
-                          <input
-                            type="hidden"
-                            name="appointmentId"
-                            value={appointment.id}
-                          />
-                          <button
-                            type="submit"
-                            className="rounded border border-foreground/20 px-3 py-1.5 text-sm text-foreground hover:bg-muted"
-                          >
-                            İptal Et
-                          </button>
-                        </form>
-                      )}
-                    </div>
+                    <AppointmentActions
+                      appointmentId={appointment.id}
+                      isFuture={appointmentIsFuture(appointment.starts_at)}
+                      status={appointment.status}
+                      filters={filters}
+                    />
                   </td>
                 </tr>
               );
@@ -299,59 +247,12 @@ export default async function AppointmentsPage({
 
   return (
     <div className="space-y-8">
-      {appointmentNotice.success &&
-        (() => {
-          const { notice, notification } = appointmentNotice.data;
-
-          if (notice === "invalid") {
-            return (
-              <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
-                İşlem bilgileri geçersiz. Lütfen tekrar deneyin.
-              </p>
-            );
-          }
-          if (notice === "update_failed") {
-            return (
-              <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
-                Randevu güncellenemedi. Lütfen tekrar deneyin.
-              </p>
-            );
-          }
-          if (notice === "stale") {
-            return (
-              <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
-                Randevu durumu değişmiş. Listeyi yenileyip tekrar kontrol edin.
-              </p>
-            );
-          }
-
-          const actionLabel =
-            notice === "approved"
-              ? "Onaylandı"
-              : notice === "rejected"
-                ? "Reddedildi"
-                : "İptal edildi";
-
-          if (notification === "sent") {
-            return (
-              <p
-                role="status"
-                className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-foreground"
-              >
-                Randevu {actionLabel.toLocaleLowerCase("tr-TR")}; hastaya
-                WhatsApp bildirimi gönderildi.
-              </p>
-            );
-          }
-
-          return (
-            <p role="alert" className="rounded-lg bg-accent/20 p-4 text-foreground">
-              Hastaya WhatsApp bildirimi gönderilemedi.
-              {notification === "window_closed" &&
-                " Hasta 24 saattir mesaj göndermediği için bildirim iletilemedi."}
-            </p>
-          );
-        })()}
+      {appointmentNotice.success && (
+        <AppointmentActionNotice
+          notice={appointmentNotice.data.notice}
+          notification={appointmentNotice.data.notification}
+        />
+      )}
 
       <div className="border-b border-foreground/10 pb-5">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -381,12 +282,15 @@ export default async function AppointmentsPage({
         )}
       </section>
 
-      <section className="space-y-4 rounded-lg bg-background p-4 shadow-sm">
+      <section
+        id="other-appointments"
+        className="space-y-4 rounded-lg bg-background p-4 shadow-sm"
+      >
         <h2 className="text-lg font-semibold text-foreground">
           Diğer Randevular
         </h2>
         <form
-          action="/admin"
+          action="/admin#appointment-results"
           method="GET"
           className="grid grid-cols-1 gap-4 md:grid-cols-4"
         >
@@ -458,7 +362,9 @@ export default async function AppointmentsPage({
           </p>
         )}
 
-        {renderAppointments(otherAppointments)}
+        <div id="appointment-results" className="scroll-mt-6">
+          {renderAppointments(otherAppointments)}
+        </div>
       </section>
     </div>
   );

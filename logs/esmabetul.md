@@ -154,3 +154,13 @@
   - Durum filtresi mantığı kod üzerinden doğrulandı: `cancelled`/`completed` seçilince tarih kısıtı kaldırılıyor, geçmiş kayıtlar dahil ediliyor; azalan sıra ve 100 kayıt sınırı aktif. Supabase'de seed randevu verisi bulunmadığından canlı veriyle manuel filtre testi yapılamadı.
 - **Açık konular:** Gerçek Supabase verisiyle `cancelled`/`completed` filtrelerinin ve 100 kayıt uyarısının manuel doğrulaması bekleniyor (seed verisi eklenince).
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-05 10:45 — Randevu işlemleri ve filtre deneyimi
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-appointment-notification-actions`
+- **Ne yapıldı:** Onay, ret ve iptal için son onay pencereleri; işlem sırasında düğmeleri devre dışı bırakma; filtreleri işlem sonrası koruma ve filtre uygulandığında sonuçlara kaydırma tamamlandı. Geçmiş randevularda onay/iptal engellendi; Next.js zaman uyarısı için admin sayfası ve layout'un request-time render davranışı düzeltildi. Panel maddeleri #30 ve #31 kapatıldı.
+- **Değişen dosyalar:** `app/admin/(dashboard)/layout.tsx`, `app/admin/(dashboard)/page.tsx`, `app/admin/actions.ts`, `components/admin/appointment-actions.tsx`, `components/admin/appointment-action-notice.tsx`, `tasks.md`, `logs/esmabetul.md`
+- **Neden:** PR geri bildirimindeki randevu işlemi UX düzeltmelerini ve geçmiş randevular için güvenlik koşullarını tamamlamak.
+- **Nasıl test edildi:** `npm run dev` ile filtreler ve onay, ret ve iptal için son onay pencereleri kullanıcı tarafından elle kontrol edildi. İptal onaylandıktan sonra WhatsApp bildiriminin gönderilip gönderilmediği kontrol edildi; yerel ortamda `SUPABASE_SERVICE_ROLE_KEY` bulunmadığından mesaj gönderilemedi ve bu durum ekranda uyarı olarak görüntülendi. Terminal POST/GET istekleri HTTP 200 döndü. Son ekran görüntüsünde `Date.now()` prerender uyarısı görünmedi. ESLint ve `npx tsc --noEmit` başarılı.
+- **Açık konular:** `SUPABASE_SERVICE_ROLE_KEY` yerel ortamda tanımlı olmadığından WhatsApp bildiriminin gerçek teslimatı test edilemedi. Panel maddesi #27 gerçek Supabase filtre verisiyle doğrulama beklediğinden açık bırakıldı.
+- **Başka ekipten istek:** WhatsApp bildiriminin yerel test edilebilmesi için proje yöneticisinin service-role anahtarını güvenli kanaldan yerel ortama tanımlaması gerekiyor; anahtar değeri loglanmadı.

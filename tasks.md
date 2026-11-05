@@ -12,16 +12,6 @@ Son güncelleme: 4 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Panel ekibi (Esma, Merve)
 
-### 30. Randevu işlem tablosunda küçük düzeltmeler
-- **Dosya:** `app/admin/(dashboard)/page.tsx`, `app/admin/actions.ts` (PR #25)
-- **Sorun:** Tabloda iki tane "İşlem" başlığı var. İşlemden sonra seçili filtreler kayboluyor, sayfa yenilenince uyarı tekrar görünüyor. Butonlar çift tıklamaya karşı korunmuyor; ikinci istek "Randevu durumu değişmiş" uyarısı gösteriyor.
-- **Yapılacak:** Buton sütununu "İşlemler" olarak adlandır. Yönlendirmede mevcut filtreleri koru. Gönderim sırasında butonu devre dışı bırak (`useFormStatus`).
-
-### 31. Geçmiş randevularda işlem butonları
-- **Dosya:** `app/admin/(dashboard)/page.tsx`, `app/admin/actions.ts` (PR #25)
-- **Sorun:** Saati geçmiş onaylı randevularda "İptal Et" görünüyor; basılırsa hastaya geçmiş tarih için iptal mesajı gidiyor. Saati geçmiş bekleyen randevu da onaylanabiliyor.
-- **Yapılacak:** Saati geçmiş randevularda iptal ve onay butonlarını gösterme, server action'da da `starts_at > now` koşulu ekle.
-
 ### 27. Durum filtrelerinin gerçek veriyle denenmesi
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
