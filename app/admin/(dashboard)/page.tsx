@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhone } from "@/lib/shared/phone";
@@ -13,10 +14,14 @@ import {
   APPOINTMENT_STATUS_LABELS,
   statusLabel,
 } from "@/lib/shared/appointment-status";
+import { AppointmentActionNotice } from "@/components/admin/appointment-action-notice";
+import { AppointmentActions } from "@/components/admin/appointment-actions";
 
 export const metadata: Metadata = {
   title: "Randevular | Klinik Yönetim Paneli",
 };
+
+export const instant = false;
 
 const filtersSchema = z.object({
   date: z.union([z.literal(""), z.iso.date()]).default(""),
@@ -32,6 +37,19 @@ const filtersSchema = z.object({
 });
 
 const MAX_STATUS_FILTER_RESULTS = 100;
+const appointmentNoticeSchema = z.object({
+  notice: z.enum([
+    "approved",
+    "rejected",
+    "cancelled",
+    "invalid",
+    "update_failed",
+    "stale",
+  ]),
+  notification: z
+    .enum(["sent", "failed", "window_closed"])
+    .optional(),
+});
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -45,12 +63,21 @@ function nextDate(date: string): string {
   return next.toISOString().slice(0, 10);
 }
 
+function appointmentIsFuture(startsAt: string): boolean {
+  return Date.parse(startsAt) > Date.now();
+}
+
 export default async function AppointmentsPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await connection();
   const params = await searchParams;
+  const appointmentNotice = appointmentNoticeSchema.safeParse({
+    notice: firstValue(params.notice),
+    notification: firstValue(params.notification),
+  });
   const parsedFilters = filtersSchema.safeParse({
     date: firstValue(params.date) ?? "",
     doctorId: firstValue(params.doctorId) ?? "",
@@ -172,6 +199,7 @@ export default async function AppointmentsPage({
               <th className="px-3 py-2">Doktor</th>
               <th className="px-3 py-2">Tarih-Saat</th>
               <th className="px-3 py-2">Durum</th>
+              <th className="px-3 py-2">İşlemler</th>
             </tr>
           </thead>
           <tbody>
@@ -201,6 +229,14 @@ export default async function AppointmentsPage({
                   <td className="px-3 py-2">
                     <span className={status.className}>{status.text}</span>
                   </td>
+                  <td className="px-3 py-2">
+                    <AppointmentActions
+                      appointmentId={appointment.id}
+                      isFuture={appointmentIsFuture(appointment.starts_at)}
+                      status={appointment.status}
+                      filters={filters}
+                    />
+                  </td>
                 </tr>
               );
             })}
@@ -211,6 +247,13 @@ export default async function AppointmentsPage({
 
   return (
     <div className="space-y-8">
+      {appointmentNotice.success && (
+        <AppointmentActionNotice
+          notice={appointmentNotice.data.notice}
+          notification={appointmentNotice.data.notification}
+        />
+      )}
+
       <div className="border-b border-foreground/10 pb-5">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Randevular
@@ -239,12 +282,15 @@ export default async function AppointmentsPage({
         )}
       </section>
 
-      <section className="space-y-4 rounded-lg bg-background p-4 shadow-sm">
+      <section
+        id="other-appointments"
+        className="space-y-4 rounded-lg bg-background p-4 shadow-sm"
+      >
         <h2 className="text-lg font-semibold text-foreground">
           Diğer Randevular
         </h2>
         <form
-          action="/admin"
+          action="/admin#appointment-results"
           method="GET"
           className="grid grid-cols-1 gap-4 md:grid-cols-4"
         >
@@ -316,7 +362,9 @@ export default async function AppointmentsPage({
           </p>
         )}
 
-        {renderAppointments(otherAppointments)}
+        <div id="appointment-results" className="scroll-mt-6">
+          {renderAppointments(otherAppointments)}
+        </div>
       </section>
     </div>
   );

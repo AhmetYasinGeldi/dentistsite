@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { PanelShell } from "@/components/admin/panel-shell";
 
@@ -9,6 +10,7 @@ export default async function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  await connection();
   const supabase = await createClient();
 
   // Oturum kontrolü (proxy.ts kontrolüne ek olarak sunucu tarafı güvencesi)
