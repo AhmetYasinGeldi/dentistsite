@@ -281,3 +281,37 @@ Genel notlar:
 **Beklenen sonuç**
 - Yatay kaydırma ve taşma olmaz.
 - WhatsApp butonu görünür ve tıklanabilir, yazılar okunur.
+
+---
+
+## Test sonuçları (6-7 Kasım 2026, canlı sistem)
+
+### Bot
+| # | Sonuç | Not |
+|---|---|---|
+| B1 | Geçti | |
+| B2 | Geçti | |
+| B3 | Geçti | |
+| B4 | Denenemedi | [sebep] |
+| B5 | Geçti | |
+| B6 | Geçti | |
+| B7 | Kaldı | İptal et işlem yapmıyor (Bulunan Hatalar kartı) |
+| B8 | Denenemedi | [sebep] |
+| B9 | Kaldı | Ertele akışı başlamıyor (Bulunan Hatalar kartı) |
+| B10 | Geçti | |
+| B11 | Geçti | |
+| B12 | Geçti | Bot cevabı: [aynen yaz] |
+| B13 | Denenemedi | Telefondan tetiklenemiyor |
+| B14 | Denenemedi | [sebep] |
+
+### Panel
+| # | Sonuç | Not |
+|---|---|---|
+| P1 | Geçti | |
+| P2 | Geçti | |
+| P3 | Kaldı | Onay çalışıyor, bildirim gönderilemedi (Bulunan Hatalar kartı) |
+| P4 | Denenemedi | [sebep] |
+| P5 | Denenemedi | Elle randevu özelliği yok |
+| P6 | Denenemedi | Elle randevu özelliği yok |
+| P7 | Kaldı | İptal çalışıyor, bildirim gönderilemedi (Bulunan Hatalar kartı) |
+| P8-P11 | Denenemedi | [sebep] |
