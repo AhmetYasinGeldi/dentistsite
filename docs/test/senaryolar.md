@@ -117,7 +117,7 @@ Genel notlar:
 
 **Beklenen sonuç**
 - Bot çökmez.
-- Görselleri işleyemediğini belirtip menüye ya da yönlendirmeye döner.
+- Resim gelince verilecek cevap AGENTS.md'de tanımlı değil, bot ekibiyle netleştirilecek.
 
 ### B13. Aynı mesaj iki kez gelir
 **Adımlar**
@@ -170,12 +170,12 @@ Genel notlar:
 
 ### P4. Randevuyu reddeder (sebepli)
 **Adımlar**
-1. Bekleyen bir randevuyu seç, red sebebi yaz ve reddet.
+1. Bekleyen bir randevuyu seç, isteğe bağlı red sebebi yaz ve reddet.
 
 **Beklenen sonuç**
 - Randevu `rejected` (Reddedildi) olur, saat tekrar boşalır.
-- Hastaya sebebiyle birlikte WhatsApp bildirimi gider (24 saat kuralı P3'teki gibi).
-- Sebep boş bırakılırsa işlem engellenir.
+- Red sebebi girilebilir ama zorunlu değildir. Sebep girilmişse hastaya WhatsApp bildiriminde yer alır.
+- Hastaya bildirim gider (24 saat kuralı P3'teki gibi).
 
 ### P5. Elle randevu ekler (yeni hasta)
 **Adımlar**
@@ -213,9 +213,9 @@ Genel notlar:
 1. Bir randevuyu seç, yeni tarih ve saat seçerek ertele.
 
 **Beklenen sonuç**
-- Eski randevu iptal edilir, yeni randevu açılır (tek işlemde, `reschedule_appointment`).
-- Yeni saat boş olmalıdır; doluysa hata gösterilir.
-- Hastaya bilgilendirme gider.
+- Randevu `rejected` (Reddedildi) olur, saat tekrar boşalır.
+- Red sebebi girilebilir ama zorunlu değildir. Sebep girilmişse hastaya WhatsApp bildiriminde yer alır.
+- Hastaya bildirim gider (24 saat kuralı P3'teki gibi).
 
 ### P9. Doktoru pasifleştirir
 **Adımlar**
@@ -223,8 +223,9 @@ Genel notlar:
 2. Siteyi, botu ve elle randevu ekranını kontrol et.
 
 **Beklenen sonuç**
-- Doktor sitede listelenmez, botta seçenek olarak çıkmaz, elle randevuda seçilemez.
-- Doktorun mevcut randevularına ne olacağı Panel ekibiyle netleştirilmelidir (AGENTS.md'de belirtilmemiş).
+- Doktorun aktif randevusu (`pending`/`approved`, süresi geçmemiş) varsa panel pasifleştirmeden önce uyarı gösterir ve bu randevuları listeler.
+- Sistem randevuları otomatik iptal etmez; admin onları elle iptal eder veya erteler.
+- Pasif doktor sitede listelenmez, botta ve elle randevuda seçilemez.
 
 ### P10. Günü kapatır
 **Adımlar**
