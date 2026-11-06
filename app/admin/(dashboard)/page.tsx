@@ -12,6 +12,7 @@ import {
 import {
   APPOINTMENT_STATUSES,
   APPOINTMENT_STATUS_LABELS,
+  isAppointmentStatus,
   statusLabel,
 } from "@/lib/shared/appointment-status";
 import { AppointmentActionNotice } from "@/components/admin/appointment-action-notice";
@@ -47,7 +48,7 @@ const appointmentNoticeSchema = z.object({
     "stale",
   ]),
   notification: z
-    .enum(["sent", "failed", "window_closed"])
+    .enum(["sent", "failed", "window_closed", "past"])
     .optional(),
 });
 
@@ -230,12 +231,14 @@ export default async function AppointmentsPage({
                     <span className={status.className}>{status.text}</span>
                   </td>
                   <td className="px-3 py-2">
-                    <AppointmentActions
-                      appointmentId={appointment.id}
-                      isFuture={appointmentIsFuture(appointment.starts_at)}
-                      status={appointment.status}
-                      filters={filters}
-                    />
+                    {isAppointmentStatus(appointment.status) && (
+                      <AppointmentActions
+                        appointmentId={appointment.id}
+                        isFuture={appointmentIsFuture(appointment.starts_at)}
+                        status={appointment.status}
+                        filters={filters}
+                      />
+                    )}
                   </td>
                 </tr>
               );
