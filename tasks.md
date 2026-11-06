@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 5 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25 incelemesi)
+Son güncelleme: 6 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31 incelemesi)
 
 ---
 
@@ -16,6 +16,16 @@ Son güncelleme: 5 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
+
+### 35. Geçmiş bekleyen randevu reddinin denenmesi
+- **Dosya:** `app/admin/actions.ts` (`rejectAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #31)
+- **Sorun:** Saati geçmiş bekleyen randevu reddedildiğinde bildirimin atlanması ve "Bildirim gönderilmedi, randevu saati geçmiş" mesajı elle denenmedi. Test verisindeki bekleyen randevuların hepsi ileri tarihli.
+- **Yapılacak:** Saati geçmiş bekleyen bir sahte randevuyla reddetmeyi dene; bildirimin gitmediğini ve mesajın göründüğünü log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
+
+### 36. Onay kartında odak ve kaydırma
+- **Dosya:** `components/admin/appointment-actions.tsx` (onay kartı bloğu) (PR #31)
+- **Sorun:** Tab ile odak yalnızca iki buton arasında tutuluyor; kart açıkken arkadaki sayfa kaydırılabiliyor. Kaplama katmanındaki `onKeyDown` içindeki `if` satırları diğer kodla aynı biçimde değil.
+- **Yapılacak:** Arka plan kaydırmasını kart açıkken kapat, `onKeyDown` bloğunu düzgün girintile. İstenirse kartı yerleşik `<dialog>` elemanıyla (`showModal()`) yeniden yaz; odak tutma ve Escape tarayıcıdan gelir.
 
 ## Bot ekibi (Sevde, Ebru)
 

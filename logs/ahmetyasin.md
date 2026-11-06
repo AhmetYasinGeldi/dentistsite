@@ -99,3 +99,13 @@
 - **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. İnceleme sırasında PR dalında `npm run lint` ve `npm run build` başarılı.
 - **Açık konular:** Esma'nın service role anahtarını yerelde tanımlama isteği değerlendirilecek.
 - **Başka ekipten istek:** Panel ekibi: 33 ve 34.
+
+## 2026-11-06 18:51 — PR #31 inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr31-tasks
+- **Ne yapıldı:** PR #31 (geçmiş randevu reddi ve panel içi onay kartı) incelendi; birleşmeyi engelleyen bulgu çıkmadı. Küçük bulgular `tasks.md`'ye Panel 35 (geçmiş bekleyen randevu reddinin denenmesi) ve 36 (onay kartında odak ve kaydırma) olarak eklendi, "Son güncelleme" satırı güncellendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #31 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #31 dalıyla birleştirme denemesi yapıldı, `tasks.md`'de çakışma çıkmadı. İnceleme sırasında PR #31 dalında `npm run lint` ve `npm run build` başarılı.
+- **Açık konular:** 35. madde için saati geçmiş bekleyen sahte randevu gerekiyor; mevcut test verisindeki bekleyen randevular ileri tarihli.
+- **Başka ekipten istek:** Panel ekibi: 35 ve 36.
