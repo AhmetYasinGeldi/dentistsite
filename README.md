@@ -11,7 +11,7 @@ Kodun neredeyse tamamı yapay zeka ajanlarıyla yazılır. Bu yüzden bu dosyada
 | Lider, veritabanı, entegrasyon | Ahmet Yasin | ayar dosyaları, `supabase/`, `lib/supabase/`, `lib/shared/` |
 | Bot (WhatsApp + sohbet + Gemini) | Sevde, Ebru | `app/api/whatsapp/`, `lib/whatsapp/`, `lib/bot/`, `lib/ai/`, `scripts/gemini-test/` |
 | Admin paneli | Esma, Merve | `app/admin/`, `components/admin/` |
-| Tanıtım sitesi | Ahmet Çiçek, Ömer, Ebrar | `app/(site)/`, `components/site/` |
+| Tanıtım sitesi | Ahmet Çiçek, Ebrar | `app/(site)/`, `components/site/` |
 | Test ve kalite | Tuğba, Nezahat | `docs/test/` |
 | Sunum | Belinay | `docs/sunum/` |
 
@@ -109,7 +109,18 @@ Kısaca: **dal aç → çalış → gönder → PR aç → onay bekle → birle�
 
 ## WhatsApp test numaraları
 
-Bot, Meta'nın test numarasıyla çalışır ve yalnızca kayıtlı 5 numaraya cevap verir. Bu numaralar dışındaki telefonlarla bota mesaj atılırsa cevap gelmez; bu bir hata değildir. Bot testleri bu numaralar üzerinden yapılır.
+Bot, Meta'nın test numarasıyla çalışır ve yalnızca kayıtlı 5 numaraya cevap verir. Bu numaralar dışındaki telefonlarla bota mesaj atılırsa cevap gelmez; bu bir hata değildir. Bot testleri bu numaralar üzerinden yapılır. Numaranızın listeye eklenmesi için Ahmet Yasin'e yazın.
+
+## Canlı ortam
+
+- **Site:** https://dentistsite-ayg5.vercel.app
+- **Bot numarası (test):** +1 555 631 9718. Sitedeki WhatsApp butonu bu numaraya gider.
+- **Webhook:** `https://dentistsite-ayg5.vercel.app/api/whatsapp/webhook`
+- `main`'e birleşen her PR birkaç dakika içinde otomatik olarak canlıya çıkar.
+- Bot şu an yankı modunda: yazdığınız mesaj aynen geri gelir. Sohbet akışı bağlandığında gerçek menü gelecek.
+- Vercel logları ve Meta paneli Ahmet Yasin'in hesabındadır. Canlıda bir şey çalışmıyorsa hata mesajını ve saatini yazın, loglara o bakar.
+
+Ayrıntılar ve hata ayıklama adımları `AGENTS.md`'deki "Canlı ortam" bölümündedir; ajanınız oradan okur.
 
 ## Kapsam dışı
 

@@ -79,7 +79,7 @@ Her ekip yalnızca kendi alanındaki dosyaları değiştirir. Başka bir alandak
 └── logs/              (her kişinin kendi log dosyası) → Herkes, sadece kendi dosyası
 ```
 
-Ekipler: **Bot ekibi** Sevde, Ebru · **Panel ekibi** Esma, Merve · **Site ekibi** Ahmet Çiçek, Ömer, Ebrar · **Test** Tuğba, Nezahat · **Sunum** Belinay · **Lider, veritabanı, entegrasyon** Ahmet Yasin.
+Ekipler: **Bot ekibi** Sevde, Ebru · **Panel ekibi** Esma, Merve · **Site ekibi** Ahmet Çiçek, Ebrar · **Test** Tuğba, Nezahat · **Sunum** Belinay · **Lider, veritabanı, entegrasyon** Ahmet Yasin.
 
 Kullanıcının hangi ekipte olduğunu bilmiyorsan, değişiklik yapmadan önce sor.
 
@@ -221,6 +221,21 @@ Panel ekibi randevu onay/red/iptal bildirimleri için bot ekibinin şu fonksiyon
 export async function notifyAppointmentUpdate(appointmentId: number): Promise<{ sent: boolean; reason?: string }>;
 ```
 24 saat penceresi kapalıysa `{ sent: false, reason: 'WINDOW_CLOSED' }` döner; panel bunu uyarı olarak gösterir.
+
+### Canlı ortam
+| Ne | Değer |
+|---|---|
+| Site (production) | `https://dentistsite-ayg5.vercel.app` |
+| Webhook adresi | `https://dentistsite-ayg5.vercel.app/api/whatsapp/webhook` |
+| Vercel projesi | `dentistsite` (Ahmet Yasin'in hesabı). `main`'e birleşen her PR otomatik production'a çıkar. |
+| Meta uygulaması | `dentist`, App ID `1660905075688400`, yayında (Live) |
+| WhatsApp test numarası | `+1 555 631 9718` (wa.me: `15556319718`), Phone Number ID `1368099289723988` |
+| WhatsApp Business hesabı (WABA) | `29353035501052456` |
+
+- Bot şu an yankı modunda (`lib/bot/echo.ts`): kayıtlı test numarasından yazılan mesaj aynen geri gelir. Sohbet akışı bağlanınca yankı kaldırılır.
+- Vercel logları ve Meta paneli yalnızca Ahmet Yasin'in hesabındadır. Canlıda bir şey çalışmıyorsa kodu değiştirmeden önce Ahmet Yasin'den logları iste.
+- Bot cevap vermiyorsa sırayla bak: (1) mesaj kayıtlı 5 test numarasından biriyle mi atıldı; (2) Vercel loglarında `POST /api/whatsapp/webhook` isteği var mı; yoksa sorun Meta tarafındadır (uygulama yayında mı, WABA `subscribed_apps` listesinde `dentist` uygulaması var mı); (3) istek varsa log'daki `[webhook]` hatasına bak.
+- `NEXT_PUBLIC_SUPABASE_URL` yalnızca proje adresidir (`https://<proje>.supabase.co`); sonuna `/rest/v1` eklenirse Supabase `PGRST125` hatası verir ve bot mesajı kaydedemez.
 
 ---
 

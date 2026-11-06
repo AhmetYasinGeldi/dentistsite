@@ -1,26 +1,54 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhone } from "@/lib/shared/phone";
-import { formatDateTime, istanbulLocalToIso } from "@/lib/shared/datetime";
-import { statusLabel } from "@/lib/shared/appointment-status";
+import {
+  formatDateTime,
+  istanbulLocalToIso,
+  todayInIstanbul,
+} from "@/lib/shared/datetime";
+import {
+  APPOINTMENT_STATUSES,
+  APPOINTMENT_STATUS_LABELS,
+  statusLabel,
+} from "@/lib/shared/appointment-status";
+import { AppointmentActionNotice } from "@/components/admin/appointment-action-notice";
+import { AppointmentActions } from "@/components/admin/appointment-actions";
 
 export const metadata: Metadata = {
   title: "Randevular | Klinik Yönetim Paneli",
 };
 
-const appointmentStatuses = [
-  "approved",
-  "rejected",
-  "cancelled",
-  "completed",
-] as const;
+export const instant = false;
 
 const filtersSchema = z.object({
   date: z.union([z.literal(""), z.iso.date()]).default(""),
   doctorId: z.union([z.literal(""), z.string().regex(/^[1-9]\d*$/)]).default(""),
-  status: z.enum(["", ...appointmentStatuses]).default(""),
+  status: z
+    .union([
+      z.literal(""),
+      z
+        .enum(APPOINTMENT_STATUSES)
+        .refine((status) => status !== "pending"),
+    ])
+    .default(""),
+});
+
+const MAX_STATUS_FILTER_RESULTS = 100;
+const appointmentNoticeSchema = z.object({
+  notice: z.enum([
+    "approved",
+    "rejected",
+    "cancelled",
+    "invalid",
+    "update_failed",
+    "stale",
+  ]),
+  notification: z
+    .enum(["sent", "failed", "window_closed"])
+    .optional(),
 });
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -35,12 +63,21 @@ function nextDate(date: string): string {
   return next.toISOString().slice(0, 10);
 }
 
+function appointmentIsFuture(startsAt: string): boolean {
+  return Date.parse(startsAt) > Date.now();
+}
+
 export default async function AppointmentsPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await connection();
   const params = await searchParams;
+  const appointmentNotice = appointmentNoticeSchema.safeParse({
+    notice: firstValue(params.notice),
+    notification: firstValue(params.notification),
+  });
   const parsedFilters = filtersSchema.safeParse({
     date: firstValue(params.date) ?? "",
     doctorId: firstValue(params.doctorId) ?? "",
@@ -84,12 +121,24 @@ export default async function AppointmentsPage({
     othersQuery = othersQuery
       .gte("starts_at", istanbulLocalToIso(filters.date, "00:00"))
       .lt("starts_at", istanbulLocalToIso(nextDate(filters.date), "00:00"));
+  } else if (!filters.status) {
+    othersQuery = othersQuery.gte(
+      "starts_at",
+      istanbulLocalToIso(todayInIstanbul(), "00:00"),
+    );
   }
   if (filters.doctorId) {
     othersQuery = othersQuery.eq("doctor_id", Number(filters.doctorId));
   }
   if (filters.status) {
     othersQuery = othersQuery.eq("status", filters.status);
+  }
+
+  let orderedOthersQuery = othersQuery.order("starts_at", {
+    ascending: !filters.status || filters.status === "approved",
+  });
+  if (filters.status) {
+    orderedOthersQuery = orderedOthersQuery.limit(MAX_STATUS_FILTER_RESULTS);
   }
 
   const [pendingResult, othersResult, doctorsResult] = await Promise.all([
@@ -107,7 +156,7 @@ export default async function AppointmentsPage({
       )
       .eq("status", "pending")
       .order("starts_at", { ascending: true }),
-    othersQuery.order("starts_at", { ascending: true }),
+    orderedOthersQuery,
     supabase.from("doctors").select("id, full_name").order("full_name"),
   ]);
 
@@ -130,6 +179,9 @@ export default async function AppointmentsPage({
   const pendingAppointments = pendingResult.data ?? [];
   const otherAppointments = othersResult.data ?? [];
   const doctors = doctorsResult.data ?? [];
+  const statusFilterLimitReached =
+    Boolean(filters.status) &&
+    otherAppointments.length === MAX_STATUS_FILTER_RESULTS;
 
   const renderAppointments = (rows: typeof pendingAppointments) =>
     rows.length === 0 ? (
@@ -147,6 +199,7 @@ export default async function AppointmentsPage({
               <th className="px-3 py-2">Doktor</th>
               <th className="px-3 py-2">Tarih-Saat</th>
               <th className="px-3 py-2">Durum</th>
+              <th className="px-3 py-2">İşlemler</th>
             </tr>
           </thead>
           <tbody>
@@ -176,6 +229,14 @@ export default async function AppointmentsPage({
                   <td className="px-3 py-2">
                     <span className={status.className}>{status.text}</span>
                   </td>
+                  <td className="px-3 py-2">
+                    <AppointmentActions
+                      appointmentId={appointment.id}
+                      isFuture={appointmentIsFuture(appointment.starts_at)}
+                      status={appointment.status}
+                      filters={filters}
+                    />
+                  </td>
                 </tr>
               );
             })}
@@ -186,6 +247,13 @@ export default async function AppointmentsPage({
 
   return (
     <div className="space-y-8">
+      {appointmentNotice.success && (
+        <AppointmentActionNotice
+          notice={appointmentNotice.data.notice}
+          notification={appointmentNotice.data.notification}
+        />
+      )}
+
       <div className="border-b border-foreground/10 pb-5">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Randevular
@@ -214,12 +282,15 @@ export default async function AppointmentsPage({
         )}
       </section>
 
-      <section className="space-y-4 rounded-lg bg-background p-4 shadow-sm">
+      <section
+        id="other-appointments"
+        className="space-y-4 rounded-lg bg-background p-4 shadow-sm"
+      >
         <h2 className="text-lg font-semibold text-foreground">
           Diğer Randevular
         </h2>
         <form
-          action="/admin"
+          action="/admin#appointment-results"
           method="GET"
           className="grid grid-cols-1 gap-4 md:grid-cols-4"
         >
@@ -255,10 +326,13 @@ export default async function AppointmentsPage({
               className="w-full rounded border border-foreground/20 bg-background p-2 text-foreground"
             >
               <option value="">Tüm Durumlar</option>
-              <option value="approved">Onaylandı</option>
-              <option value="rejected">Reddedildi</option>
-              <option value="cancelled">İptal Edildi</option>
-              <option value="completed">Tamamlandı</option>
+              {APPOINTMENT_STATUSES.filter(
+                (status) => status !== "pending",
+              ).map((status) => (
+                <option key={status} value={status}>
+                  {APPOINTMENT_STATUS_LABELS[status]}
+                </option>
+              ))}
             </select>
           </label>
           <div className="flex items-end gap-3">
@@ -277,7 +351,20 @@ export default async function AppointmentsPage({
           </div>
         </form>
 
-        {renderAppointments(otherAppointments)}
+        {statusFilterLimitReached && (
+          <p
+            role="status"
+            className="rounded border border-accent bg-accent/10 p-3 text-sm text-foreground"
+          >
+            Bu filtrede en fazla {MAX_STATUS_FILTER_RESULTS} randevu gösteriliyor.
+            Daha fazla sonuç olabilir; listeyi daraltmak için tarih veya doktor
+            filtresi seçebilirsiniz.
+          </p>
+        )}
+
+        <div id="appointment-results" className="scroll-mt-6">
+          {renderAppointments(otherAppointments)}
+        </div>
       </section>
     </div>
   );
