@@ -109,3 +109,13 @@
 - **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #31 dalıyla birleştirme denemesi yapıldı, `tasks.md`'de çakışma çıkmadı. İnceleme sırasında PR #31 dalında `npm run lint` ve `npm run build` başarılı.
 - **Açık konular:** 35. madde için saati geçmiş bekleyen sahte randevu gerekiyor; mevcut test verisindeki bekleyen randevular ileri tarihli.
 - **Başka ekipten istek:** Panel ekibi: 35 ve 36.
+
+## 2026-11-07 10:00 — PR #33 inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr33
+- **Ne yapıldı:** PR #33 (test sonuçları) incelendi. Birleşmeyi engellemeyen küçük bulgular `tasks.md` test bölümüne 37 (log biçimi, P5 tutarsızlığı, kapatılan maddeler) ve 38 (sonuç tablosu ayrıntıları) olarak eklendi, "Son güncelleme" satırı güncellendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #33 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #33 yalnızca .md dosyası değiştirdiği için lint ve build çalıştırılmadı.
+- **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları düzeltilmeden birleştirilmeyecek. Canlıda P3 ve P7 bildirimlerinin neden gitmediği Vercel loglarından incelenecek.
+- **Başka ekipten istek:** Test ekibi: 37 ve 38.

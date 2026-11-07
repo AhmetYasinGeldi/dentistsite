@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 6 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31 incelemesi)
+Son güncelleme: 7 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33 incelemesi)
 
 ---
 
@@ -78,6 +78,16 @@ Açık madde yok.
 - **Dosya:** `logs/tugba.md` (PR #4)
 - **Sorun:** "Ne yapıldı" maddesi "P1 ve P2 senaryoları" diye yarım kalmış.
 - **Yapılacak:** Sonraki kayıtta düzelt.
+
+### 37. PR #33 log kaydı biçimi ve tutarsızlıklar
+- **Dosya:** `logs/tugba.md` (PR #33)
+- **Sorun:** Başlık `## 6 Kasım 2026 23:45 — Tuğba Aslan` şeklinde; AGENTS.md formatı `## 2026-11-06 23:45 — Kısa başlık`. "Ne yapıldı" maddesinde P5 denenmiş gibi yazıyor, sonuç tablosunda P5 "Denenemedi". PR'ın kapattığı 11, 12 ve 13. maddeler kayıtta belirtilmemiş, `tasks.md`'den de silinmemiş. Eski kaydın (30 Ekim) içeriği düzenlenmiş; eski kayıtlar değiştirilmez, düzeltme yeni kayıtta yazılır. Dosya sonunda satır sonu yok.
+- **Yapılacak:** Sonraki kayıtta tarih formatını AGENTS.md'ye uydur, P5 ifadesini tabloyla eşle, kapatılan maddeleri yaz ve `tasks.md`'den sil.
+
+### 38. Test sonuç tablosunda eksik ayrıntılar
+- **Dosya:** `docs/test/senaryolar.md` (PR #33)
+- **Sorun:** B12 "Geçti" işaretli ama beklenen sonuç "netleştirilecek"; botun resme verdiği cevap yazılmamış. B7 ve B9 "Kaldı" yazıyor; kodda iptal/erteleme butonları var ama işleyicileri henüz yazılmamış (`lib/bot/flow.ts`), yani hata değil eksik özellik. P8-P11 tek satırda toplanmış, her senaryonun sebebi ayrı görünmüyor. Dosya sonunda satır sonu yok.
+- **Yapılacak:** B12 notuna botun cevabını aynen yaz. B7/B9 notunu "özellik henüz yok" diye düzelt. P8-P11'i ayrı satırlara böl. Dosya sonuna satır sonu ekle.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 
