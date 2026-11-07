@@ -47,3 +47,12 @@
 - **Nasıl test edildi:** `npm run lint` ve `npm run build` başarılı.
 - **Açık konular:** Yok.
 - **Başka ekipten istek:** Yok.
+
+
+## 2026.11.06 16:21 - Gemini test setindeki belirsiz beklentiler düzenlendi
+**Ne yapıldı:**
+- `tasks.md` Madde 25'te belirtilen `scripts/gemini-test/dataset.json` dosyasındaki belirsiz beklenen değerler güncellendi; id 13 için işlem `Muayene`, id 24 için saat `null` yapıldı.
+- Eksik olan "menü", "dün", "3 ay sonra" ve "10-12 arası" senaryoları test verisine başarıyla eklendi, dosya sonu boş satır hatası giderildi.
+
+**Kapatılan Maddeler:**
+- Madde 25 (Gemini test setindeki belirsizliklerin giderilmesi ve eksik senaryoların eklenmesi)
