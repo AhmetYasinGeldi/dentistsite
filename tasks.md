@@ -6,26 +6,26 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 5 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25 incelemesi)
+Son güncelleme: 7 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33 incelemesi)
 
 ---
 
 ## Panel ekibi (Esma, Merve)
 
-### 33. Saati geçmiş bekleyen randevuda "Reddet" butonu
-- **Dosya:** `components/admin/appointment-actions.tsx` (satır 116), `app/admin/actions.ts` (`rejectAppointmentAction`) (PR #25)
-- **Sorun:** Saati geçmiş bekleyen randevularda "Onayla" gizleniyor ama "Reddet" görünmeye devam ediyor. Basılırsa hastaya geçmiş tarihli bir randevu için WhatsApp'tan red bildirimi gidiyor.
-- **Yapılacak:** Saati geçmiş bekleyen randevu reddedildiğinde `notifyAppointmentUpdate` çağrılmasın, panelde "Bildirim gönderilmedi, randevu saati geçmiş" bilgisi gösterilsin. Liste temizliği için butonun kalması yeterli.
-
-### 34. Randevu işlem bileşeninde tip ve biçim düzeltmeleri
-- **Dosya:** `components/admin/appointment-actions.tsx`, `app/admin/actions.ts` (PR #25)
-- **Sorun:** `status` prop'u (satır 97) ve filtre tipindeki `status` (satır 14) düz `string`; veritabanındaki durum tipi kullanılmıyor. `AppointmentFilters` tipi bileşende (satır 11) ve `actions.ts`'te (satır 108) ayrı ayrı tanımlı. İptal bloğunun girintisi (satır 141-154) kaymış.
-- **Yapılacak:** `status` için `lib/database.types.ts`'teki durum tipini kullan, `AppointmentFilters` tipini tek yerden `import type` ile al, iptal bloğunun girintisini düzelt.
-
 ### 27. Durum filtrelerinin gerçek veriyle denenmesi
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
+
+### 35. Geçmiş bekleyen randevu reddinin denenmesi
+- **Dosya:** `app/admin/actions.ts` (`rejectAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #31)
+- **Sorun:** Saati geçmiş bekleyen randevu reddedildiğinde bildirimin atlanması ve "Bildirim gönderilmedi, randevu saati geçmiş" mesajı elle denenmedi. Test verisindeki bekleyen randevuların hepsi ileri tarihli.
+- **Yapılacak:** Saati geçmiş bekleyen bir sahte randevuyla reddetmeyi dene; bildirimin gitmediğini ve mesajın göründüğünü log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
+
+### 36. Onay kartında odak ve kaydırma
+- **Dosya:** `components/admin/appointment-actions.tsx` (onay kartı bloğu) (PR #31)
+- **Sorun:** Tab ile odak yalnızca iki buton arasında tutuluyor; kart açıkken arkadaki sayfa kaydırılabiliyor. Kaplama katmanındaki `onKeyDown` içindeki `if` satırları diğer kodla aynı biçimde değil.
+- **Yapılacak:** Arka plan kaydırmasını kart açıkken kapat, `onKeyDown` bloğunu düzgün girintile. İstenirse kartı yerleşik `<dialog>` elemanıyla (`showModal()`) yeniden yaz; odak tutma ve Escape tarayıcıdan gelir.
 
 ## Bot ekibi (Sevde, Ebru)
 
@@ -78,6 +78,16 @@ Açık madde yok.
 - **Dosya:** `logs/tugba.md` (PR #4)
 - **Sorun:** "Ne yapıldı" maddesi "P1 ve P2 senaryoları" diye yarım kalmış.
 - **Yapılacak:** Sonraki kayıtta düzelt.
+
+### 37. PR #33 log kaydı biçimi ve tutarsızlıklar
+- **Dosya:** `logs/tugba.md` (PR #33)
+- **Sorun:** Başlık `## 6 Kasım 2026 23:45 — Tuğba Aslan` şeklinde; AGENTS.md formatı `## 2026-11-06 23:45 — Kısa başlık`. "Ne yapıldı" maddesinde P5 denenmiş gibi yazıyor, sonuç tablosunda P5 "Denenemedi". PR'ın kapattığı 11, 12 ve 13. maddeler kayıtta belirtilmemiş, `tasks.md`'den de silinmemiş. Eski kaydın (30 Ekim) içeriği düzenlenmiş; eski kayıtlar değiştirilmez, düzeltme yeni kayıtta yazılır. Dosya sonunda satır sonu yok.
+- **Yapılacak:** Sonraki kayıtta tarih formatını AGENTS.md'ye uydur, P5 ifadesini tabloyla eşle, kapatılan maddeleri yaz ve `tasks.md`'den sil.
+
+### 38. Test sonuç tablosunda eksik ayrıntılar
+- **Dosya:** `docs/test/senaryolar.md` (PR #33)
+- **Sorun:** B12 "Geçti" işaretli ama beklenen sonuç "netleştirilecek"; botun resme verdiği cevap yazılmamış. B7 ve B9 "Kaldı" yazıyor; kodda iptal/erteleme butonları var ama işleyicileri henüz yazılmamış (`lib/bot/flow.ts`), yani hata değil eksik özellik. P8-P11 tek satırda toplanmış, her senaryonun sebebi ayrı görünmüyor. Dosya sonunda satır sonu yok.
+- **Yapılacak:** B12 notuna botun cevabını aynen yaz. B7/B9 notunu "özellik henüz yok" diye düzelt. P8-P11'i ayrı satırlara böl. Dosya sonuna satır sonu ekle.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 

@@ -105,7 +105,7 @@ const appointmentFiltersSchema = z.object({
     .default(""),
 });
 
-type AppointmentFilters = z.infer<typeof appointmentFiltersSchema>;
+export type AppointmentFilters = z.infer<typeof appointmentFiltersSchema>;
 
 function getAppointmentFilters(formData: FormData): AppointmentFilters {
   const parsed = appointmentFiltersSchema.safeParse({
@@ -120,7 +120,7 @@ function getAppointmentFilters(formData: FormData): AppointmentFilters {
 function getAdminUrl(
   filters: AppointmentFilters,
   notice: string,
-  notification?: "sent" | "failed" | "window_closed",
+  notification?: "sent" | "failed" | "window_closed" | "past",
 ): string {
   const params = new URLSearchParams();
   if (filters.date) params.set("date", filters.date);
@@ -149,18 +149,22 @@ async function notifyAndRefresh(
   appointmentId: number,
   notice: "approved" | "rejected" | "cancelled",
   filters: AppointmentFilters,
+  skipNotification?: "past",
 ): Promise<void> {
-  let notification: "sent" | "failed" | "window_closed" = "failed";
+  let notification: "sent" | "failed" | "window_closed" | "past" =
+    skipNotification ?? "failed";
 
-  try {
-    const result = await notifyAppointmentUpdate(appointmentId);
-    if (result.sent) {
-      notification = "sent";
-    } else if (result.reason === "WINDOW_CLOSED") {
-      notification = "window_closed";
+  if (!skipNotification) {
+    try {
+      const result = await notifyAppointmentUpdate(appointmentId);
+      if (result.sent) {
+        notification = "sent";
+      } else if (result.reason === "WINDOW_CLOSED") {
+        notification = "window_closed";
+      }
+    } catch (error) {
+      console.error("Randevu sonrası WhatsApp bildirimi gönderilemedi:", error);
     }
-  } catch (error) {
-    console.error("Randevu sonrası WhatsApp bildirimi gönderilemedi:", error);
   }
 
   revalidatePath("/admin");
@@ -228,7 +232,7 @@ export async function rejectAppointmentAction(
     })
     .eq("id", parsed.data.appointmentId)
     .eq("status", "pending")
-    .select("id")
+    .select("id, starts_at")
     .maybeSingle();
 
   if (error) {
@@ -237,7 +241,13 @@ export async function rejectAppointmentAction(
   }
   if (!data) redirect(getAdminUrl(filters, "stale"));
 
-  await notifyAndRefresh(data.id, "rejected", filters);
+  const appointmentHasPassed = Date.parse(data.starts_at) <= Date.now();
+  await notifyAndRefresh(
+    data.id,
+    "rejected",
+    filters,
+    appointmentHasPassed ? "past" : undefined,
+  );
 }
 
 export async function cancelAppointmentAction(
