@@ -69,12 +69,12 @@ Açık madde yok.
 - **Sorun:** "Ne yapıldı" maddesi "P1 ve P2 senaryoları" diye yarım kalmış.
 - **Yapılacak:** Sonraki kayıtta düzelt.
 
-### 33. PR #33 log kaydı biçimi ve tutarsızlıklar
+### 37. PR #33 log kaydı biçimi ve tutarsızlıklar
 - **Dosya:** `logs/tugba.md` (PR #33)
 - **Sorun:** Başlık `## 6 Kasım 2026 23:45 — Tuğba Aslan` şeklinde; AGENTS.md formatı `## 2026-11-06 23:45 — Kısa başlık`. "Ne yapıldı" maddesinde P5 denenmiş gibi yazıyor, sonuç tablosunda P5 "Denenemedi". PR'ın kapattığı 11, 12 ve 13. maddeler kayıtta belirtilmemiş, `tasks.md`'den de silinmemiş. Eski kaydın (30 Ekim) içeriği düzenlenmiş; eski kayıtlar değiştirilmez, düzeltme yeni kayıtta yazılır. Dosya sonunda satır sonu yok.
 - **Yapılacak:** Sonraki kayıtta tarih formatını AGENTS.md'ye uydur, P5 ifadesini tabloyla eşle, kapatılan maddeleri yaz ve `tasks.md`'den sil.
 
-### 34. Test sonuç tablosunda eksik ayrıntılar
+### 38. Test sonuç tablosunda eksik ayrıntılar
 - **Dosya:** `docs/test/senaryolar.md` (PR #33)
 - **Sorun:** B12 "Geçti" işaretli ama beklenen sonuç "netleştirilecek"; botun resme verdiği cevap yazılmamış. B7 ve B9 "Kaldı" yazıyor; kodda iptal/erteleme butonları var ama işleyicileri henüz yazılmamış (`lib/bot/flow.ts`), yani hata değil eksik özellik. P8-P11 tek satırda toplanmış, her senaryonun sebebi ayrı görünmüyor. Dosya sonunda satır sonu yok.
 - **Yapılacak:** B12 notuna botun cevabını aynen yaz. B7/B9 notunu "özellik henüz yok" diye düzelt. P8-P11'i ayrı satırlara böl. Dosya sonuna satır sonu ekle.
