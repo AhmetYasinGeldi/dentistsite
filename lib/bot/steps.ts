@@ -20,6 +20,7 @@ export const STEPS = [
   "manage_appointment",
   "confirm_cancel",
   "reschedule_date",
+  "reschedule_time_period", // yeni günün boş saatleri 10'dan fazlaysa
   "reschedule_time",
   "confirm_reschedule",
 ] as const;
