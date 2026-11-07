@@ -17,6 +17,7 @@ import {
 } from "@/lib/shared/appointment-status";
 import { AppointmentActionNotice } from "@/components/admin/appointment-action-notice";
 import { AppointmentActions } from "@/components/admin/appointment-actions";
+import { AppointmentDetails } from "@/components/admin/appointment-details";
 
 export const metadata: Metadata = {
   title: "Randevular | Klinik Yönetim Paneli",
@@ -38,18 +39,35 @@ const filtersSchema = z.object({
 });
 
 const MAX_STATUS_FILTER_RESULTS = 100;
+const APPOINTMENT_LIST_SELECT = `
+  id,
+  starts_at,
+  ends_at,
+  status,
+  patient_note,
+  admin_note,
+  rescheduled_from,
+  patients!inner(full_name, phone),
+  procedures!inner(name),
+  doctors!inner(full_name)
+`;
 const appointmentNoticeSchema = z.object({
   notice: z.enum([
     "approved",
     "rejected",
     "cancelled",
+    "rescheduled",
+    "completed",
     "invalid",
     "update_failed",
     "stale",
+    "operation_failed",
+    "reschedule_approval_failed",
   ]),
   notification: z
     .enum(["sent", "failed", "window_closed", "past"])
     .optional(),
+  error: z.enum(["RD002", "RD003", "RD004", "23P01"]).optional(),
 });
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -106,16 +124,7 @@ export default async function AppointmentsPage({
 
   let othersQuery = supabase
     .from("appointments")
-    .select(
-      `
-        id,
-        starts_at,
-        status,
-        patients!inner(full_name, phone),
-        procedures!inner(name),
-        doctors!inner(full_name)
-      `,
-    )
+    .select(APPOINTMENT_LIST_SELECT)
     .neq("status", "pending");
 
   if (filters.date) {
@@ -145,16 +154,7 @@ export default async function AppointmentsPage({
   const [pendingResult, othersResult, doctorsResult] = await Promise.all([
     supabase
       .from("appointments")
-      .select(
-        `
-          id,
-          starts_at,
-          status,
-          patients!inner(full_name, phone),
-          procedures!inner(name),
-          doctors!inner(full_name)
-        `,
-      )
+      .select(APPOINTMENT_LIST_SELECT)
       .eq("status", "pending")
       .order("starts_at", { ascending: true }),
     orderedOthersQuery,
@@ -180,9 +180,50 @@ export default async function AppointmentsPage({
   const pendingAppointments = pendingResult.data ?? [];
   const otherAppointments = othersResult.data ?? [];
   const doctors = doctorsResult.data ?? [];
+  const previousAppointmentIds = [
+    ...new Set(
+      [...pendingAppointments, ...otherAppointments]
+        .map((appointment) => appointment.rescheduled_from)
+        .filter((id): id is number => id !== null),
+    ),
+  ];
+  const previousAppointmentsById = new Map<
+    number,
+    { starts_at: string; status: string }
+  >();
+
+  if (previousAppointmentIds.length > 0) {
+    const previousAppointmentsResult = await supabase
+      .from("appointments")
+      .select("id, starts_at, status")
+      .in("id", previousAppointmentIds);
+
+    if (previousAppointmentsResult.error) {
+      console.error(
+        "Önceki randevu bilgileri alınırken Supabase hatası:",
+        previousAppointmentsResult.error,
+      );
+      return (
+        <div className="space-y-6">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Randevular
+          </h1>
+          <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
+            Randevu listesi alınamadı. Lütfen daha sonra tekrar deneyin.
+          </p>
+        </div>
+      );
+    }
+
+    for (const appointment of previousAppointmentsResult.data) {
+      previousAppointmentsById.set(appointment.id, appointment);
+    }
+  }
+
   const statusFilterLimitReached =
     Boolean(filters.status) &&
     otherAppointments.length === MAX_STATUS_FILTER_RESULTS;
+  const today = todayInIstanbul();
 
   const renderAppointments = (rows: typeof pendingAppointments) =>
     rows.length === 0 ? (
@@ -206,6 +247,21 @@ export default async function AppointmentsPage({
           <tbody>
             {rows.map((appointment) => {
               const status = statusLabel(appointment.status);
+              const appointmentStatus = isAppointmentStatus(appointment.status)
+                ? appointment.status
+                : null;
+              const isActive =
+                appointment.status === "pending" ||
+                appointment.status === "approved";
+              const canReschedule =
+                isActive && Date.parse(appointment.ends_at) > Date.now();
+              const canComplete =
+                appointment.status === "approved" &&
+                Date.parse(appointment.ends_at) <= Date.now();
+              const previousAppointment =
+                appointment.rescheduled_from === null
+                  ? undefined
+                  : previousAppointmentsById.get(appointment.rescheduled_from);
 
               return (
                 <tr
@@ -231,14 +287,43 @@ export default async function AppointmentsPage({
                     <span className={status.className}>{status.text}</span>
                   </td>
                   <td className="px-3 py-2">
-                    {isAppointmentStatus(appointment.status) && (
-                      <AppointmentActions
-                        appointmentId={appointment.id}
-                        isFuture={appointmentIsFuture(appointment.starts_at)}
-                        status={appointment.status}
-                        filters={filters}
-                      />
-                    )}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {appointmentStatus && (
+                        <>
+                          <AppointmentDetails
+                            appointment={{
+                              id: appointment.id,
+                              startsAt: appointment.starts_at,
+                              endsAt: appointment.ends_at,
+                              status: appointmentStatus,
+                              patientName: appointment.patients.full_name,
+                              patientPhone: appointment.patients.phone,
+                              patientNote: appointment.patient_note,
+                              adminNote: appointment.admin_note,
+                              procedureName: appointment.procedures.name,
+                              doctorName: appointment.doctors.full_name,
+                              previousAppointment: previousAppointment
+                                ? {
+                                    startsAt: previousAppointment.starts_at,
+                                    status: previousAppointment.status,
+                                  }
+                                : null,
+                              today,
+                              isActive,
+                              canReschedule,
+                              canComplete,
+                            }}
+                            filters={filters}
+                          />
+                          <AppointmentActions
+                            appointmentId={appointment.id}
+                            isFuture={appointmentIsFuture(appointment.starts_at)}
+                            status={appointmentStatus}
+                            filters={filters}
+                          />
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );
@@ -254,6 +339,7 @@ export default async function AppointmentsPage({
         <AppointmentActionNotice
           notice={appointmentNotice.data.notice}
           notification={appointmentNotice.data.notification}
+          errorCode={appointmentNotice.data.error}
         />
       )}
 
