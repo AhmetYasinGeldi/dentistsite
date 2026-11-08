@@ -119,3 +119,23 @@
 - **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #33 yalnızca .md dosyası değiştirdiği için lint ve build çalıştırılmadı.
 - **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları düzeltilmeden birleştirilmeyecek. Canlıda P3 ve P7 bildirimlerinin neden gitmediği Vercel loglarından incelenecek.
 - **Başka ekipten istek:** Test ekibi: 37 ve 38.
+
+## 2026-11-08 08:05 — PR #35 ve #36 inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr35-36
+- **Ne yapıldı:** PR #33 (tekrar), #35 (bot iptal/erteleme) ve #36 (panel randevu detay ve yönetim) incelendi. #35 ve #36'da birleşmeyi engelleyen bulgu çıkmadı; küçük bulgular `tasks.md`'ye Bot 39 (telefonsuz "kliniği arayın" metni), Bot 40 (panelden ertelemede bildirim metni), Panel 41 (geçmiş randevu iptalinde bildirim) ve Panel 42 (erteleme hata mesajlarının denenmesi) olarak eklendi. "Son güncelleme" satırı güncellendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #35 ve #36 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #36 dalıyla birleştirme denemesinde `tasks.md`'de çakışma çıkmadı. İnceleme sırasında PR #35 ve #36 dallarında `npm run lint` ve `npm run build` başarılı.
+- **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları hâlâ düzeltilmedi, birleştirilmeyecek. Panel 35 için saati geçmiş bekleyen sahte randevu SQL Editor'den eklenecek. `clinic_settings.phone` canlıda dolu mu kontrol edilecek.
+- **Başka ekipten istek:** Bot ekibi: 39 ve 40. Panel ekibi: 41 ve 42.
+
+## 2026-11-08 14:20 — PR #37 inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr35-36
+- **Ne yapıldı:** PR #37 (bot, Gemini ile serbest metin anlama) incelendi; birleşmeyi engelleyen bulgu çıkmadı. Küçük bulgular `tasks.md`'ye Bot 43 (fiyat/sağlık sorularında klinik telefonu) ve Bot 44 (mesajdan gelen gün kapalı veya aralık dışıyken uyarı metni) olarak eklendi. #37'nin Vercel önizleme hatasının nedeni bulundu: ortam değişkenleri Vercel'de sadece Production için tanımlı, Preview build'i `/` sayfasını önceden oluştururken `supabaseUrl is required` hatası veriyor. #35'ten beri bütün önizlemeler aynı nedenle düşüyor; main'in production deploy'u (#36) başarılı.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #37 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #37 dalında `npm run lint` ve `npm run build` başarılı. Vercel build log'ları ve ortam değişkeni listesi (sadece adlar ve hedef ortamlar) Vercel'den okundu.
+- **Açık konular:** Vercel'de en azından `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` Preview ortamına da eklenecek. Gemini test scripti gerçek anahtarla çalıştırılıp sonuç Sevde'ye iletilecek.
+- **Başka ekipten istek:** Bot ekibi: 43 ve 44.
