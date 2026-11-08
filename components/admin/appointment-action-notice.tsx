@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AppointmentDialog } from "@/components/admin/appointment-dialog";
+import {
+  DB_ERROR_MESSAGES,
+  type DbErrorCode,
+} from "@/lib/shared/errors";
 
 type AppointmentNotice =
   | "approved"
   | "rejected"
   | "cancelled"
+  | "rescheduled"
+  | "completed"
   | "invalid"
   | "update_failed"
-  | "stale";
+  | "stale"
+  | "operation_failed"
+  | "reschedule_approval_failed";
 
 type NotificationStatus =
   | "sent"
@@ -20,14 +29,19 @@ type NotificationStatus =
 export function AppointmentActionNotice({
   notice,
   notification,
+  errorCode,
 }: {
   notice: AppointmentNotice;
   notification: NotificationStatus;
+  errorCode?: DbErrorCode;
 }) {
+  const [open, setOpen] = useState(true);
+
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete("notice");
     url.searchParams.delete("notification");
+    url.searchParams.delete("error");
     window.history.replaceState(
       window.history.state,
       "",
@@ -35,60 +49,81 @@ export function AppointmentActionNotice({
     );
   }, []);
 
+  let message: string;
+  let isError = false;
+
   if (notice === "invalid") {
-    return (
-      <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
-        İşlem bilgileri geçersiz. Lütfen tekrar deneyin.
-      </p>
-    );
-  }
-  if (notice === "update_failed") {
-    return (
-      <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
-        Randevu güncellenemedi. Lütfen tekrar deneyin.
-      </p>
-    );
-  }
-  if (notice === "stale") {
-    return (
-      <p role="alert" className="rounded-lg bg-danger/10 p-4 text-danger">
-        Randevu durumu değişmiş veya randevu saati geçmiş. Listeyi yenileyip
-        tekrar kontrol edin.
-      </p>
-    );
-  }
+    message = "İşlem bilgileri geçersiz. Lütfen tekrar deneyin.";
+    isError = true;
+  } else if (notice === "update_failed") {
+    message = "Randevu güncellenemedi. Lütfen tekrar deneyin.";
+    isError = true;
+  } else if (notice === "stale") {
+    message =
+      "Randevu durumu değişmiş veya randevu saati geçmiş. Listeyi yenileyip tekrar kontrol edin.";
+    isError = true;
+  } else if (notice === "operation_failed") {
+    message = errorCode
+      ? DB_ERROR_MESSAGES[errorCode]
+      : "İşlem tamamlanamadı. Lütfen tekrar deneyin.";
+    isError = true;
+  } else if (notice === "reschedule_approval_failed") {
+    message =
+      "Yeni randevu oluşturuldu ancak onaylanamadı. Lütfen randevu listesinden kontrol edin.";
+    isError = true;
+  } else if (notice === "completed") {
+    message = "Randevu tamamlandı olarak işaretlendi.";
+  } else {
+    const actionLabel =
+      notice === "approved"
+        ? "onaylandı"
+        : notice === "rejected"
+          ? "reddedildi"
+          : notice === "rescheduled"
+            ? "ertelendi"
+            : "iptal edildi";
 
-  const actionLabel =
-    notice === "approved"
-      ? "onaylandı"
-      : notice === "rejected"
-        ? "reddedildi"
-        : "iptal edildi";
-
-  if (notification === "sent") {
-    return (
-      <p
-        role="status"
-        className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-foreground"
-      >
-        Randevu {actionLabel}; hastaya WhatsApp bildirimi gönderildi.
-      </p>
-    );
-  }
-
-  if (notification === "past") {
-    return (
-      <p role="status" className="rounded-lg bg-accent/20 p-4 text-foreground">
-        Randevu {actionLabel}. Bildirim gönderilmedi, randevu saati geçmiş.
-      </p>
-    );
+    if (notification === "sent") {
+      message = `Randevu ${actionLabel}; hastaya WhatsApp bildirimi gönderildi.`;
+    } else if (notification === "past") {
+      message = `Randevu ${actionLabel}. Bildirim gönderilmedi, randevu saati geçmiş.`;
+    } else {
+      message = `Randevu ${actionLabel}, ancak hastaya WhatsApp bildirimi gönderilemedi.${
+        notification === "window_closed"
+          ? " Hasta 24 saattir mesaj göndermediği için bildirim iletilemedi."
+          : ""
+      }`;
+      isError = true;
+    }
   }
 
   return (
-    <p role="alert" className="rounded-lg bg-accent/20 p-4 text-foreground">
-      Randevu {actionLabel}, ancak hastaya WhatsApp bildirimi gönderilemedi.
-      {notification === "window_closed" &&
-        " Hasta 24 saattir mesaj göndermediği için bildirim iletilemedi."}
-    </p>
+    <AppointmentDialog
+      open={open}
+      onClose={() => setOpen(false)}
+      title={isError ? "İşlem uyarısı" : "İşlem tamamlandı"}
+      closeOnBackdrop={false}
+    >
+      <p
+        role={isError ? "alert" : "status"}
+        className={`mt-4 rounded-lg p-4 ${
+          isError
+            ? "bg-danger/10 text-danger"
+            : "bg-primary/10 text-foreground"
+        }`}
+      >
+        {message}
+      </p>
+      <div className="mt-5 flex justify-end">
+        <button
+          type="button"
+          autoFocus
+          onClick={() => setOpen(false)}
+          className="rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+        >
+          Tamam
+        </button>
+      </div>
+    </AppointmentDialog>
   );
 }

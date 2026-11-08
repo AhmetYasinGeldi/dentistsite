@@ -22,11 +22,6 @@ Son güncelleme: 7 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** Saati geçmiş bekleyen randevu reddedildiğinde bildirimin atlanması ve "Bildirim gönderilmedi, randevu saati geçmiş" mesajı elle denenmedi. Test verisindeki bekleyen randevuların hepsi ileri tarihli.
 - **Yapılacak:** Saati geçmiş bekleyen bir sahte randevuyla reddetmeyi dene; bildirimin gitmediğini ve mesajın göründüğünü log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
-### 36. Onay kartında odak ve kaydırma
-- **Dosya:** `components/admin/appointment-actions.tsx` (onay kartı bloğu) (PR #31)
-- **Sorun:** Tab ile odak yalnızca iki buton arasında tutuluyor; kart açıkken arkadaki sayfa kaydırılabiliyor. Kaplama katmanındaki `onKeyDown` içindeki `if` satırları diğer kodla aynı biçimde değil.
-- **Yapılacak:** Arka plan kaydırmasını kart açıkken kapat, `onKeyDown` bloğunu düzgün girintile. İstenirse kartı yerleşik `<dialog>` elemanıyla (`showModal()`) yeniden yaz; odak tutma ve Escape tarayıcıdan gelir.
-
 ## Bot ekibi (Sevde, Ebru)
 
 ### 8. Adım isimlerini `steps.ts` ile eşleştirme
