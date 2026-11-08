@@ -120,7 +120,7 @@
 - **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları düzeltilmeden birleştirilmeyecek. Canlıda P3 ve P7 bildirimlerinin neden gitmediği Vercel loglarından incelenecek.
 - **Başka ekipten istek:** Test ekibi: 37 ve 38.
 
-## 2026-11-08 — PR #35 ve #36 inceleme maddeleri
+## 2026-11-08 08:05 — PR #35 ve #36 inceleme maddeleri
 - **Kişi / araç:** Ahmet Yasin / Claude Code
 - **Dal:** docs/tasks-pr35-36
 - **Ne yapıldı:** PR #33 (tekrar), #35 (bot iptal/erteleme) ve #36 (panel randevu detay ve yönetim) incelendi. #35 ve #36'da birleşmeyi engelleyen bulgu çıkmadı; küçük bulgular `tasks.md`'ye Bot 39 (telefonsuz "kliniği arayın" metni), Bot 40 (panelden ertelemede bildirim metni), Panel 41 (geçmiş randevu iptalinde bildirim) ve Panel 42 (erteleme hata mesajlarının denenmesi) olarak eklendi. "Son güncelleme" satırı güncellendi.
