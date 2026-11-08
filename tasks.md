@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 7 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33 incelemesi)
+Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37 incelemesi)
 
 ---
 
@@ -17,15 +17,20 @@ Son güncelleme: 7 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
+### 41. Saati geçmiş randevu iptalinde bildirim
+- **Dosya:** `app/admin/actions.ts` (`cancelAppointmentAction`) (PR #36)
+- **Sorun:** `starts_at` kontrolü kaldırıldığı için panel artık saati geçmiş aktif randevuyu da iptal edebiliyor. Bu durumda hastaya "klinik randevunuzu iptal etti" mesajı gidiyor; geçmiş bir randevu için anlamsız.
+- **Yapılacak:** Red işlemindeki gibi randevu saati geçmişse `notifyAndRefresh(..., "past")` ile bildirimi atla ve "randevu saati geçmiş" uyarısını göster.
+
+### 42. Erteleme hata mesajlarının denenmesi
+- **Dosya:** `app/admin/actions.ts` (`rescheduleAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #36)
+- **Sorun:** 23P01 / RD004 (saat doldu) ve RD003 (randevu artık aktif değil) mesajları elle tetiklenmedi.
+- **Yapılacak:** İki sekmede aynı randevunun erteleme penceresini aç, birinde saati seç ve ertele, diğerinde aynı saati seç: RD003 mesajını gör. Başka bir randevuyu bir sekmede seçilen saate ertele, diğerinde aynı saati seç: RD004 veya 23P01 mesajını gör. Sonucu log'a yaz.
+
 ### 35. Geçmiş bekleyen randevu reddinin denenmesi
 - **Dosya:** `app/admin/actions.ts` (`rejectAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #31)
 - **Sorun:** Saati geçmiş bekleyen randevu reddedildiğinde bildirimin atlanması ve "Bildirim gönderilmedi, randevu saati geçmiş" mesajı elle denenmedi. Test verisindeki bekleyen randevuların hepsi ileri tarihli.
 - **Yapılacak:** Saati geçmiş bekleyen bir sahte randevuyla reddetmeyi dene; bildirimin gitmediğini ve mesajın göründüğünü log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
-
-### 36. Onay kartında odak ve kaydırma
-- **Dosya:** `components/admin/appointment-actions.tsx` (onay kartı bloğu) (PR #31)
-- **Sorun:** Tab ile odak yalnızca iki buton arasında tutuluyor; kart açıkken arkadaki sayfa kaydırılabiliyor. Kaplama katmanındaki `onKeyDown` içindeki `if` satırları diğer kodla aynı biçimde değil.
-- **Yapılacak:** Arka plan kaydırmasını kart açıkken kapat, `onKeyDown` bloğunu düzgün girintile. İstenirse kartı yerleşik `<dialog>` elemanıyla (`showModal()`) yeniden yaz; odak tutma ve Escape tarayıcıdan gelir.
 
 ## Bot ekibi (Sevde, Ebru)
 
@@ -54,6 +59,26 @@ Son güncelleme: 7 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Dosya:** `lib/bot/messages.ts`, `lib/bot/flow.ts` (randevu alma akışı PR'ı)
 - **Sorun:** Geçersiz ad soyad yazıldığında ayrı bir uyarı metni yok; akış şimdilik soruyu tekrarlıyor. İşlem veya doktor listesi 10'u geçerse kullanılacak "Diğer" satırı için metin yok; akışta geçici olarak `MORE_OPTIONS_TITLE = "Diğer seçenekler"` yazılı.
 - **Yapılacak:** Ebru: `errors.invalidName` (ör. "Lütfen adınızı ve soyadınızı birlikte yazar mısınız?") ve `listRows.otherOptions` ekle. Sevde: eklenince `flow.ts`'te kullan, geçici sabiti sil.
+
+### 39. Klinik telefonu yokken "kliniği arayın" metni
+- **Dosya:** `lib/bot/flow.ts` (`checkChangeAllowed`), `lib/bot/messages.ts` (PR #35)
+- **Sorun:** Telefon boşken metin `cancelDeadlinePassed("").replace(/:\s*$/, ".")` ile kırpılıyor. `messages.ts`'teki cümle değişirse (ör. sonu iki nokta ile bitmezse) kırpma sessizce bozulur.
+- **Yapılacak:** Ebru: `errors` içine telefonsuz ayrı bir metin ekle (ör. `cancelDeadlinePassedNoPhone`). Sevde: `replace` yerine bu metni kullan.
+
+### 40. Panelden ertelenen randevunun bildirimi
+- **Dosya:** `lib/whatsapp/notify.ts` (`buildNotification`) (PR #36 ile ortaya çıktı)
+- **Sorun:** Panelden erteleme yeni randevuyu `approved` yapıp `notifyAppointmentUpdate` çağırıyor. Hastaya yalnızca "randevunuz onaylandı" metni gidiyor; randevunun başka saate taşındığı anlaşılmıyor.
+- **Yapılacak:** `rescheduled_from` dolu ve `approved` olan randevu için ayrı bir metin kullan (ör. "Randevunuz klinik tarafından 5 Kasım 2026 Perşembe, 10:30 olarak güncellendi."). Fonksiyonun imzası değişmez.
+
+### 43. Fiyat ve sağlık sorularında klinik telefonu
+- **Dosya:** `lib/bot/flow.ts` (`handleFreeText`), `lib/bot/messages.ts` (PR #37)
+- **Sorun:** Fiyat, adres, sağlık sorusu gibi mesajlar Gemini'den `other` olarak dönüyor ve hastaya "anlayamadım" + menü gidiyor. AGENTS.md 8. bölüm bu sorularda kliniğin telefon numarasının önerilmesini istiyor; hasta sorusunu anlaşılmamış sanıyor.
+- **Yapılacak:** Ebru: `messages.ts`'e telefonlu ve telefonsuz bir metin ekle (ör. "Bu konuda bilgi için kliniğimizi arayabilirsiniz: …"). Sevde: serbest metinde `other` gelince "anlayamadım" yerine bu metni (`clinic_settings.phone` ile) gönder, sonra menüyü göster. `intent` listesi değişmez.
+
+### 44. Mesajdan gelen gün kapalıysa veya aralık dışındaysa uyarı metni
+- **Dosya:** `lib/bot/flow.ts` (`selectDate`, `goToDates`) (PR #37)
+- **Sorun:** Gemini'nin verdiği `date` doğrudan `get_available_slots`'a gidiyor. Gün klinik tatili, doktorun çalışmadığı gün veya `booking_window_days` dışındaysa da hastaya "o gün boş saat kalmadı" deniyor; gün aslında hiç açık değil. Ayrıca `time` alanı ("14 gibi") okunuyor ama akışta kullanılmıyor.
+- **Yapılacak:** `hintDate`, `upcomingOpenDates` listesinde yoksa "boş saat kalmadı" yerine "Bu tarihte randevu verilemiyor" gibi bir metinle gün listesini göster (metin Ebru'dan). `time` için şimdilik bir şey yapılmayacaksa PR açıklamasına/log'a not düş; kullanılacaksa o saate en yakın slotu listenin başına almak yeterli.
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 

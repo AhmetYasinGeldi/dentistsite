@@ -49,6 +49,18 @@ export function splitByPeriod<T>(
 }
 
 /**
+ * Hasta bot üzerinden iptal/erteleme yapabilir mi? Randevuya limitHours
+ * saatten az kaldıysa hayır (AGENTS.md iş kuralı 3).
+ */
+export function canPatientChange(
+  startsAt: string,
+  limitHours: number,
+  now: Date = new Date(),
+): boolean {
+  return Date.parse(startsAt) - now.getTime() >= limitHours * 60 * 60 * 1000;
+}
+
+/**
  * Hastanın yazdığı ad soyadı temizler: baştaki/sondaki ve fazla boşluklar
  * atılır. En az iki kelime, sadece harf, boşluk, kesme, nokta ve tire;
  * 3-60 karakter. Geçersizse null.

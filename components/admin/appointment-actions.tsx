@@ -9,6 +9,7 @@ import {
   type AppointmentFilters,
 } from "@/app/admin/actions";
 import type { AppointmentStatus } from "@/lib/shared/appointment-status";
+import { AppointmentDialog } from "@/components/admin/appointment-dialog";
 
 type AppointmentAction = (
   formData: FormData,
@@ -44,7 +45,7 @@ function FilterFields({ filters }: { filters: AppointmentFilters }) {
   );
 }
 
-function AppointmentActionForm({
+export function AppointmentActionForm({
   action,
   appointmentId,
   filters,
@@ -63,12 +64,8 @@ function AppointmentActionForm({
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
-  const cancelButtonRef = useRef<HTMLButtonElement>(null);
-  const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const confirmedRef = useRef(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const titleId = `appointment-confirmation-title-${appointmentId}`;
-  const descriptionId = `appointment-confirmation-description-${appointmentId}`;
 
   function confirmSubmission(event: FormEvent<HTMLFormElement>) {
     if (confirmedRef.current) {
@@ -81,11 +78,6 @@ function AppointmentActionForm({
       triggerRef.current = document.activeElement;
     }
     setIsConfirmationOpen(true);
-  }
-
-  function cancelSubmission() {
-    setIsConfirmationOpen(false);
-    triggerRef.current?.focus();
   }
 
   function confirmSubmissionAfterReview() {
@@ -108,66 +100,36 @@ function AppointmentActionForm({
       />
       <FilterFields filters={filters} />
       {children}
-      {isConfirmationOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) cancelSubmission();
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") cancelSubmission();
-            if (event.key === "Tab" && event.shiftKey &&
-                document.activeElement === cancelButtonRef.current) {
-              event.preventDefault();
-              confirmButtonRef.current?.focus();
-            } else if (event.key === "Tab" && !event.shiftKey &&
-                document.activeElement === confirmButtonRef.current) {
-              event.preventDefault();
-              cancelButtonRef.current?.focus();
-            }
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            aria-describedby={descriptionId}
-            className="w-full max-w-md rounded-xl border border-foreground/10 bg-background p-6 text-foreground shadow-xl"
+      <AppointmentDialog
+        open={isConfirmationOpen}
+        onClose={() => {
+          setIsConfirmationOpen(false);
+          requestAnimationFrame(() => triggerRef.current?.focus());
+        }}
+        title="İşlemi Onaylayın"
+        description={confirmation}
+      >
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            autoFocus
+            onClick={() => {
+              setIsConfirmationOpen(false);
+              requestAnimationFrame(() => triggerRef.current?.focus());
+            }}
+            className="rounded border border-foreground/20 px-4 py-2 text-sm text-foreground hover:bg-muted"
           >
-            <h2
-              id={titleId}
-              className="text-lg font-semibold"
-            >
-              İşlemi Onaylayın
-            </h2>
-            <p
-              id={descriptionId}
-              className="mt-3 text-sm text-foreground/70"
-            >
-              {confirmation}
-            </p>
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                ref={cancelButtonRef}
-                type="button"
-                autoFocus
-                onClick={cancelSubmission}
-                className="rounded border border-foreground/20 px-4 py-2 text-sm text-foreground hover:bg-muted"
-              >
-                Vazgeç
-              </button>
-              <button
-                ref={confirmButtonRef}
-                type="button"
-                onClick={confirmSubmissionAfterReview}
-                className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
-              >
-                {confirmationAction}
-              </button>
-            </div>
-          </div>
+            Vazgeç
+          </button>
+          <button
+            type="button"
+            onClick={confirmSubmissionAfterReview}
+            className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+          >
+            {confirmationAction}
+          </button>
         </div>
-      )}
+      </AppointmentDialog>
     </form>
   );
 }
@@ -226,7 +188,7 @@ export function AppointmentActions({
           </PendingSubmitButton>
         </AppointmentActionForm>
       )}
-      {status === "approved" && isFuture && (
+      {(status === "approved" || status === "pending") && (
         <AppointmentActionForm
           action={cancelAppointmentAction}
           appointmentId={appointmentId}
