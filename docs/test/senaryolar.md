@@ -213,9 +213,10 @@ Genel notlar:
 1. Bir randevuyu seç, yeni tarih ve saat seçerek ertele.
 
 **Beklenen sonuç**
-- Randevu `rejected` (Reddedildi) olur, saat tekrar boşalır.
-- Red sebebi girilebilir ama zorunlu değildir. Sebep girilmişse hastaya WhatsApp bildiriminde yer alır.
-- Hastaya bildirim gider (24 saat kuralı P3'teki gibi).
+- Eski randevu iptal edilir (`cancelled`, iptal eden `admin`), yeni randevu aynı işlemde `approved` olur. Admin'in ertelediği randevu tekrar onay beklemez.
+- Yeni saat boş olmalıdır; doluysa hata gösterilir.
+- Hastaya yeni saat WhatsApp ile bildirilir (24 saat kuralı geçerli).
+- Karşılaştırma: bottan gelen erteleme (B9) `pending` kalır.
 
 ### P9. Doktoru pasifleştirir
 **Adımlar**
@@ -292,17 +293,17 @@ Genel notlar:
 | B1 | Geçti | |
 | B2 | Geçti | |
 | B3 | Geçti | |
-| B4 | Denenemedi | [sebep] |
+| B4 | Denenemedi | Aynı saati ikinci bir kayıtlı numaradan seçmek gerekiyor, tek numarayla denenemedi |
 | B5 | Geçti | |
 | B6 | Geçti | |
-| B7 | Kaldı | İptal et işlem yapmıyor (Bulunan Hatalar kartı) |
-| B8 | Denenemedi | [sebep] |
-| B9 | Kaldı | Ertele akışı başlamıyor (Bulunan Hatalar kartı) |
+| B7 | Denenemedi | Özellik henüz yok (iptal/erteleme işleyicileri yazılmamış) |
+| B8 | Denenemedi | Randevusuna 2 saatten az kalan test hastası oluşturulamadı (panelde elle randevu yok) |
+| B9 | Denenemedi | Özellik henüz yok (iptal/erteleme işleyicileri yazılmamış) |
 | B10 | Geçti | |
 | B11 | Geçti | |
-| B12 | Geçti | Bot cevabı: [aynen yaz] |
+| B12 | Geçti | Bot cevabı: Anlayamadım, menüden seçer misiniz? "menü" yazarak menüye dönebilirsiniz. |
 | B13 | Denenemedi | Telefondan tetiklenemiyor |
-| B14 | Denenemedi | [sebep] |
+| B14 | Denenemedi | Özellik henüz yok |
 
 ### Panel
 | # | Sonuç | Not |
@@ -310,8 +311,19 @@ Genel notlar:
 | P1 | Geçti | |
 | P2 | Geçti | |
 | P3 | Kaldı | Onay çalışıyor, bildirim gönderilemedi (Bulunan Hatalar kartı) |
-| P4 | Denenemedi | [sebep] |
+| P4 | Denenemedi | Özellik henüz yok |
 | P5 | Denenemedi | Elle randevu özelliği yok |
 | P6 | Denenemedi | Elle randevu özelliği yok |
 | P7 | Kaldı | İptal çalışıyor, bildirim gönderilemedi (Bulunan Hatalar kartı) |
-| P8-P11 | Denenemedi | [sebep] |
+| P8 | Denenemedi | Özellik henüz yok |
+| P9 | Denenemedi | Özellik henüz yok |
+| P10 | Denenemedi | Özellik henüz yok |
+| P11 | Denenemedi | Özellik henüz yok |
+
+### Site
+| # | Sonuç | Not |
+|---|---|---|
+| S1 | Geçti | Butona basınca WhatsApp açıldı, numara doğru, hazır mesaj "Merhaba, randevu almak istiyorum. |
+| S2 | Denenemedi | |
+| S3 | Denenemedi | |
+| S4 | Denenemedi | |

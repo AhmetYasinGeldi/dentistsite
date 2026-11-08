@@ -20,3 +20,14 @@
 - **Nasıl test edildi:** Canlı sistemde test numarasından WhatsApp'ta bota yazarak ve canlı panelde giriş yaparak. Bildirim testleri hastanın son mesajından sonraki 24 saat içinde yapıldı.
 - **Açık konular:** B4, B8, B13, B14, P4, P6 ve P8-P11 denenmedi: [sebep, ör. ikinci numara yok, B8'in test yolu belirsiz, özellik yok]. B12'de botun verdiği cevap AGENTS.md'de tanımlı değil, bot ekibiyle netleştirilecek.
 - **Başka ekipten istek:** Bot ekibi: B7 ve B9 (iptal, erteleme). Panel/Bot ekibi: bildirim gönderimi (P3, P7). Panel ekibi: elle randevu ekleme (P5, P6).
+
+## 2026-11-07 23:58 — Açık işler 12, 13, 37, 38 kapatıldı
+- **Kişi / araç:** Tuğba / Claude (web sohbeti)
+- **Dal:** test-tugba
+- **Ne yapıldı:** Açık işler listesindeki 12, 13, 37 ve 38. maddeleri kapattım ve `tasks.md`'den sildim. `senaryolar.md`'de P4 beklenen sonucunu (red sebebi isteğe bağlı), P8'i (erteleme sonrası yeni randevu aynı işlemde `approved`) ve B12'yi ("netleştirilecek") düzelttim. Sonuç tablosunda B12 notuna botun cevabını yazdım, B7 ve B9'u "Kaldı"dan "Denenemedi (özellik henüz yok)"e çevirdim, P8-P11'i ayrı satırlara böldüm, S1 sonucunu ekledim. 6 Kasım kaydındaki "P5 denendi" ifadesi yanlıştı: P5 denenmedi, panelde elle randevu özelliği yok. Başlık formatını AGENTS.md'ye uydurdum.
+- **Değişen dosyalar:** `docs/test/senaryolar.md`, `logs/tugba.md`, `tasks.md`
+- **Neden:** Açık işler listesi: PR #4 incelemesi (12, 13), PR #33 incelemesi (37, 38).
+- **Nasıl test edildi:** Doküman değişikliği, çalıştırılacak kod yok. [lint ve build çalıştırdıysan sonucu yaz, çalıştırmadıysan bu cümleyi sil]
+- **Açık konular:** B4 (ikinci kayıtlı numara gerekiyor), B8, B13, B14, P4, P6, P8-P11 ve S2-S4 denenmedi. B7 ve B9 işleyicileri yazılınca tekrar denenecek. B12'de resim cevabının nasıl olacağı bot ekibiyle netleştirilecek.
+- **Başka ekipten istek:** Yok.
+
