@@ -296,9 +296,9 @@ Genel notlar:
 | B4 | Denenemedi | Aynı saati ikinci bir kayıtlı numaradan seçmek gerekiyor, tek numarayla denenemedi |
 | B5 | Geçti | |
 | B6 | Geçti | |
-| B7 | Denenemedi | Özellik henüz yok (iptal/erteleme işleyicileri yazılmamış) |
+| B7 | Kaldı | İptal/erteleme çalışıyor, bildirim gönderilemedi.|
 | B8 | Denenemedi | Randevusuna 2 saatten az kalan test hastası oluşturulamadı (panelde elle randevu yok) |
-| B9 | Denenemedi | Özellik henüz yok (iptal/erteleme işleyicileri yazılmamış) |
+| B9 | Kaldı | İptal/erteleme çalışıyor, bildirim gönderilemedi. |
 | B10 | Geçti | |
 | B11 | Geçti | |
 | B12 | Geçti | Bot cevabı: Anlayamadım, menüden seçer misiniz? "menü" yazarak menüye dönebilirsiniz. |

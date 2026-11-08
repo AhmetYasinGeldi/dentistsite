@@ -31,3 +31,12 @@
 - **Açık konular:** B4 (ikinci kayıtlı numara gerekiyor), B8, B13, B14, P4, P6, P8-P11 ve S2-S4 denenmedi. B7 ve B9 işleyicileri yazılınca tekrar denenecek. B12'de resim cevabının nasıl olacağı bot ekibiyle netleştirilecek.
 - **Başka ekipten istek:** Yok.
 
+## 2026-11-08 21:40 — B7 ve B9 tekrar denendi, inceleme düzeltmeleri
+- **Kişi / araç:** Tuğba / Claude (web sohbeti)
+- **Dal:** test-tugba
+- **Ne yapıldı:** Canlı sistemde B7 (iptal) ve B9 (erteleme) senaryolarını tekrar denedim. İptal ve erteleme işlemleri çalıştı, ancak panel "bildirim gönderilemedi" uyarısı gösterdi. Sonuç tablosunda B7 ve B9 satırlarını ve sebep sütunlarını güncelledim. Ahmet Yasin'in PR incelemesindeki iki isteği yaptım: P8'in beklenen sonucunu düzelttim (eski randevu iptal, yeni randevu "Onaylandı", hastaya bildirim) ve tablodaki ile log'daki yer tutucuları gerçek sebeplerle doldurdum.
+- **Değişen dosyalar:** `docs/test/senaryolar.md`, `logs/tugba.md`
+- **Neden:** PR incelemesindeki düzeltmeler ve B7/B9 test kartı.
+- **Nasıl test edildi:** Canlı sistemde test numarasından bota yazarak ve panelden durumu kontrol ederek. `npm run lint` ve `npm run build` hatasız bitti.
+- **Açık konular:** Bildirim gönderimi çalışmıyor (P3, P7, B7, B9): hastaya WhatsApp mesajı gitmiyor, Trello'daki kartta B7 ve B9 de eklendi. B4, B8, B13, B14 ve S2-S4 hâlâ denenmedi.
+- **Başka ekipten istek:** Bot ekibi: bildirim gönderimi (`notifyAppointmentUpdate`) hatası.
