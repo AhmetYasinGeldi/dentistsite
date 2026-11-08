@@ -9,6 +9,8 @@ export type Procedure = { id: number; name: string; durationMinutes: number };
 export type Doctor = { id: number; title: string; fullName: string; specialty: string };
 export type ActiveAppointment = {
   id: number;
+  doctorId: number;
+  procedureId: number;
   startsAt: string;
   status: string;
   doctor: string;
@@ -46,7 +48,7 @@ export async function createPatient(phone: string, fullName: string) {
 export async function getActiveAppointment(patientId: number): Promise<ActiveAppointment | null> {
   const { data, error } = await createAdminClient()
     .from("appointments")
-    .select("id, starts_at, status, doctors(title, full_name), procedures(name)")
+    .select("id, doctor_id, procedure_id, starts_at, status, doctors(title, full_name), procedures(name)")
     .eq("patient_id", patientId)
     .in("status", ["pending", "approved"])
     .gt("ends_at", new Date().toISOString())
@@ -57,6 +59,8 @@ export async function getActiveAppointment(patientId: number): Promise<ActiveApp
   if (!data) return null;
   return {
     id: data.id,
+    doctorId: data.doctor_id,
+    procedureId: data.procedure_id,
     startsAt: data.starts_at,
     status: data.status,
     doctor: data.doctors ? `${data.doctors.title} ${data.doctors.full_name}` : "",
@@ -167,6 +171,38 @@ export async function createAppointment(input: {
   });
   if (error && !["23P01", "RD001"].includes(error.code)) {
     logError("Randevu oluşturulamadı", error);
+  }
+  return error;
+}
+
+/**
+ * Hastanın kendi aktif randevusunu iptal eder (cancelled_by = patient).
+ * Randevu bu hastanın değilse veya artık aktif değilse false döner.
+ */
+export async function cancelAppointment(appointmentId: number, patientId: number) {
+  const { data, error } = await createAdminClient()
+    .from("appointments")
+    .update({ status: "cancelled", cancelled_by: "patient" })
+    .eq("id", appointmentId)
+    .eq("patient_id", patientId)
+    .in("status", ["pending", "approved"])
+    .select("id");
+  if (error) logError("Randevu iptal edilemedi", error);
+  return !error && (data?.length ?? 0) > 0;
+}
+
+/**
+ * Erteleme her zaman veritabanı fonksiyonuyla yapılır (AGENTS.md iş kuralı 5):
+ * eskiyi iptal eder, yeni saate pending açar. Hata kodları: 23P01, RD002-RD004.
+ */
+export async function rescheduleAppointment(appointmentId: number, newStartsAt: string) {
+  const { error } = await createAdminClient().rpc("reschedule_appointment", {
+    p_appointment_id: appointmentId,
+    p_new_starts_at: newStartsAt,
+    p_cancelled_by: "patient",
+  });
+  if (error && !["23P01", "RD003", "RD004"].includes(error.code)) {
+    logError("Randevu ertelenemedi", error);
   }
   return error;
 }
