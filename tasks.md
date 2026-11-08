@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36 incelemesi)
+Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37 incelemesi)
 
 ---
 
@@ -74,6 +74,16 @@ Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Dosya:** `lib/whatsapp/notify.ts` (`buildNotification`) (PR #36 ile ortaya çıktı)
 - **Sorun:** Panelden erteleme yeni randevuyu `approved` yapıp `notifyAppointmentUpdate` çağırıyor. Hastaya yalnızca "randevunuz onaylandı" metni gidiyor; randevunun başka saate taşındığı anlaşılmıyor.
 - **Yapılacak:** `rescheduled_from` dolu ve `approved` olan randevu için ayrı bir metin kullan (ör. "Randevunuz klinik tarafından 5 Kasım 2026 Perşembe, 10:30 olarak güncellendi."). Fonksiyonun imzası değişmez.
+
+### 43. Fiyat ve sağlık sorularında klinik telefonu
+- **Dosya:** `lib/bot/flow.ts` (`handleFreeText`), `lib/bot/messages.ts` (PR #37)
+- **Sorun:** Fiyat, adres, sağlık sorusu gibi mesajlar Gemini'den `other` olarak dönüyor ve hastaya "anlayamadım" + menü gidiyor. AGENTS.md 8. bölüm bu sorularda kliniğin telefon numarasının önerilmesini istiyor; hasta sorusunu anlaşılmamış sanıyor.
+- **Yapılacak:** Ebru: `messages.ts`'e telefonlu ve telefonsuz bir metin ekle (ör. "Bu konuda bilgi için kliniğimizi arayabilirsiniz: …"). Sevde: serbest metinde `other` gelince "anlayamadım" yerine bu metni (`clinic_settings.phone` ile) gönder, sonra menüyü göster. `intent` listesi değişmez.
+
+### 44. Mesajdan gelen gün kapalıysa veya aralık dışındaysa uyarı metni
+- **Dosya:** `lib/bot/flow.ts` (`selectDate`, `goToDates`) (PR #37)
+- **Sorun:** Gemini'nin verdiği `date` doğrudan `get_available_slots`'a gidiyor. Gün klinik tatili, doktorun çalışmadığı gün veya `booking_window_days` dışındaysa da hastaya "o gün boş saat kalmadı" deniyor; gün aslında hiç açık değil. Ayrıca `time` alanı ("14 gibi") okunuyor ama akışta kullanılmıyor.
+- **Yapılacak:** `hintDate`, `upcomingOpenDates` listesinde yoksa "boş saat kalmadı" yerine "Bu tarihte randevu verilemiyor" gibi bir metinle gün listesini göster (metin Ebru'dan). `time` için şimdilik bir şey yapılmayacaksa PR açıklamasına/log'a not düş; kullanılacaksa o saate en yakın slotu listenin başına almak yeterli.
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
