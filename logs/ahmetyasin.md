@@ -119,3 +119,13 @@
 - **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #33 yalnızca .md dosyası değiştirdiği için lint ve build çalıştırılmadı.
 - **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları düzeltilmeden birleştirilmeyecek. Canlıda P3 ve P7 bildirimlerinin neden gitmediği Vercel loglarından incelenecek.
 - **Başka ekipten istek:** Test ekibi: 37 ve 38.
+
+## 2026-11-08 — PR #35 ve #36 inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr35-36
+- **Ne yapıldı:** PR #33 (tekrar), #35 (bot iptal/erteleme) ve #36 (panel randevu detay ve yönetim) incelendi. #35 ve #36'da birleşmeyi engelleyen bulgu çıkmadı; küçük bulgular `tasks.md`'ye Bot 39 (telefonsuz "kliniği arayın" metni), Bot 40 (panelden ertelemede bildirim metni), Panel 41 (geçmiş randevu iptalinde bildirim) ve Panel 42 (erteleme hata mesajlarının denenmesi) olarak eklendi. "Son güncelleme" satırı güncellendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #35 ve #36 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #36 dalıyla birleştirme denemesinde `tasks.md`'de çakışma çıkmadı. İnceleme sırasında PR #35 ve #36 dallarında `npm run lint` ve `npm run build` başarılı.
+- **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları hâlâ düzeltilmedi, birleştirilmeyecek. Panel 35 için saati geçmiş bekleyen sahte randevu SQL Editor'den eklenecek. `clinic_settings.phone` canlıda dolu mu kontrol edilecek.
+- **Başka ekipten istek:** Bot ekibi: 39 ve 40. Panel ekibi: 41 ve 42.
