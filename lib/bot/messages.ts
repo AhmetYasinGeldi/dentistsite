@@ -106,7 +106,8 @@ export const errors = {
   notUnderstood: 'Anlayamadım, menüden seçer misiniz? "menü" yazarak menüye dönebilirsiniz.',
   hasActiveAppointment: "Zaten aktif bir randevunuz var. Ne yapmak istersiniz?",
   cancelDeadlinePassed: (clinicPhone: string): string =>
-`Randevunuza az süre kaldığı için iptal veya erteleme işlemini buradan yapamıyoruz. Lütfen kliniği arayın: ${clinicPhone}`,  slotTaken: "Seçtiğiniz saat az önce doldu. Başka bir saat seçebilir misiniz?",
+    `Randevunuza az süre kaldığı için iptal veya erteleme işlemini buradan yapamıyoruz. Lütfen kliniği arayın: ${clinicPhone}`,
+  slotTaken: "Seçtiğiniz saat az önce doldu. Başka bir saat seçebilir misiniz?",
   noSlotsOnDate: "Bu gün için boş saat kalmadı. Başka bir gün seçebilir misiniz?",
   medicalOrPrice: (clinicPhone: string): string =>
     `Bu konuda en doğru bilgiyi kliniğimiz verebilir. Lütfen arayın: ${clinicPhone}`,
