@@ -26,6 +26,7 @@ export const buttons = {
 export const listRows = {
   otherDays: "Diğer günler",
   otherTimes: "Diğer saatler",
+  otherOptions: "Diğer seçenekler",
   morning: "Sabah",
   afternoon: "Öğleden sonra",
 } as const;
@@ -104,6 +105,7 @@ export const notifications = {
 // ---------- Hata ve özel durum mesajları ----------
 export const errors = {
   notUnderstood: 'Anlayamadım, menüden seçer misiniz? "menü" yazarak menüye dönebilirsiniz.',
+  invalidName: "Lütfen adınızı ve soyadınızı birlikte yazar mısınız?",
   hasActiveAppointment: "Zaten aktif bir randevunuz var. Ne yapmak istersiniz?",
   cancelDeadlinePassed: (clinicPhone: string): string =>
 `Randevunuza az süre kaldığı için iptal veya erteleme işlemini buradan yapamıyoruz. Lütfen kliniği arayın: ${clinicPhone}`,  slotTaken: "Seçtiğiniz saat az önce doldu. Başka bir saat seçebilir misiniz?",
