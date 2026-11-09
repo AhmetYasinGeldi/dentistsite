@@ -6,7 +6,7 @@ Bu dosya, bu repoda kod yazan tüm yapay zeka ajanları (Claude Code, Cursor, Co
 
 ## 1. Proje özeti
 
-Tek bir diş kliniği için WhatsApp üzerinden çalışan randevu sistemi.
+Tek bir diş kliniği için WhatsApp üzerinden çalışan randevu sistemi. Klinik **ZB Dentist** (Ağız ve Diş Sağlığı) adında, proje kapsamında oluşturulmuş kurgusal bir kliniktir; logo ve tema `docs/marka/` klasöründedir (bkz. bölüm 10, "Marka ve tema").
 
 - **Hasta tarafı:** Hasta, kliniğin tanıtım sitesindeki WhatsApp butonuna basar ve WhatsApp botuyla yazışarak randevu alır, randevusunu görür, iptal eder veya erteler.
 - **Klinik tarafı:** Sekreter, admin panelinden randevu taleplerini onaylar veya reddeder, elle randevu ekler, doktor/işlem/çalışma saatlerini yönetir.
@@ -65,6 +65,8 @@ Her ekip yalnızca kendi alanındaki dosyaları değiştirir. Başka bir alandak
 │   ├── bot/           (sohbet akışı, adımlar, oturum durumu) → Bot ekibi
 │   └── ai/            (Gemini çağrıları ve prompt'lar) → Bot ekibi
 ├── app/
+│   ├── layout.tsx, globals.css (tema renkleri ve fontlar),
+│   │   favicon.ico, icon.svg, apple-icon.png → Ahmet Yasin
 │   ├── (site)/        (tanıtım sitesi, "/" adresi) → Site ekibi
 │   ├── admin/         (admin paneli, "/admin")     → Panel ekibi
 │   └── api/whatsapp/webhook/route.ts               → Bot ekibi
@@ -73,7 +75,9 @@ Her ekip yalnızca kendi alanındaki dosyaları değiştirir. Başka bir alandak
 │   ├── site/                                       → Site ekibi
 │   └── admin/                                      → Panel ekibi
 ├── scripts/gemini-test/  (Gemini test seti ve script) → Bot ekibi
+├── public/logo/      (sitede ve panelde kullanılan logo SVG'leri) → Ahmet Yasin
 ├── docs/
+│   ├── marka/         (logo paketi, renkler, fontlar; SADECE OKU) → Ahmet Yasin
 │   ├── test/          (test senaryoları ve sonuçları) → Test ekibi
 │   └── sunum/                                       → Sunum
 └── logs/              (her kişinin kendi log dosyası) → Herkes, sadece kendi dosyası
@@ -269,6 +273,7 @@ Gemini **sadece** hastanın serbest yazdığı metni yapılandırılmış veriye
 
 ## 9. Admin paneli kuralları (panel ekibi)
 
+- Renk, font ve logo kuralları site ile aynıdır: bölüm 10, "Marka ve tema".
 - `/admin` altındaki tüm sayfalar giriş gerektirir. Giriş yapılmamışsa `/admin/login` sayfasına yönlendir.
 - Kayıt (sign up) sayfası YAPMA. Tek admin hesabı Supabase'de elle oluşturulmuştur.
 - Onay bekleyen randevular ana ekranda en üstte ve dikkat çekici gösterilir.
@@ -286,6 +291,31 @@ Gemini **sadece** hastanın serbest yazdığı metni yapılandırılmış veriye
 - Sayfa bölümleri ayrı bileşenlerdir (`components/site/`): Hero + WhatsApp butonu, Doktorlar, Tedaviler, Hakkımızda, İletişim/SSS. Her kişi kendi bileşeninde çalışır.
 - Mobil öncelikli tasarla. Renkleri sabit yazma, Tailwind temasındaki ortak renkleri kullan (panel ve site aynı kimliği taşır).
 - Dışarıdan görsel kullanılacaksa telif sorunu olmayan görseller veya yer tutucular kullan.
+
+### Marka ve tema (site ve panel)
+Kaynak `docs/marka/README.md`. Renkler `app/globals.css` içindeki `@theme` bloğunda tanımlıdır; bileşenlerde hex renk (`bg-[#0E4D5C]`, `style={{ color: ... }}`) veya Tailwind'in hazır paleti (`bg-sky-600`, `text-green-700`) kullanma, aşağıdaki adları kullan. Yeni renk gerekiyorsa `globals.css`'e eklenmesi için Ahmet Yasin'e söyle.
+
+| Tailwind adı | Renk | Kullanım |
+|---|---|---|
+| `primary` / `primary-foreground` | Petrol `#0E4D5C` / beyaz | Başlıklar, ana buton, footer |
+| `background` | Kırık beyaz `#F6F8F5` | Sayfa zemini |
+| `foreground` | Mürekkep `#14232B` | Gövde metni |
+| `surface`, `secondary`, `muted` | Nane `#E3EFEA` | Kart ve bölüm zeminleri |
+| `muted-foreground` | Gri `#5B6B73` | İkincil metin, açıklamalar |
+| `border` | `#D6E0DB` | 1 px çizgiler (`border-border`) |
+| `olive` / `olive-dark` | `#5E8C31` / `#3F6420` | İkon, rozet / yeşil metin ve etiket |
+| `sea` | Marmara `#24709F` | Bağlantılar, bilgi kutuları |
+| `accent` | Gün batımı `#B9531A` | Tek vurgu (ör. onay bekleyen randevu); az kullan |
+| `success` / `danger` | `#3F6420` / `#DC2626` | Onay / hata durumları |
+| `whatsapp` / `whatsapp-foreground` | `#25D366` / `#0B2E17` | Yalnızca WhatsApp butonu; üzerindeki yazı beyaz değil koyu olur |
+
+- Fontlar `app/layout.tsx`'te yüklenir: gövde Inter (`font-sans`, varsayılan), başlıklar Outfit (`font-heading`; `h1`-`h3` otomatik alır). Bileşenlerde başka font yükleme.
+- Köşe yuvarlaklığı 14 px: `rounded-brand`. Gölge yok ya da çok hafif; ayrım için `border border-border`. Butonlar en az 44 px yüksekliğinde.
+- Logo dosyaları `public/logo/` altındadır, `next/image` ile kullan:
+  - Açık zeminde (header): `/logo/zb-dentist-logo-renkli.svg`, en az 140 px genişlik.
+  - Koyu zeminde (footer, `bg-primary` bölümler): `/logo/zb-dentist-logo-beyaz.svg`.
+  - Dar alanda (mobil navbar, panel kenar çubuğu): `/logo/zb-dentist-isaret-renkli.svg` veya `-beyaz.svg`.
+- Logoyu esnetme, döndürme, rengini değiştirme, gölge veya efekt ekleme. Favicon ve uygulama ikonu `app/` altında hazırdır, bileşenlerde ayrıca ekleme.
 
 ---
 

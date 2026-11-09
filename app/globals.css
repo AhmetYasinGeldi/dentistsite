@@ -1,30 +1,52 @@
 @import "tailwindcss";
 
 /*
- * Ortak renkler (site + panel). Kullanım: bg-primary, text-primary-foreground,
- * border-danger, bg-success/15 ...
- * Esma'nın diş hekimi randevu sistemi referans alınarak ferah medikal gök mavisi paletine güncellendi.
+ * Ortak renkler (site + panel). Kaynak: docs/marka/README.md ("Site teması").
+ * Kullanım: bg-primary, text-primary-foreground, text-muted-foreground,
+ * border-border, bg-surface, bg-whatsapp text-whatsapp-foreground ...
+ * Renkleri bileşenlerde hex olarak yazma, buradaki adları kullan.
  */
 @theme {
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
+  --color-background: #f6f8f5; /* Kırık beyaz: sayfa zemini */
+  --color-foreground: #14232b; /* Mürekkep: gövde metni */
 
-  --color-primary: #0284c7;
+  --color-primary: #0e4d5c; /* Petrol: başlıklar, ana buton, footer */
   --color-primary-foreground: #ffffff;
-  --color-secondary: #e0f2fe;
-  --color-accent: #38b6ff;
-  --color-muted: #f8fafc;
+  --color-secondary: #e3efea; /* Nane: kart ve bölüm zeminleri */
+  --color-surface: #e3efea; /* Nane: kart ve bölüm zeminleri */
+  --color-muted: #e3efea; /* Hafif zemin (tablo başlığı, pasif alan) */
+  --color-muted-foreground: #5b6b73; /* Gri: ikincil metin */
+  --color-border: #d6e0db; /* 1 px çizgiler */
+
+  --color-olive: #5e8c31; /* Zeytin: ikonlar, rozetler */
+  --color-olive-dark: #3f6420; /* Koyu zeytin: yeşil metin ve etiketler */
+  --color-sea: #24709f; /* Marmara: bağlantılar, bilgi kutuları */
+  --color-accent: #b9531a; /* Gün batımı: tek vurgu, az kullan */
+
   --color-danger: #dc2626;
-  --color-success: #15803d;
+  --color-success: #3f6420; /* Onay durumu: koyu zeytin */
+
+  --color-whatsapp: #25d366; /* Yalnızca WhatsApp butonu */
+  --color-whatsapp-foreground: #0b2e17; /* WhatsApp butonu üzerindeki yazı */
+
+  --radius-brand: 14px; /* rounded-brand: kart ve buton köşeleri */
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-outfit);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading), var(--font-sans), Arial, sans-serif;
+  }
 }

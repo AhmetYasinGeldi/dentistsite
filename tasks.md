@@ -32,6 +32,11 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** Saati geçmiş bekleyen randevu reddedildiğinde bildirimin atlanması ve "Bildirim gönderilmedi, randevu saati geçmiş" mesajı elle denenmedi. Test verisindeki bekleyen randevuların hepsi ileri tarihli.
 - **Yapılacak:** Saati geçmiş bekleyen bir sahte randevuyla reddetmeyi dene; bildirimin gitmediğini ve mesajın göründüğünü log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
+### 51. Panelde ZB Dentist logosu ve renk kontrolü
+- **Dosya:** `app/admin/`, `components/admin/` (marka PR'ı)
+- **Sorun:** Tema ZB Dentist'e geçti: `primary` petrol, `accent` gün batımı (turuncu), `muted`/`secondary` nane yeşili oldu. Onay bekleyen kutusu (`border-accent bg-accent/10`) artık turuncu görünüyor. Panelde logo yok.
+- **Yapılacak:** Paneli açıp ekranları kontrol et; okunmayan veya bozuk görünen yer varsa ortak renk adlarıyla düzelt (hex yazma). Giriş sayfasına ve üst/kenar çubuğuna `/logo/zb-dentist-isaret-renkli.svg` veya yatay logoyu ekle. Kurallar `AGENTS.md` bölüm 10, "Marka ve tema".
+
 ## Bot ekibi (Sevde, Ebru)
 
 ### 8. Adım isimlerini `steps.ts` ile eşleştirme
@@ -82,7 +87,10 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
-Açık madde yok.
+### 50. Siteyi ZB Dentist markasına uydurma
+- **Dosya:** `components/site/HeroSection.tsx` ve diğer site bileşenleri (marka PR'ı)
+- **Sorun:** Tema renkleri ve fontlar `globals.css`/`layout.tsx`'te ZB Dentist'e geçti, site bunları otomatik alıyor. Ama WhatsApp butonu `bg-primary text-primary-foreground` kullanıyor; marka kuralı WhatsApp butonu için `bg-whatsapp text-whatsapp-foreground` diyor. Sitede logo yok. Hero başlığı `font-extrabold` (800), Outfit sadece 600 ve 700 ağırlıklarıyla yüklü.
+- **Yapılacak:** WhatsApp butonunu `bg-whatsapp text-whatsapp-foreground` yap. Header'a `/logo/zb-dentist-logo-renkli.svg`, footer'a `/logo/zb-dentist-logo-beyaz.svg` ekle (`next/image`). Başlıklarda `font-bold` kullan; kart ve butonlarda `rounded-brand` ve `border-border` kullan. Kurallar `AGENTS.md` bölüm 10, "Marka ve tema".
 
 ## Test ekibi (Tuğba, Nezahat)
 
