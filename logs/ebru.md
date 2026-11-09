@@ -48,12 +48,30 @@
 - **Açık konular:** Yok.
 - **Başka ekipten istek:** Yok.
 
-## 2026.11.08 20.35 — Gemini test setindeki belirsiz beklentiler düzenlendi
+## 2026-11-08 21:10 — Akış için eksik metinler eklendi
+- **Kişi / araç:** Ebru / Claude
+- **Dal:** fix/bot-akis-eksik-metinler
+- **Ne yapıldı:**  Akış için eksik metinler eklendi
+- **Değişen dosyalar:** `lib/bot/messages.ts`, `tasks.md`, `logs/ebru.md`
+- **Neden:** Geçersiz ad soyad yazıldığında ayrı bir uyarı metni yoktu. İşlem veya doktor listesi 10'u geçerse kullanılacak "Diğer" satırı için metin yoktu.
+- **Nasıl test edildi:** `npm run lint` hatasız
+
+## 2026-11-08 20:50 — `messages.ts` biçim bozukluğu giderildi
 - **Kişi / araç:** Ebru / Codex
-- **Dal:** fix/bot-gemini-dataset
-- **Ne yapıldı:** `tasks.md` Madde 25'te belirtilen `scripts/gemini-test/dataset.json` dosyasındaki belirsiz beklenen değerler güncellendi; id 13 için işlem `Muayene`, id 24 için saat `null` yapıldı. Eksik olan "menü", "dün", "3 ay sonra" ve "10-12 arası" senaryoları test verisine başarıyla eklendi, dosya sonu boş satır hatası giderildi.
-- **Değişen dosyalar:** `tasks.md`, `scripts/gemini-test/dataset.json`, `logs/ebru.md`
-- **Neden:** Gemini test setinde belirsiz beklentileri gidermek için.
-- **Nasıl test edildi:** `npm run lint` hatasız tamamlandı.
+- **Dal:** fix/bot-mesaj-bicim-duzeltme
+- **Ne yapıldı:** `messages.ts` biçim bozukluğu giderildi.
+- **Değişen dosyalar:** `lib/bot/messages.ts`, `tasks.md`, `logs/ebru.md`
+- **Neden:** Biçim bozuluğu.
+- **Nasıl test edildi:** `npm run build` başarılı.
 - **Açık konular:** Yok
 - **Başka ekipten istek:** Yok
+
+## 2026-11-09 23:00 — Gemini test veri seti güncellendi
+- **Kişi / araç:** Ebru / Codex
+- **Dal:** fix/bot-gemini-dataset
+- **Ne yapıldı:** Silinen 48–68 arası vakalar geri eklendi; dört yeni vaka 69–72 olarak sona eklendi. id 13 için işlem `Muayene`, id 24 için saat `null` yapıldı. “Menü” yerine Gemini’ye gönderilebilen “ana sayfaya dönmek istiyorum” örneği eklendi. Üç ay sonrası randevu örneğinin intent’i `book`, tarihi `null` yapıldı.
+- **Değişen dosyalar:** `scripts/gemini-test/dataset.json`, `logs/ebru.md`
+- **Neden:** PR #39 ve `tasks.md` 45. madde.
+- **Nasıl test edildi:** JSON’un geçerli olduğu, 72 kayıt içerdiği, id’lerin 1–72 arasında kesintisiz olduğu ve dosya sonunda satır sonu bulunduğu kontrol edildi. Gemini ile çalıştırılmadı.
+- **Açık konular:** Gemini test scriptiyle çalıştırma ve rapor oluşturma ayrıca tamamlanacak.
+- **Başka ekipten istek:** Yok.
