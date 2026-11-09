@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42 incelemesi)
+Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44 incelemesi)
 
 ---
 
@@ -87,7 +87,35 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
-Açık madde yok.
+### 52. Hero arka plan görselleri dış kaynaktan ve optimize edilmeden yükleniyor
+- **Dosya:** `components/site/HeroBackgroundSlider.tsx` (PR #44)
+- **Sorun:** Dört görsel doğrudan `images.unsplash.com` adresinden, 1920 px genişlikte ve `<img>` ile çekiliyor. Mobilde ilk açılış ağırlaşıyor, görseller Unsplash'e bağlı kalıyor. Slayt `prefers-reduced-motion` ayarına bakmadan 5 saniyede bir değişiyor.
+- **Yapılacak:** Görselleri (Unsplash lisansıyla) indirip `public/` altına koymak için Ahmet Yasin'e iste ya da sayıyı bire indir; `next/image` ile `sizes` vererek yükle. Sadece ilk görsel öncelikli yüklensin. `motion-reduce:` ile ya da `matchMedia('(prefers-reduced-motion: reduce)')` kontrolüyle geçişi durdur.
+
+### 53. WhatsApp bağlantısı dört dosyada ayrı ayrı üretiliyor
+- **Dosya:** `components/site/Header.tsx`, `HeroSection.tsx`, `Footer.tsx`, `BookingSection.tsx` (PR #44)
+- **Sorun:** `NEXT_PUBLIC_WHATSAPP_NUMBER` okuma, rakam dışını silme ve `wa.me` adresini kurma kodu dört yerde kopyalanmış. WhatsApp ikonunun SVG yolu da dört kez tekrar ediyor. Biri değişirse diğerleri unutulur.
+- **Yapılacak:** `components/site/` altında tek bir yardımcı (ör. `whatsapp-link.ts`: `getWhatsappNumber()`, `buildWhatsappUrl(message)`) ve tek bir `WhatsappIcon` bileşeni yaz, dört dosya bunları kullansın.
+
+### 54. QuickBookingCard'da işlem tipi elle tanımlanmış
+- **Dosya:** `components/site/QuickBookingCard.tsx` (PR #44)
+- **Sorun:** `ProcedureOption` arayüzü `procedures` tablosunun alanlarını elle yeniden tanımlıyor. `AGENTS.md` bölüm 4 tabloların `lib/database.types.ts`'ten alınmasını istiyor.
+- **Yapılacak:** `Pick<Tables<"procedures">, "id" | "name" | "duration_minutes">` kullan.
+
+### 55. Site arayüzünde küçük tutarlılık düzeltmeleri
+- **Dosya:** `components/site/Doctors.tsx`, `Header.tsx`, `Footer.tsx`, `Treatments.tsx`, `AboutSection.tsx` (PR #44)
+- **Sorun:** Doktor fotoğrafı `h-16 w-16`, baş harf yuvarlağı `h-14 w-14`; kartlar farklı boyda görünüyor. Header'da logo bağlantısı `focus:outline-none` ile klavye odağını gizliyor. Footer'daki WhatsApp butonunda `shadow-sm hover:shadow-md hover:-translate-y-0.5` var, marka kuralı gölge istemiyor ve diğer WhatsApp butonları sadece `hover:opacity-90` kullanıyor. Tedaviler başlığındaki "Toplam N aktif işlem" yazısında "aktif" iç sistem dili. Hakkımızda bölümündeki branş listesi (ortodonti, endodonti, çene cerrahisi) elle yazılmış, veritabanındaki doktorlarla uyuşmayabilir. Mobilde menü bağlantıları tamamen gizli.
+- **Yapılacak:** İki yuvarlağı aynı boyuta getir. `focus:outline-none` yerine `focus-visible:outline-2 focus-visible:outline-primary` kullan. Footer butonunu diğerleriyle aynı yap. Metni "Toplam N tedavi" yap. Branş cümlesini genel tut ya da doktor listesinden üret. Mobil menü gerekip gerekmediğine ekipçe karar ver.
+
+### 56. Header mobilde yatay taşma yapıyor olabilir
+- **Dosya:** `components/site/Header.tsx` (PR #44)
+- **Sorun:** Logo 180 px ve `shrink-0`, WhatsApp butonu da `shrink-0`; `gap-6` ve `px-4` ile birlikte toplam genişlik yaklaşık 410 px. 375 px ve daha dar telefonlarda sayfada yatay kaydırma çıkması bekleniyor (hesapla tespit edildi, tarayıcıda denenmedi). `AGENTS.md` bölüm 10 dar alanda işaret logosunu istiyor.
+- **Yapılacak:** `md` altında `/logo/zb-dentist-isaret-renkli.svg`, `md` ve üstünde renkli tam logoyu göster ya da mobilde buton metnini kısalt. 360 px ve 375 px genişlikte yatay kaydırma olmadığını tarayıcıda dene, sonucu log'a yaz.
+
+### 57. PR #44 log kaydında yanlış ve eksik bilgi
+- **Dosya:** `logs/ahmetcicek.md` (PR #44)
+- **Sorun:** 9 Kasım 18:32 kaydı `HeroSection`, `Treatments` ve `Doctors` bileşenlerinin "cam efekti (glassmorphism) ve mikro-animasyonlarla" güncellendiğini söylüyor, kodda böyle bir şey yok. "Nasıl test edildi" kısmında `npm run build` sonucu ve tarayıcıda deneme yok.
+- **Yapılacak:** Eski kaydı değiştirmeden yeni bir kayıt ekle: yapılan değişikliği doğru anlat, `npm run build` sonucunu ve sitenin mobilde ve masaüstünde nasıl denendiğini yaz.
 
 ## Test ekibi (Tuğba, Nezahat)
 

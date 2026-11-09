@@ -159,3 +159,13 @@
 - **Nasıl test edildi:** `npm run lint` ve `npm run build` başarılı. `next start` ile ana sayfanın başlığı, favicon/icon/apple-icon etiketleri, `/logo/` dosyaları ve CSS'teki yeni renk değerleri kontrol edildi. Ekranlar gözle kontrol edilmedi (site 50 ve panel 51 maddelerinde).
 - **Açık konular:** Veritabanında `clinic_settings.clinic_name` "ZB Dentist" olarak SQL Editor'den güncellenecek.
 - **Başka ekipten istek:** Site ekibi: 50. Panel ekibi: 51.
+
+## 2026-11-09 17:47 — PR #44 incelemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-44-inceleme
+- **Ne yapıldı:** Site ekibinin PR #44'ü (ZB Dentist marka uyumu ve tanıtım sitesi) incelendi ve onaylandı. İncelemede çıkan düzeltmeler `tasks.md` site bölümüne 52-57 olarak eklendi: hero görsellerinin optimizasyonu (52), WhatsApp linkinin tek yardımcıya alınması (53), `QuickBookingCard` tipinin `Tables<"procedures">` olması (54), küçük arayüz tutarlılıkları (55), mobil header taşması (56) ve PR log kaydının düzeltilmesi (57).
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #44 incelemesinde birleştirmeyi engellemeyen düzeltmelerin takip edilmesi.
+- **Nasıl test edildi:** PR dalında `npm run lint` hatasız, `npm run build` başarılı. Mobil header taşması genişlik hesabıyla tespit edildi, tarayıcıda denenmedi.
+- **Açık konular:** 56 ve 57 öncelikli. PR #44 birleşti, main bu dala alındı; site bölümündeki "Açık madde yok." satırı kaldırıldı.
+- **Başka ekipten istek:** Site ekibi: 52, 53, 54, 55, 56 ve 57.
