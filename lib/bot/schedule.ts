@@ -32,6 +32,14 @@ export function upcomingOpenDates(
   return dates;
 }
 
+/** Bugünden başlayarak n gün: Gemini istemindeki takvim için. */
+export function nextDays(today: string, n: number): { date: string; isoWeekday: number }[] {
+  return Array.from({ length: n }, (_, i) => {
+    const date = addDays(today, i);
+    return { date, isoWeekday: isoDayOfWeek(date) };
+  });
+}
+
 export type TimePeriod = "morning" | "afternoon";
 
 /**
