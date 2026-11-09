@@ -1,5 +1,6 @@
 import "server-only";
 
+import { understandMessage } from "@/lib/ai/gemini";
 import * as text from "@/lib/bot/messages";
 import {
   cancelAppointment,
@@ -19,9 +20,11 @@ import {
 } from "@/lib/bot/queries";
 import {
   canPatientChange,
+  nextDays,
   normalizeFullName,
   splitByPeriod,
   upcomingOpenDates,
+  type TimePeriod,
 } from "@/lib/bot/schedule";
 import {
   getSession,
@@ -102,10 +105,14 @@ async function route(message: IncomingMessage): Promise<void> {
   const session = await getSession(phone);
   switch (session.step) {
     case "idle":
+      if (typed) return handleFreeText(phone, typed, true);
       await sendText(phone, text.greeting);
       return showMenu(phone);
+    case "menu":
+      if (typed) return handleFreeText(phone, typed, false);
+      return notUnderstood(phone, session);
     case "ask_name":
-      return handleName(phone, typed);
+      return handleName(phone, session, typed);
     case "choose_procedure":
       return handleProcedure(phone, session, replyId);
     case "choose_doctor":
@@ -138,7 +145,7 @@ async function notUnderstood(phone: string, session: Session): Promise<void> {
   const c = session.context;
   switch (session.step) {
     case "ask_name":
-      return askName(phone);
+      return askName(phone, hintsOf(c));
     case "choose_procedure":
       return showProcedures(phone, c);
     case "choose_doctor":
@@ -166,6 +173,52 @@ async function notUnderstood(phone: string, session: Session): Promise<void> {
 /** Taslak eksik/bozuksa baştan al: ertelemedeysek menüye, değilsek işlem listesine. */
 function restart(phone: string, context: SessionContext): Promise<void> {
   return context.appointmentId ? showMenu(phone) : showProcedures(phone, {});
+}
+
+// ---------- Serbest metin (Gemini) ----------
+
+/** Gemini'den gelen ipuçları: işlem, gün ve gün dilimi. */
+type Hints = Pick<SessionContext, "procedureId" | "hintDate" | "hintPeriod">;
+
+/** Sadece ipucu alanlarını al (oturumdan taşınırken). */
+function hintsOf({ procedureId, hintDate, hintPeriod }: SessionContext): Hints {
+  return { procedureId, hintDate, hintPeriod };
+}
+
+/**
+ * Menüdeyken veya ilk mesajda butona basmak yerine yazı yazıldıysa Gemini
+ * mesajı yapılandırılmış veriye çevirir; kararı her zaman kod verir.
+ * Gemini başarısızsa veya anlamazsa butonlu menü gösterilir.
+ */
+async function handleFreeText(phone: string, typed: string, firstMessage: boolean) {
+  const procedures = await getBookableProcedures();
+  const parsed = await understandMessage(typed, {
+    upcoming: nextDays(todayInIstanbul(), 15),
+    procedures: procedures.map((p) => p.name),
+  });
+
+  if (!parsed || parsed.intent === "greeting" || parsed.intent === "other") {
+    // İlk mesajda karşılama; menüdeyken anlaşılmadı uyarısı. Sonra menü.
+    const greet = firstMessage || parsed?.intent === "greeting";
+    await sendText(phone, greet ? text.greeting : text.errors.notUnderstood);
+    return showMenu(phone);
+  }
+
+  const hints: Hints = {
+    procedureId: procedures.find((p) => p.name === parsed.procedure)?.id,
+    hintDate: parsed.date ?? undefined,
+    hintPeriod: parsed.time_of_day ?? undefined,
+  };
+  switch (parsed.intent) {
+    case "book":
+      return startBooking(phone, hints);
+    case "view":
+      return showAppointment(phone);
+    case "cancel":
+      return startChange(phone, "cancel");
+    case "reschedule":
+      return startChange(phone, "reschedule", hints);
+  }
 }
 
 // ---------- Menü ----------
@@ -220,14 +273,18 @@ async function showAppointment(phone: string): Promise<void> {
 
 // ---------- Randevu alma ----------
 
-async function startBooking(phone: string): Promise<void> {
+async function startBooking(phone: string, hints: Hints = {}): Promise<void> {
   const patient = await getPatientByPhone(phone);
-  if (!patient) return askName(phone);
-  return continueBooking(phone, patient.id);
+  if (!patient) return askName(phone, hints);
+  return continueBooking(phone, patient.id, hints);
 }
 
 /** Aktif randevu varsa seçenek sun, yoksa işlem listesine geç. */
-async function continueBooking(phone: string, patientId: number): Promise<void> {
+async function continueBooking(
+  phone: string,
+  patientId: number,
+  hints: Hints = {},
+): Promise<void> {
   if (await getActiveAppointment(patientId)) {
     await setSession(phone, "menu", {});
     await sendButtons(phone, {
@@ -240,25 +297,28 @@ async function continueBooking(phone: string, patientId: number): Promise<void> 
     });
     return;
   }
-  return showProcedures(phone, {});
+  // Mesajda işlem anlaşıldıysa işlem listesi atlanır.
+  if (hints.procedureId) return chooseProcedure(phone, hints.procedureId, hints);
+  return showProcedures(phone, hints);
 }
 
-async function askName(phone: string): Promise<void> {
-  await setSession(phone, "ask_name", {});
+async function askName(phone: string, hints: Hints = {}): Promise<void> {
+  await setSession(phone, "ask_name", hintsOf(hints));
   await sendText(phone, text.steps.ask_name);
 }
 
-async function handleName(phone: string, typed: string): Promise<void> {
+async function handleName(phone: string, session: Session, typed: string): Promise<void> {
+  const hints = hintsOf(session.context);
   const fullName = normalizeFullName(typed);
   // Geçersiz ad: soruyu tekrarla (ayrı bir hata metni messages.ts'e eklenecek).
-  if (!fullName) return askName(phone);
+  if (!fullName) return askName(phone, hints);
 
   const patient = await createPatient(phone, fullName);
   if (!patient) {
     await sendText(phone, DEFAULT_ERROR_MESSAGE);
     return showMenu(phone);
   }
-  return continueBooking(phone, patient.id);
+  return continueBooking(phone, patient.id, hints);
 }
 
 async function showProcedures(phone: string, context: SessionContext): Promise<void> {
@@ -273,7 +333,8 @@ async function showProcedures(phone: string, context: SessionContext): Promise<v
     title: fit(p.name, 24),
     description: `${p.durationMinutes} dk`,
   }));
-  await setSession(phone, "choose_procedure", { page });
+  const { hintDate, hintPeriod } = context;
+  await setSession(phone, "choose_procedure", { page, hintDate, hintPeriod });
   await sendList(phone, {
     body: text.steps.choose_procedure,
     buttonText: text.listOpenButtons.procedure,
@@ -282,20 +343,30 @@ async function showProcedures(phone: string, context: SessionContext): Promise<v
 }
 
 async function handleProcedure(phone: string, session: Session, replyId: string | null) {
+  const { hintDate, hintPeriod } = session.context;
   const more = replyId ? parseMoreRowId(replyId) : null;
-  if (more !== null) return showProcedures(phone, { page: more });
+  if (more !== null) return showProcedures(phone, { page: more, hintDate, hintPeriod });
 
   const procedureId = parseNumericId(replyId, "proc:");
-  const procedure = procedureId ? await getProcedure(procedureId) : null;
-  if (!procedure) return notUnderstood(phone, session);
+  if (!procedureId) return notUnderstood(phone, session);
+  return chooseProcedure(phone, procedureId, { hintDate, hintPeriod });
+}
 
-  const doctors = await getDoctorsForProcedure(procedure.id);
-  if (doctors.length === 0) return notUnderstood(phone, session);
-  // Tek doktor varsa doktor adımı atlanır.
-  if (doctors.length === 1) {
-    return showDates(phone, { procedureId: procedure.id, doctorId: doctors[0].id });
+/** İşlem seçildi (listeden veya mesajdan): doktor adımına ya da (tek doktorsa) güne geç. */
+async function chooseProcedure(phone: string, procedureId: number, hints: Hints) {
+  const procedure = await getProcedure(procedureId);
+  const doctors = procedure ? await getDoctorsForProcedure(procedure.id) : [];
+  if (!procedure || doctors.length === 0) {
+    return showProcedures(phone, { hintDate: hints.hintDate, hintPeriod: hints.hintPeriod });
   }
-  return showDoctors(phone, { procedureId: procedure.id });
+  const context: SessionContext = {
+    procedureId: procedure.id,
+    hintDate: hints.hintDate,
+    hintPeriod: hints.hintPeriod,
+  };
+  // Tek doktor varsa doktor adımı atlanır.
+  if (doctors.length === 1) return goToDates(phone, { ...context, doctorId: doctors[0].id });
+  return showDoctors(phone, context);
 }
 
 async function showDoctors(phone: string, context: SessionContext): Promise<void> {
@@ -307,7 +378,8 @@ async function showDoctors(phone: string, context: SessionContext): Promise<void
     title: fit(`${d.title} ${d.fullName}`, 24),
     description: fit(d.specialty, 72),
   }));
-  await setSession(phone, "choose_doctor", { procedureId: context.procedureId, page });
+  const { procedureId, hintDate, hintPeriod } = context;
+  await setSession(phone, "choose_doctor", { procedureId, page, hintDate, hintPeriod });
   await sendList(phone, {
     body: text.steps.choose_doctor,
     buttonText: text.listOpenButtons.doctor,
@@ -316,18 +388,18 @@ async function showDoctors(phone: string, context: SessionContext): Promise<void
 }
 
 async function handleDoctor(phone: string, session: Session, replyId: string | null) {
-  const { procedureId } = session.context;
+  const { procedureId, hintDate, hintPeriod } = session.context;
   if (!procedureId) return showProcedures(phone, {});
 
   const more = replyId ? parseMoreRowId(replyId) : null;
-  if (more !== null) return showDoctors(phone, { procedureId, page: more });
+  if (more !== null) return showDoctors(phone, { procedureId, page: more, hintDate, hintPeriod });
 
   const doctorId = parseNumericId(replyId, "doc:");
   const doctors = await getDoctorsForProcedure(procedureId);
   if (!doctorId || !doctors.some((d) => d.id === doctorId)) {
     return notUnderstood(phone, session);
   }
-  return showDates(phone, { procedureId, doctorId });
+  return goToDates(phone, { procedureId, doctorId, hintDate, hintPeriod });
 }
 
 // ---------- Tarih ve saat (randevu alma ve erteleme ortak) ----------
@@ -335,6 +407,14 @@ async function handleDoctor(phone: string, session: Session, replyId: string | n
 /** Seçimden bağımsız kalıcı alanlar: işlem, doktor ve (ertelemede) randevu. */
 function baseOf({ procedureId, doctorId, appointmentId }: SessionContext): SessionContext {
   return { procedureId, doctorId, appointmentId };
+}
+
+/** Mesajda gün verildiyse doğrudan o güne geç, yoksa gün listesini göster. */
+async function goToDates(phone: string, context: SessionContext): Promise<void> {
+  if (context.hintDate) {
+    return selectDate(phone, baseOf(context), context.hintDate, context.hintPeriod);
+  }
+  return showDates(phone, context);
 }
 
 async function showDates(phone: string, context: SessionContext): Promise<void> {
@@ -349,7 +429,11 @@ async function showDates(phone: string, context: SessionContext): Promise<void> 
     id: `date:${date}`,
     title: fit(formatDate(istanbulLocalToIso(date, "12:00")), 24),
   }));
-  await setSession(phone, MODE_STEPS[mode].date, { ...baseOf(context), page });
+  await setSession(phone, MODE_STEPS[mode].date, {
+    ...baseOf(context),
+    page,
+    hintPeriod: context.hintPeriod,
+  });
   await sendList(phone, {
     body: MODE_TEXT[mode].date,
     buttonText: text.listOpenButtons.date,
@@ -367,6 +451,22 @@ async function handleDate(phone: string, session: Session, replyId: string | nul
 
   const date = replyId?.startsWith("date:") ? replyId.slice("date:".length) : null;
   if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return notUnderstood(phone, session);
+  return selectDate(phone, base, date, session.context.hintPeriod);
+}
+
+/**
+ * Gün seçildi (listeden veya mesajdan). Boş saat yoksa gün listesine döner.
+ * Tercih edilen dilimde (mesajdaki "sabah" / "öğleden sonra") saat varsa
+ * doğrudan o dilimin saatleri gösterilir.
+ */
+async function selectDate(
+  phone: string,
+  base: SessionContext,
+  date: string,
+  preferred?: TimePeriod,
+): Promise<void> {
+  const { procedureId, doctorId } = base;
+  if (!procedureId || !doctorId) return restart(phone, base);
 
   const slots = await getAvailableSlots(doctorId, procedureId, date);
   if (slots.length === 0) {
@@ -374,9 +474,12 @@ async function handleDate(phone: string, session: Session, replyId: string | nul
     return showDates(phone, base);
   }
 
-  // 10'dan fazla saat varsa ve iki dilimde de saat varsa önce sabah/öğleden sonra sorulur.
   const periods = splitByPeriod(slots, (s) => formatTime(s.slot_start));
   const context: SessionContext = { ...base, date };
+  if (preferred && periods[preferred].length > 0) {
+    return showTimes(phone, { ...context, timePeriod: preferred });
+  }
+  // 10'dan fazla saat varsa ve iki dilimde de saat varsa önce sabah/öğleden sonra sorulur.
   if (slots.length > 10 && periods.morning.length > 0 && periods.afternoon.length > 0) {
     return showPeriods(phone, context);
   }
@@ -575,15 +678,21 @@ async function checkChangeAllowed(phone: string): Promise<ActiveAppointment | nu
   return appointment;
 }
 
-async function startChange(phone: string, action: "cancel" | "reschedule"): Promise<void> {
+async function startChange(
+  phone: string,
+  action: "cancel" | "reschedule",
+  hints: Hints = {},
+): Promise<void> {
   const appointment = await checkChangeAllowed(phone);
   if (!appointment) return;
 
   if (action === "reschedule") {
-    return showDates(phone, {
+    return goToDates(phone, {
       appointmentId: appointment.id,
       procedureId: appointment.procedureId,
       doctorId: appointment.doctorId,
+      hintDate: hints.hintDate,
+      hintPeriod: hints.hintPeriod,
     });
   }
   await setSession(phone, "confirm_cancel", { appointmentId: appointment.id });
