@@ -86,33 +86,6 @@ Açık madde yok.
 
 ## Test ekibi (Tuğba, Nezahat)
 
-### 11. Dosya adı yazım hatası
-- **Dosya:** `docs/test/senarolar.md` (PR #4)
-- **Sorun:** Dosya adı `senarolar.md`, PR açıklamasında ve log'da `senaryolar.md`.
-- **Yapılacak:** `git mv docs/test/senarolar.md docs/test/senaryolar.md`.
-
-### 12. Kurallarda olmayan beklentiler
-- **Dosya:** `docs/test/senarolar.md` (PR #4)
-- **Sorun:**
-  - P4: "Sebep boş bırakılırsa işlem engellenir" — `rejection_reason` sütunu boş bırakılabilir, AGENTS.md'de zorunlu değil.
-  - P8: Panelden erteleme sonrası yeni randevunun durumu yazılmamış. `reschedule_appointment` yeni randevuyu her zaman `pending` açıyor; panelden ertelenen randevu da tekrar onay bekleyecek.
-  - B12: Resim gelince ne olacağı AGENTS.md'de tanımlı değil; beklenen sonuç bot ekibiyle netleştirilmeli.
-- **Yapılacak:** Bu maddeleri "netleştirilecek" olarak işaretle veya gerçek kurala göre düzelt.
-
-### 13. Log'da yarım cümle
-- **Dosya:** `logs/tugba.md` (PR #4)
-- **Sorun:** "Ne yapıldı" maddesi "P1 ve P2 senaryoları" diye yarım kalmış.
-- **Yapılacak:** Sonraki kayıtta düzelt.
-
-### 37. PR #33 log kaydı biçimi ve tutarsızlıklar
-- **Dosya:** `logs/tugba.md` (PR #33)
-- **Sorun:** Başlık `## 6 Kasım 2026 23:45 — Tuğba Aslan` şeklinde; AGENTS.md formatı `## 2026-11-06 23:45 — Kısa başlık`. "Ne yapıldı" maddesinde P5 denenmiş gibi yazıyor, sonuç tablosunda P5 "Denenemedi". PR'ın kapattığı 11, 12 ve 13. maddeler kayıtta belirtilmemiş, `tasks.md`'den de silinmemiş. Eski kaydın (30 Ekim) içeriği düzenlenmiş; eski kayıtlar değiştirilmez, düzeltme yeni kayıtta yazılır. Dosya sonunda satır sonu yok.
-- **Yapılacak:** Sonraki kayıtta tarih formatını AGENTS.md'ye uydur, P5 ifadesini tabloyla eşle, kapatılan maddeleri yaz ve `tasks.md`'den sil.
-
-### 38. Test sonuç tablosunda eksik ayrıntılar
-- **Dosya:** `docs/test/senaryolar.md` (PR #33)
-- **Sorun:** B12 "Geçti" işaretli ama beklenen sonuç "netleştirilecek"; botun resme verdiği cevap yazılmamış. B7 ve B9 "Kaldı" yazıyor; kodda iptal/erteleme butonları var ama işleyicileri henüz yazılmamış (`lib/bot/flow.ts`), yani hata değil eksik özellik. P8-P11 tek satırda toplanmış, her senaryonun sebebi ayrı görünmüyor. Dosya sonunda satır sonu yok.
-- **Yapılacak:** B12 notuna botun cevabını aynen yaz. B7/B9 notunu "özellik henüz yok" diye düzelt. P8-P11'i ayrı satırlara böl. Dosya sonuna satır sonu ekle.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 
