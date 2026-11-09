@@ -39,6 +39,12 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** `steps` nesnesindeki anahtarlar Sevde'nin `lib/bot/steps.ts` dosyasıyla aynı olmalı, ancak `steps.ts` henüz main'de yok. İki ayrı listede aynı isimler elle tutulursa zamanla ayrışır.
 - **Yapılacak:** `steps.ts` gelince `steps` nesnesinin tipini oradaki adım listesine bağla (ör. `satisfies Partial<Record<Step, string>>`).
 
+### 25. Gemini test setinde belirsiz beklentiler ve eksik senaryolar
+- **Dosya:** `scripts/gemini-test/dataset.json` (PR #14)
+- **Sorun:** id 24 ("17 den sonra uygun musunuz") için `time: "17:00"` bekleniyor; mesaj bir saat değil alt sınır veriyor. id 13 ("diş çekimi") için `Basit Diş Çekimi` bekleniyor; basit mi gömülü mü olduğu belli değil. "menü", geçmiş tarih ("dün"), randevu penceresi dışı tarih ("3 ay sonra") ve saat aralığı ("10-12 arası") senaryoları yok. Dosya sonunda satır sonu yok.
+- **Yapılacak:** id 24 ve 13'ün beklenen değerini netleştir (ör. `time: null`, `procedure: null` veya `Muayene`), eksik senaryoları ekle.
+- **Durum:** PR #39'da yapıldı ama o PR 68 vakanın 21'ini (id 48-68) sildiği için değişiklik istendi. Silinen vakalar geri konunca ve 45. madde de yapılınca birleşecek.
+
 ### 39. Klinik telefonu yokken "kliniği arayın" metni
 - **Dosya:** `lib/bot/flow.ts` (`checkChangeAllowed`), `lib/bot/messages.ts` (PR #35)
 - **Sorun:** Telefon boşken metin `cancelDeadlinePassed("").replace(/:\s*$/, ".")` ile kırpılıyor. `messages.ts`'teki cümle değişirse (ör. sonu iki nokta ile bitmezse) kırpma sessizce bozulur.
@@ -60,19 +66,19 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Yapılacak:** `hintDate`, `upcomingOpenDates` listesinde yoksa "boş saat kalmadı" yerine "Bu tarihte randevu verilemiyor" gibi bir metinle gün listesini göster (metin Ebru'dan). `time` için şimdilik bir şey yapılmayacaksa PR açıklamasına/log'a not düş; kullanılacaksa o saate en yakın slotu listenin başına almak yeterli.
 
 ### 45. Gemini test setinde iki beklenen değer
-- **Dosya:** `scripts/gemini-test/dataset.json` (PR #39)
-- **Sorun:** id 50 ("3 ay sonra için randevu alabiliyor muyuz") için `intent: "other"` bekleniyor; `lib/ai/intent.ts`'teki tanıma göre müsaitlik soran mesaj `book`, `date: null` olmalı (pencere dışı olduğuna Gemini değil kod karar verir). id 48 ("menü") Gemini'ye hiç gitmiyor; `flow.ts` bu kelimeyi önce yakalıyor, bu vaka botun gerçek davranışını ölçmüyor. Dosya sonunda satır sonu hâlâ yok.
-- **Yapılacak:** id 50'yi `book` yap. id 48'i sil ya da yerine "ana sayfaya dönmek istiyorum" gibi Gemini'ye giden bir mesaj koy. Dosya sonuna satır sonu ekle.
+- **Dosya:** `scripts/gemini-test/dataset.json` (PR #39, açık)
+- **Sorun:** PR #39'da eklenen vakalardan id 50 ("3 ay sonra için randevu alabiliyor muyuz") için `intent: "other"` bekleniyor; `lib/ai/intent.ts`'teki tanıma göre müsaitlik soran mesaj `book`, `date: null` olmalı (pencere dışı olduğuna Gemini değil kod karar verir). id 48 ("menü") Gemini'ye hiç gitmiyor; `flow.ts` bu kelimeyi önce yakalıyor, bu vaka botun gerçek davranışını ölçmüyor. Dosya sonunda satır sonu hâlâ yok.
+- **Yapılacak:** PR #39'u düzeltirken bunu da yap: id 50'yi `book` yap. "menü" vakasını sil ya da yerine "ana sayfaya dönmek istiyorum" gibi Gemini'ye giden bir mesaj koy. Dosya sonuna satır sonu ekle. Silinen 21 vaka geri gelince id'ler değişeceği için yeni vakaları sona ekle.
 
 ### 46. Akış metinlerinin `flow.ts`'te kullanılması (32. maddenin Sevde kısmı)
 - **Dosya:** `lib/bot/flow.ts`, `lib/bot/messages.ts` (PR #42)
 - **Sorun:** PR #42, 32. maddeyi tamamen sildi ama maddenin sadece Ebru kısmı yapıldı. `flow.ts`'te geçici `MORE_OPTIONS_TITLE` sabiti duruyor, `errors.invalidName` ve `listRows.otherOptions` hiçbir yerde kullanılmıyor.
 - **Yapılacak:** Sevde: `MORE_OPTIONS_TITLE` yerine `listRows.otherOptions` kullan ve sabiti sil; geçersiz ad soyadda soruyu tekrarlamak yerine `errors.invalidName` gönder.
 
-### 47. Ebru'nun PR #39-#42 log kayıtları
-- **Dosya:** `logs/ebru.md` (PR #39, #40, #41, #42)
-- **Sorun:** PR #39 kaydının başlığı `2026.11.08 20.35` biçiminde (AGENTS.md: `2026-11-08 20:35`). PR #40 kaydı 26. maddeyi kapattığını yazmıyor, "Biçim bozuluğu" yazım hatası var. PR #42 kaydında kişi "Ebrar / Claude" yazıyor (Ebrar site ekibinde) ve 32. madde geçmiyor. PR #41 için log kaydı yok, 10. maddenin kapatıldığı hiçbir kayıtta geçmiyor. Dosya sonunda satır sonu yine yok.
-- **Yapılacak:** Sonraki kayıtta bu PR'larda kapatılan maddeleri (10, 25, 26, 32) ve kişi adını düzelt; tarih biçimini AGENTS.md'ye uydur, dosya sonuna satır sonu ekle.
+### 47. Ebru'nun PR #40-#42 log kayıtları
+- **Dosya:** `logs/ebru.md` (PR #40, #41, #42; açık PR #39)
+- **Sorun:** PR #40 kaydı 26. maddeyi kapattığını yazmıyor, "Biçim bozuluğu" yazım hatası var. PR #42 kaydında kişi "Ebrar / Claude" yazıyor (Ebrar site ekibinde) ve 32. madde geçmiyor. PR #41 için log kaydı yok, 10. maddenin kapatıldığı hiçbir kayıtta geçmiyor. Dosya sonunda satır sonu yine yok.
+- **Yapılacak:** Sonraki kayıtta bu PR'larda kapatılan maddeleri (10, 26, 32) ve kişi adını düzelt, dosya sonuna satır sonu ekle. PR #39'daki kaydın başlığını da düzelt: `2026.11.08 20.35` yerine `2026-11-08 20:35`.
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
