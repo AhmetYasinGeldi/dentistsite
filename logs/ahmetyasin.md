@@ -157,5 +157,5 @@
 - **Değişen dosyalar:** `docs/marka/*`, `public/logo/*`, `app/favicon.ico`, `app/icon.svg`, `app/apple-icon.png`, `app/globals.css`, `app/layout.tsx`, `README.md`, `AGENTS.md`, `tasks.md`, `logs/ahmetyasin.md`
 - **Neden:** Klinik kimliğinin (ZB Dentist) belirlenmesi; site ve panelin aynı renk, font ve logoyu kullanması.
 - **Nasıl test edildi:** `npm run lint` ve `npm run build` başarılı. `next start` ile ana sayfanın başlığı, favicon/icon/apple-icon etiketleri, `/logo/` dosyaları ve CSS'teki yeni renk değerleri kontrol edildi. Ekranlar gözle kontrol edilmedi (site 50 ve panel 51 maddelerinde).
-- **Açık konular:** Veritabanında `clinic_settings.name` "ZB Dentist" olarak SQL Editor'den güncellenecek. Logo paketinde sağ yaprak `#0E7C86` renginde, paket README'si "petrol" (`#0E4D5C`) diyor; logo dosyaları olduğu gibi bırakıldı.
+- **Açık konular:** Veritabanında `clinic_settings.clinic_name` "ZB Dentist" olarak SQL Editor'den güncellenecek. Logo paketinde sağ yaprak `#0E7C86` renginde, paket README'si "petrol" (`#0E4D5C`) diyor; logo dosyaları olduğu gibi bırakıldı.
 - **Başka ekipten istek:** Site ekibi: 50. Panel ekibi: 51.
