@@ -1,6 +1,6 @@
 # ZB Dentist — Logo Paketi
 
-Bu paket, ZB Dentist sitesi için seçilen **"Yaprak Diş"** logosunu içerir. İki zeytin yaprağı birleşerek bir diş oluşturur: sol yaprak zeytin yeşili, sağ yaprak petrol rengidir. Zeytin motifi, Zeytinburnu adından esinlenmiştir.
+Bu paket, ZB Dentist sitesi için seçilen **"Yaprak Diş"** logosunu içerir. İki zeytin yaprağı birleşerek bir diş oluşturur: sol yaprak zeytin yeşili (`#5E8C31`), sağ yaprak deniz turkuazıdır (`#0E7C86`). Renklerin tamamı aşağıdaki "Logo renkleri" tablosunda. Zeytin motifi, Zeytinburnu adından esinlenmiştir.
 
 > Not: ZB Dentist, proje kapsamında oluşturulmuş kurgusal bir kliniktir. Logo, Zeytinburnu Belediyesi amblemini kopyalamaz; yalnızca zeytin motifi yorumlanmıştır.
 
@@ -85,6 +85,19 @@ Mobilde yer darsa yatay logo yerine `zb-dentist-isaret-renkli.svg` kullanılabil
 - **Boşluk:** Logonun çevresinde, en az diş işaretinin yarı genişliği kadar boşluk bırakın.
 - **Zemin:** Renkli logo açık zeminde (beyaz, `#F6F8F5`, `#E3EFEA`), beyaz logo koyu zeminde (`#0E4D5C`, `#14232B`) kullanılır.
 - **Yapılmaması gerekenler:** Logoyu esnetmeyin, döndürmeyin, renklerini değiştirmeyin, gölge veya efekt eklemeyin, karmaşık fotoğrafların üzerine koymayın.
+- **Renkler:** Logo dosyalarındaki renkler aşağıdaki tablodaki gibidir ve değiştirilmez.
+
+### Logo renkleri
+
+| Parça | Renkli logo (açık zemin) | Beyaz logo (koyu zemin) |
+|---|---|---|
+| Sol yaprak | Zeytin `#5E8C31` | Açık zeytin `#A6C66B` |
+| Sağ yaprak | Deniz turkuazı `#0E7C86` | Açık turkuaz `#8FD3D8` |
+| Yaprak damarları | Beyaz `#FFFFFF` | Petrol `#0E4D5C` |
+| "ZB Dentist" yazısı | Petrol `#0E4D5C` | Beyaz `#FFFFFF` |
+| "Ağız ve Diş Sağlığı" yazısı | Gri `#5B6B73` | Beyaz `#FFFFFF` |
+
+Deniz turkuazı (`#0E7C86`) ve açık tonlar yalnızca logoda kullanılır; site temasında yoktur. Sitede ana renk petroldür (`#0E4D5C`).
 
 ---
 
