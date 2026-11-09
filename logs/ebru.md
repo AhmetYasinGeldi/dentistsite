@@ -47,3 +47,13 @@
 - **Nasıl test edildi:** `npm run lint` ve `npm run build` başarılı.
 - **Açık konular:** Yok.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-08 20:50 — `messages.ts` biçim bozukluğu giderildi
+- **Kişi / araç:** Ebru / Codex
+- **Dal:** fix/bot-mesaj-bicim-duzeltme
+- **Ne yapıldı:** `messages.ts` biçim bozukluğu giderildi.
+- **Değişen dosyalar:** `lib/bot/messages.ts`, `tasks.md`, `logs/ebru.md`
+- **Neden:** Biçim bozuluğu.
+- **Nasıl test edildi:** `npm run build` başarılı.
+- **Açık konular:** Yok
+- **Başka ekipten istek:** Yok
