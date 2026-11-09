@@ -87,8 +87,6 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
-Açık madde yok.
-
 ### 52. Hero arka plan görselleri dış kaynaktan ve optimize edilmeden yükleniyor
 - **Dosya:** `components/site/HeroBackgroundSlider.tsx` (PR #44)
 - **Sorun:** Dört görsel doğrudan `images.unsplash.com` adresinden, 1920 px genişlikte ve `<img>` ile çekiliyor. Mobilde ilk açılış ağırlaşıyor, görseller Unsplash'e bağlı kalıyor. Slayt `prefers-reduced-motion` ayarına bakmadan 5 saniyede bir değişiyor.

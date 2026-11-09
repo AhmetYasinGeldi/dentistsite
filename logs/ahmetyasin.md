@@ -167,5 +167,5 @@
 - **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
 - **Neden:** PR #44 incelemesinde birleştirmeyi engellemeyen düzeltmelerin takip edilmesi.
 - **Nasıl test edildi:** PR dalında `npm run lint` hatasız, `npm run build` başarılı. Mobil header taşması genişlik hesabıyla tespit edildi, tarayıcıda denenmedi.
-- **Açık konular:** 56 ve 57 öncelikli. PR #44 birleştikten sonra main bu dala alınacak; `tasks.md` çakışmasında 50. maddenin yerine 52-57 kalacak.
+- **Açık konular:** 56 ve 57 öncelikli. PR #44 birleşti, main bu dala alındı; site bölümündeki "Açık madde yok." satırı kaldırıldı.
 - **Başka ekipten istek:** Site ekibi: 52, 53, 54, 55, 56 ve 57.
