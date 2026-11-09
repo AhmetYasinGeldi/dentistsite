@@ -139,3 +139,13 @@
 - **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #37 dalında `npm run lint` ve `npm run build` başarılı. Vercel build log'ları ve ortam değişkeni listesi (sadece adlar ve hedef ortamlar) Vercel'den okundu.
 - **Açık konular:** Vercel'de en azından `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` Preview ortamına da eklenecek. Gemini test scripti gerçek anahtarla çalıştırılıp sonuç Sevde'ye iletilecek.
 - **Başka ekipten istek:** Bot ekibi: 43 ve 44.
+
+## 2026-11-09 22:00 — PR #33, #39, #40, #41, #42 incelemesi ve tasks.md toplu güncelleme
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-33-42-inceleme
+- **Ne yapıldı:** PR #33, #39, #40, #41 ve #42 incelendi. #39'da test setinden 21 vaka (id 48-68) silindiği için değişiklik istendi; diğerlerinde birleşmeyi engelleyen bulgu çıkmadı. Bu PR'lar `tasks.md` ve `logs/ebru.md`'de birbiriyle çakıştığı için `tasks.md`'nin son hali bu dalda toplandı: PR'ların kapattığı 10, 11, 12, 13, 25, 26, 32, 37 ve 38. maddeler silindi, yeni bulgular Bot 45-47 ve Test 48-49 olarak eklendi. 32. maddenin yapılmayan Sevde kısmı 46. madde olarak korundu. Panel 35 ve 41 denemesi için 8 Kasım tarihli, saati geçmiş sahte bir bekleyen randevu SQL Editor'den eklendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR incelemelerinde çıkan küçük düzeltmelerin takibi ve PR'lar arası `tasks.md` çakışmalarının tek yerde çözülmesi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #40 ve #42 dallarında `npm run lint` ve `npm run build` başarılı. PR'ların main ile birleşmesi `git merge-tree` ile denendi.
+- **Açık konular:** Bu dal, beş PR birleştikten sonra en son birleştirilecek; `tasks.md` çakışmasında bu dalın hali alınacak. #39 düzeltilmeden birleşmezse 25. madde geri eklenmeli.
+- **Başka ekipten istek:** Bot ekibi: 45, 46 ve 47. Test ekibi: 48 ve 49.
