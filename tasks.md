@@ -87,10 +87,7 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
-### 50. Siteyi ZB Dentist markasına uydurma
-- **Dosya:** `components/site/HeroSection.tsx` ve diğer site bileşenleri (marka PR'ı)
-- **Sorun:** Tema renkleri ve fontlar `globals.css`/`layout.tsx`'te ZB Dentist'e geçti, site bunları otomatik alıyor. Ama WhatsApp butonu `bg-primary text-primary-foreground` kullanıyor; marka kuralı WhatsApp butonu için `bg-whatsapp text-whatsapp-foreground` diyor. Sitede logo yok. Hero başlığı `font-extrabold` (800), Outfit sadece 600 ve 700 ağırlıklarıyla yüklü.
-- **Yapılacak:** WhatsApp butonunu `bg-whatsapp text-whatsapp-foreground` yap. Header'a `/logo/zb-dentist-logo-renkli.svg`, footer'a `/logo/zb-dentist-logo-beyaz.svg` ekle (`next/image`). Başlıklarda `font-bold` kullan; kart ve butonlarda `rounded-brand` ve `border-border` kullan. Kurallar `AGENTS.md` bölüm 10, "Marka ve tema".
+Açık madde yok.
 
 ## Test ekibi (Tuğba, Nezahat)
 
