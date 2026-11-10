@@ -99,15 +99,6 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Test ekibi (Tuğba, Nezahat)
 
-### 48. PR #33 log kayıtlarında kalan yer tutucular
-- **Dosya:** `logs/tugba.md` (PR #33)
-- **Sorun:** 6 Kasım kaydının "Açık konular" maddesinde `[sebep, ör. ikinci numara yok, ...]`, 7 Kasım kaydının "Nasıl test edildi" maddesinde `[lint ve build çalıştırdıysan sonucu yaz, ...]` yer tutucusu duruyor. 8 Kasım kaydı yer tutucuların doldurulduğunu söylüyor.
-- **Yapılacak:** Sonraki kayıtta bu iki yer tutucunun yerine geçen bilgiyi yaz (eski kayıtları değiştirme).
-
-### 49. B7 ve B9 sonucunda "bildirim gönderilemedi" ifadesi
-- **Dosya:** `docs/test/senaryolar.md`, `logs/tugba.md` (PR #33)
-- **Sorun:** B7 (iptal) ve B9 (erteleme) bottan yapılan işlemler; hasta cevabı sohbette doğrudan alır, `notifyAppointmentUpdate` ve panelin "bildirim gönderilemedi" uyarısı bu senaryolarda devreye girmez. Log'da "panel bildirim gönderilemedi uyarısı gösterdi" yazıyor; neyin denendiği belli değil. Dosya sonunda satır sonu hâlâ yok.
-- **Yapılacak:** B7/B9'u tekrar dene: bot iptal/erteleme sonrası sohbette onay mesajı gönderdi mi, veritabanında durum doğru mu, bunları ayrı ayrı yaz. Panelden yapılan iptal/onay bildirim hatası P3/P7 satırında kalsın. Dosya sonuna satır sonu ekle.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 

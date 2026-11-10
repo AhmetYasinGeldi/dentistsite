@@ -296,9 +296,9 @@ Genel notlar:
 | B4 | Denenemedi | Aynı saati ikinci bir kayıtlı numaradan seçmek gerekiyor, tek numarayla denenemedi |
 | B5 | Geçti | |
 | B6 | Geçti | |
-| B7 | Kaldı | İptal/erteleme çalışıyor, bildirim gönderilemedi.|
-| B8 | Denenemedi | Randevusuna 2 saatten az kalan test hastası oluşturulamadı (panelde elle randevu yok) |
-| B9 | Kaldı | İptal/erteleme çalışıyor, bildirim gönderilemedi. |
+| B7 | Geçti | Bot iptalden sonra "Randevunuz iptal edildi." yazdı. Panelde randevu "İptal edildi", iptal eden hasta. |
+| B8 | Geçti | Randevuya 2 saatten az kalınca bot iptali reddetti: "Randevunuza az süre kaldığı için iptal veya erteleme işlemini buradan yapamıyoruz. Lütfen kliniği arayın: +15556319718". Randevu önceden oluşturulup saatine yaklaşınca denendi. |
+| B9 | Geçti | Bot "Erteleme talebiniz alındı, klinik onayladığında bilgilendirileceksiniz." yazdı. Panelde eski randevu "İptal edildi", yeni randevu "Onay bekliyor". |
 | B10 | Geçti | |
 | B11 | Geçti | |
 | B12 | Geçti | Bot cevabı: Anlayamadım, menüden seçer misiniz? "menü" yazarak menüye dönebilirsiniz. |
@@ -311,10 +311,10 @@ Genel notlar:
 | P1 | Geçti | |
 | P2 | Geçti | |
 | P3 | Kaldı | Onay çalışıyor, bildirim gönderilemedi (Bulunan Hatalar kartı) |
-| P4 | Denenemedi | Özellik henüz yok |
+| P4 | Kaldı | Red çalışıyor, ama hastaya WhatsApp bildirimi gönderilemedi (24 saat içinde denendi). Bildirim hata kartında takip ediliyor. |
 | P5 | Denenemedi | Elle randevu özelliği yok |
 | P6 | Denenemedi | Elle randevu özelliği yok |
-| P7 | Kaldı | İptal çalışıyor, bildirim gönderilemedi (Bulunan Hatalar kartı) |
+| P7 | Kaldı | İptal çalışıyor (panel "Randevu iptal edildi" dedi), ama hastaya WhatsApp bildirimi gönderilemedi (24 saat içinde denendi). Bildirim hata kartında takip ediliyor. |
 | P8 | Denenemedi | Özellik henüz yok |
 | P9 | Denenemedi | Özellik henüz yok |
 | P10 | Denenemedi | Özellik henüz yok |
