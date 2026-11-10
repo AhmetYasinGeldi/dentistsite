@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -131,14 +132,20 @@ function getAdminUrl(
   notice: string,
   notification?: "sent" | "failed" | "window_closed" | "past",
   errorCode?: DbErrorCode,
+  rescheduleDetails?: { appointmentId: number; date: string },
 ): string {
   const params = new URLSearchParams();
   if (filters.date) params.set("date", filters.date);
   if (filters.doctorId) params.set("doctorId", filters.doctorId);
   if (filters.status) params.set("status", filters.status);
   params.set("notice", notice);
+  params.set("resultId", randomUUID());
   if (notification) params.set("notification", notification);
   if (errorCode) params.set("error", errorCode);
+  if (rescheduleDetails) {
+    params.set("rescheduleAppointmentId", String(rescheduleDetails.appointmentId));
+    params.set("rescheduleDate", rescheduleDetails.date);
+  }
 
   return `/admin?${params.toString()}`;
 }
@@ -278,7 +285,7 @@ export async function cancelAppointmentAction(
     })
     .eq("id", parsedId.data)
     .in("status", ["pending", "approved"])
-    .select("id")
+    .select("id, starts_at")
     .maybeSingle();
 
   if (error) {
@@ -287,7 +294,13 @@ export async function cancelAppointmentAction(
   }
   if (!data) redirect(getAdminUrl(filters, "stale"));
 
-  await notifyAndRefresh(data.id, "cancelled", filters);
+  const appointmentHasPassed = Date.parse(data.starts_at) <= Date.now();
+  await notifyAndRefresh(
+    data.id,
+    "cancelled",
+    filters,
+    appointmentHasPassed ? "past" : undefined,
+  );
 }
 
 export async function completeAppointmentAction(
@@ -425,10 +438,12 @@ export async function rescheduleAppointmentAction(
     .object({
       appointmentId: appointmentIdSchema,
       newStartsAt: newStartsAtSchema,
+      rescheduleDate: rescheduleDateSchema,
     })
     .safeParse({
       appointmentId: formData.get("appointmentId"),
       newStartsAt: formData.get("newStartsAt"),
+      rescheduleDate: formData.get("rescheduleDate"),
     });
 
   if (!parsed.success) redirect(getAdminUrl(filters, "invalid"));
@@ -446,12 +461,21 @@ export async function rescheduleAppointmentAction(
   if (error) {
     console.error("Randevu ertelenirken Supabase hatası:", error);
     const code = getErrorCode(error);
+    const dbErrorCode = isDbErrorCode(code) ? code : undefined;
+    const shouldReopenDetails =
+      dbErrorCode === "RD004" || dbErrorCode === "23P01";
     redirect(
       getAdminUrl(
         filters,
         "operation_failed",
         undefined,
-        isDbErrorCode(code) ? code : undefined,
+        dbErrorCode,
+        shouldReopenDetails
+          ? {
+              appointmentId: parsed.data.appointmentId,
+              date: parsed.data.rescheduleDate,
+            }
+          : undefined,
       ),
     );
   }

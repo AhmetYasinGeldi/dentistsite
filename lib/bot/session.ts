@@ -17,6 +17,9 @@ export const sessionContextSchema = z
     slotStart: z.iso.datetime({ offset: true }),
     page: z.number().int().min(0), // liste sayfası ("Diğer ..." satırı)
     appointmentId: z.number().int(), // iptal/erteleme yapılan randevu
+    // Hastanın serbest yazdığı mesajdan (Gemini) gelen ipuçları; gün seçilince silinir.
+    hintDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    hintPeriod: z.enum(["morning", "afternoon"]),
   })
   .partial();
 

@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37 incelemesi)
+Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44 incelemesi)
 
 ---
 
@@ -17,21 +17,6 @@ Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
-### 41. Saati geçmiş randevu iptalinde bildirim
-- **Dosya:** `app/admin/actions.ts` (`cancelAppointmentAction`) (PR #36)
-- **Sorun:** `starts_at` kontrolü kaldırıldığı için panel artık saati geçmiş aktif randevuyu da iptal edebiliyor. Bu durumda hastaya "klinik randevunuzu iptal etti" mesajı gidiyor; geçmiş bir randevu için anlamsız.
-- **Yapılacak:** Red işlemindeki gibi randevu saati geçmişse `notifyAndRefresh(..., "past")` ile bildirimi atla ve "randevu saati geçmiş" uyarısını göster.
-
-### 42. Erteleme hata mesajlarının denenmesi
-- **Dosya:** `app/admin/actions.ts` (`rescheduleAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #36)
-- **Sorun:** 23P01 / RD004 (saat doldu) ve RD003 (randevu artık aktif değil) mesajları elle tetiklenmedi.
-- **Yapılacak:** İki sekmede aynı randevunun erteleme penceresini aç, birinde saati seç ve ertele, diğerinde aynı saati seç: RD003 mesajını gör. Başka bir randevuyu bir sekmede seçilen saate ertele, diğerinde aynı saati seç: RD004 veya 23P01 mesajını gör. Sonucu log'a yaz.
-
-### 35. Geçmiş bekleyen randevu reddinin denenmesi
-- **Dosya:** `app/admin/actions.ts` (`rejectAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #31)
-- **Sorun:** Saati geçmiş bekleyen randevu reddedildiğinde bildirimin atlanması ve "Bildirim gönderilmedi, randevu saati geçmiş" mesajı elle denenmedi. Test verisindeki bekleyen randevuların hepsi ileri tarihli.
-- **Yapılacak:** Saati geçmiş bekleyen bir sahte randevuyla reddetmeyi dene; bildirimin gitmediğini ve mesajın göründüğünü log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
-
 ## Bot ekibi (Sevde, Ebru)
 
 ### 8. Adım isimlerini `steps.ts` ile eşleştirme
@@ -39,26 +24,11 @@ Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** `steps` nesnesindeki anahtarlar Sevde'nin `lib/bot/steps.ts` dosyasıyla aynı olmalı, ancak `steps.ts` henüz main'de yok. İki ayrı listede aynı isimler elle tutulursa zamanla ayrışır.
 - **Yapılacak:** `steps.ts` gelince `steps` nesnesinin tipini oradaki adım listesine bağla (ör. `satisfies Partial<Record<Step, string>>`).
 
-
-
-### 10. Ebru'nun eski log kayıtları
-- **Dosya:** `logs/ebru.md` (PR #7)
-- **Not:** İlk iki kayıtta dal `main` ve saat yok; kayıtlar silinmez ama bundan sonraki kayıtlarda saat ve doğru dal yazılmalı. Dosya başlığı (`# Ebru - ...`) eklenebilir.
-
 ### 25. Gemini test setinde belirsiz beklentiler ve eksik senaryolar
 - **Dosya:** `scripts/gemini-test/dataset.json` (PR #14)
 - **Sorun:** id 24 ("17 den sonra uygun musunuz") için `time: "17:00"` bekleniyor; mesaj bir saat değil alt sınır veriyor. id 13 ("diş çekimi") için `Basit Diş Çekimi` bekleniyor; basit mi gömülü mü olduğu belli değil. "menü", geçmiş tarih ("dün"), randevu penceresi dışı tarih ("3 ay sonra") ve saat aralığı ("10-12 arası") senaryoları yok. Dosya sonunda satır sonu yok.
 - **Yapılacak:** id 24 ve 13'ün beklenen değerini netleştir (ör. `time: null`, `procedure: null` veya `Muayene`), eksik senaryoları ekle.
-
-### 26. `messages.ts` biçim bozukluğu ve PR #17 log eksikleri
-- **Dosya:** `lib/bot/messages.ts`, `logs/ebru.md`, `tasks.md` (PR #17)
-- **Sorun:** `errors` içinde `cancelDeadlinePassed` metni girintisiz yazılmış ve `slotTaken` aynı satıra yapışmış. Log kaydında dal `fix bot mesaj parametre isimleri` yazıyor, gerçek dal `fix/bot-mesaj-parametre-isimleri`; parametre adlarının İngilizceye çevrilmesi ve 7. maddenin kapatılması kayıtta yok, sadece 9. madde geçiyor. `tasks.md`'de silinen maddelerin yerinde fazladan boş satırlar kaldı; `logs/ebru.md` sonunda satır sonu yok.
-- **Yapılacak:** `cancelDeadlinePassed` metnini 4 boşlukla girintile, `slotTaken`'ı ayrı satıra al. Sonraki log kaydında dal adını doğru yaz, kapatılan tüm maddeleri belirt. Fazla boş satırları sil.
-
-### 32. Akış için eksik metinler
-- **Dosya:** `lib/bot/messages.ts`, `lib/bot/flow.ts` (randevu alma akışı PR'ı)
-- **Sorun:** Geçersiz ad soyad yazıldığında ayrı bir uyarı metni yok; akış şimdilik soruyu tekrarlıyor. İşlem veya doktor listesi 10'u geçerse kullanılacak "Diğer" satırı için metin yok; akışta geçici olarak `MORE_OPTIONS_TITLE = "Diğer seçenekler"` yazılı.
-- **Yapılacak:** Ebru: `errors.invalidName` (ör. "Lütfen adınızı ve soyadınızı birlikte yazar mısınız?") ve `listRows.otherOptions` ekle. Sevde: eklenince `flow.ts`'te kullan, geçici sabiti sil.
+- **Durum:** PR #39'da yapıldı ama o PR 68 vakanın 21'ini (id 48-68) sildiği için değişiklik istendi. Silinen vakalar geri konunca ve 45. madde de yapılınca birleşecek.
 
 ### 39. Klinik telefonu yokken "kliniği arayın" metni
 - **Dosya:** `lib/bot/flow.ts` (`checkChangeAllowed`), `lib/bot/messages.ts` (PR #35)
@@ -80,12 +50,64 @@ Son güncelleme: 8 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** Gemini'nin verdiği `date` doğrudan `get_available_slots`'a gidiyor. Gün klinik tatili, doktorun çalışmadığı gün veya `booking_window_days` dışındaysa da hastaya "o gün boş saat kalmadı" deniyor; gün aslında hiç açık değil. Ayrıca `time` alanı ("14 gibi") okunuyor ama akışta kullanılmıyor.
 - **Yapılacak:** `hintDate`, `upcomingOpenDates` listesinde yoksa "boş saat kalmadı" yerine "Bu tarihte randevu verilemiyor" gibi bir metinle gün listesini göster (metin Ebru'dan). `time` için şimdilik bir şey yapılmayacaksa PR açıklamasına/log'a not düş; kullanılacaksa o saate en yakın slotu listenin başına almak yeterli.
 
+### 45. Gemini test setinde iki beklenen değer
+- **Dosya:** `scripts/gemini-test/dataset.json` (PR #39, açık)
+- **Sorun:** PR #39'da eklenen vakalardan id 50 ("3 ay sonra için randevu alabiliyor muyuz") için `intent: "other"` bekleniyor; `lib/ai/intent.ts`'teki tanıma göre müsaitlik soran mesaj `book`, `date: null` olmalı (pencere dışı olduğuna Gemini değil kod karar verir). id 48 ("menü") Gemini'ye hiç gitmiyor; `flow.ts` bu kelimeyi önce yakalıyor, bu vaka botun gerçek davranışını ölçmüyor. Dosya sonunda satır sonu hâlâ yok.
+- **Yapılacak:** PR #39'u düzeltirken bunu da yap: id 50'yi `book` yap. "menü" vakasını sil ya da yerine "ana sayfaya dönmek istiyorum" gibi Gemini'ye giden bir mesaj koy. Dosya sonuna satır sonu ekle. Silinen 21 vaka geri gelince id'ler değişeceği için yeni vakaları sona ekle.
+
+### 46. Akış metinlerinin `flow.ts`'te kullanılması (32. maddenin Sevde kısmı)
+- **Dosya:** `lib/bot/flow.ts`, `lib/bot/messages.ts` (PR #42)
+- **Sorun:** PR #42, 32. maddeyi tamamen sildi ama maddenin sadece Ebru kısmı yapıldı. `flow.ts`'te geçici `MORE_OPTIONS_TITLE` sabiti duruyor, `errors.invalidName` ve `listRows.otherOptions` hiçbir yerde kullanılmıyor.
+- **Yapılacak:** Sevde: `MORE_OPTIONS_TITLE` yerine `listRows.otherOptions` kullan ve sabiti sil; geçersiz ad soyadda soruyu tekrarlamak yerine `errors.invalidName` gönder.
+
+### 47. Ebru'nun PR #40-#42 log kayıtları
+- **Dosya:** `logs/ebru.md` (PR #40, #41, #42; açık PR #39)
+- **Sorun:** PR #40 kaydı 26. maddeyi kapattığını yazmıyor, "Biçim bozuluğu" yazım hatası var. PR #42 kaydında kişi "Ebrar / Claude" yazıyor (Ebrar site ekibinde) ve 32. madde geçmiyor. PR #41 için log kaydı yok, 10. maddenin kapatıldığı hiçbir kayıtta geçmiyor. Dosya sonunda satır sonu yine yok.
+- **Yapılacak:** Sonraki kayıtta bu PR'larda kapatılan maddeleri (10, 26, 32) ve kişi adını düzelt, dosya sonuna satır sonu ekle. PR #39'daki kaydın başlığını da düzelt: `2026.11.08 20.35` yerine `2026-11-08 20:35`.
+
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
-Açık madde yok.
+### 52. Hero arka plan görselleri dış kaynaktan ve optimize edilmeden yükleniyor
+- **Dosya:** `components/site/HeroBackgroundSlider.tsx` (PR #44)
+- **Sorun:** Dört görsel doğrudan `images.unsplash.com` adresinden, 1920 px genişlikte ve `<img>` ile çekiliyor. Mobilde ilk açılış ağırlaşıyor, görseller Unsplash'e bağlı kalıyor. Slayt `prefers-reduced-motion` ayarına bakmadan 5 saniyede bir değişiyor.
+- **Yapılacak:** Görselleri (Unsplash lisansıyla) indirip `public/` altına koymak için Ahmet Yasin'e iste ya da sayıyı bire indir; `next/image` ile `sizes` vererek yükle. Sadece ilk görsel öncelikli yüklensin. `motion-reduce:` ile ya da `matchMedia('(prefers-reduced-motion: reduce)')` kontrolüyle geçişi durdur.
+
+### 53. WhatsApp bağlantısı dört dosyada ayrı ayrı üretiliyor
+- **Dosya:** `components/site/Header.tsx`, `HeroSection.tsx`, `Footer.tsx`, `BookingSection.tsx` (PR #44)
+- **Sorun:** `NEXT_PUBLIC_WHATSAPP_NUMBER` okuma, rakam dışını silme ve `wa.me` adresini kurma kodu dört yerde kopyalanmış. WhatsApp ikonunun SVG yolu da dört kez tekrar ediyor. Biri değişirse diğerleri unutulur.
+- **Yapılacak:** `components/site/` altında tek bir yardımcı (ör. `whatsapp-link.ts`: `getWhatsappNumber()`, `buildWhatsappUrl(message)`) ve tek bir `WhatsappIcon` bileşeni yaz, dört dosya bunları kullansın.
+
+### 54. QuickBookingCard'da işlem tipi elle tanımlanmış
+- **Dosya:** `components/site/QuickBookingCard.tsx` (PR #44)
+- **Sorun:** `ProcedureOption` arayüzü `procedures` tablosunun alanlarını elle yeniden tanımlıyor. `AGENTS.md` bölüm 4 tabloların `lib/database.types.ts`'ten alınmasını istiyor.
+- **Yapılacak:** `Pick<Tables<"procedures">, "id" | "name" | "duration_minutes">` kullan.
+
+### 55. Site arayüzünde küçük tutarlılık düzeltmeleri
+- **Dosya:** `components/site/Doctors.tsx`, `Header.tsx`, `Footer.tsx`, `Treatments.tsx`, `AboutSection.tsx` (PR #44)
+- **Sorun:** Doktor fotoğrafı `h-16 w-16`, baş harf yuvarlağı `h-14 w-14`; kartlar farklı boyda görünüyor. Header'da logo bağlantısı `focus:outline-none` ile klavye odağını gizliyor. Footer'daki WhatsApp butonunda `shadow-sm hover:shadow-md hover:-translate-y-0.5` var, marka kuralı gölge istemiyor ve diğer WhatsApp butonları sadece `hover:opacity-90` kullanıyor. Tedaviler başlığındaki "Toplam N aktif işlem" yazısında "aktif" iç sistem dili. Hakkımızda bölümündeki branş listesi (ortodonti, endodonti, çene cerrahisi) elle yazılmış, veritabanındaki doktorlarla uyuşmayabilir. Mobilde menü bağlantıları tamamen gizli.
+- **Yapılacak:** İki yuvarlağı aynı boyuta getir. `focus:outline-none` yerine `focus-visible:outline-2 focus-visible:outline-primary` kullan. Footer butonunu diğerleriyle aynı yap. Metni "Toplam N tedavi" yap. Branş cümlesini genel tut ya da doktor listesinden üret. Mobil menü gerekip gerekmediğine ekipçe karar ver.
+
+### 56. Header mobilde yatay taşma yapıyor olabilir
+- **Dosya:** `components/site/Header.tsx` (PR #44)
+- **Sorun:** Logo 180 px ve `shrink-0`, WhatsApp butonu da `shrink-0`; `gap-6` ve `px-4` ile birlikte toplam genişlik yaklaşık 410 px. 375 px ve daha dar telefonlarda sayfada yatay kaydırma çıkması bekleniyor (hesapla tespit edildi, tarayıcıda denenmedi). `AGENTS.md` bölüm 10 dar alanda işaret logosunu istiyor.
+- **Yapılacak:** `md` altında `/logo/zb-dentist-isaret-renkli.svg`, `md` ve üstünde renkli tam logoyu göster ya da mobilde buton metnini kısalt. 360 px ve 375 px genişlikte yatay kaydırma olmadığını tarayıcıda dene, sonucu log'a yaz.
+
+### 57. PR #44 log kaydında yanlış ve eksik bilgi
+- **Dosya:** `logs/ahmetcicek.md` (PR #44)
+- **Sorun:** 9 Kasım 18:32 kaydı `HeroSection`, `Treatments` ve `Doctors` bileşenlerinin "cam efekti (glassmorphism) ve mikro-animasyonlarla" güncellendiğini söylüyor, kodda böyle bir şey yok. "Nasıl test edildi" kısmında `npm run build` sonucu ve tarayıcıda deneme yok.
+- **Yapılacak:** Eski kaydı değiştirmeden yeni bir kayıt ekle: yapılan değişikliği doğru anlat, `npm run build` sonucunu ve sitenin mobilde ve masaüstünde nasıl denendiğini yaz.
 
 ## Test ekibi (Tuğba, Nezahat)
 
+### 48. PR #33 log kayıtlarında kalan yer tutucular
+- **Dosya:** `logs/tugba.md` (PR #33)
+- **Sorun:** 6 Kasım kaydının "Açık konular" maddesinde `[sebep, ör. ikinci numara yok, ...]`, 7 Kasım kaydının "Nasıl test edildi" maddesinde `[lint ve build çalıştırdıysan sonucu yaz, ...]` yer tutucusu duruyor. 8 Kasım kaydı yer tutucuların doldurulduğunu söylüyor.
+- **Yapılacak:** Sonraki kayıtta bu iki yer tutucunun yerine geçen bilgiyi yaz (eski kayıtları değiştirme).
+
+### 49. B7 ve B9 sonucunda "bildirim gönderilemedi" ifadesi
+- **Dosya:** `docs/test/senaryolar.md`, `logs/tugba.md` (PR #33)
+- **Sorun:** B7 (iptal) ve B9 (erteleme) bottan yapılan işlemler; hasta cevabı sohbette doğrudan alır, `notifyAppointmentUpdate` ve panelin "bildirim gönderilemedi" uyarısı bu senaryolarda devreye girmez. Log'da "panel bildirim gönderilemedi uyarısı gösterdi" yazıyor; neyin denendiği belli değil. Dosya sonunda satır sonu hâlâ yok.
+- **Yapılacak:** B7/B9'u tekrar dene: bot iptal/erteleme sonrası sohbette onay mesajı gönderdi mi, veritabanında durum doğru mu, bunları ayrı ayrı yaz. Panelden yapılan iptal/onay bildirim hatası P3/P7 satırında kalsın. Dosya sonuna satır sonu ekle.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 

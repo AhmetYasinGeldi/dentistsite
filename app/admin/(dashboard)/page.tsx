@@ -68,6 +68,16 @@ const appointmentNoticeSchema = z.object({
     .enum(["sent", "failed", "window_closed", "past"])
     .optional(),
   error: z.enum(["RD002", "RD003", "RD004", "23P01"]).optional(),
+  resultId: z.uuid().optional(),
+});
+const rescheduleDetailsSchema = z.object({
+  appointmentId: z
+    .string()
+    .regex(/^[1-9]\d*$/)
+    .transform(Number)
+    .refine(Number.isSafeInteger)
+    .optional(),
+  date: z.iso.date().optional(),
 });
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -96,6 +106,12 @@ export default async function AppointmentsPage({
   const appointmentNotice = appointmentNoticeSchema.safeParse({
     notice: firstValue(params.notice),
     notification: firstValue(params.notification),
+    error: firstValue(params.error),
+    resultId: firstValue(params.resultId),
+  });
+  const requestedRescheduleDetails = rescheduleDetailsSchema.safeParse({
+    appointmentId: firstValue(params.rescheduleAppointmentId),
+    date: firstValue(params.rescheduleDate),
   });
   const parsedFilters = filtersSchema.safeParse({
     date: firstValue(params.date) ?? "",
@@ -180,6 +196,26 @@ export default async function AppointmentsPage({
   const pendingAppointments = pendingResult.data ?? [];
   const otherAppointments = othersResult.data ?? [];
   const doctors = doctorsResult.data ?? [];
+  const rescheduleAppointmentId = requestedRescheduleDetails.success
+    ? requestedRescheduleDetails.data.appointmentId
+    : undefined;
+  const rescheduleDate = requestedRescheduleDetails.success
+    ? requestedRescheduleDetails.data.date
+    : undefined;
+  const appointmentToResume = [
+    ...pendingAppointments,
+    ...otherAppointments,
+  ].find((appointment) => appointment.id === rescheduleAppointmentId);
+  const isRescheduleSlotError =
+    appointmentNotice.success &&
+    appointmentNotice.data.notice === "operation_failed" &&
+    (appointmentNotice.data.error === "RD004" ||
+      appointmentNotice.data.error === "23P01");
+  const shouldResumeReschedule =
+    isRescheduleSlotError &&
+    Boolean(rescheduleDate) &&
+    (appointmentToResume?.status === "pending" ||
+      appointmentToResume?.status === "approved");
   const previousAppointmentIds = [
     ...new Set(
       [...pendingAppointments, ...otherAppointments]
@@ -291,6 +327,7 @@ export default async function AppointmentsPage({
                       {appointmentStatus && (
                         <>
                           <AppointmentDetails
+                            key={`${appointment.id}-${shouldResumeReschedule && appointment.id === rescheduleAppointmentId}`}
                             appointment={{
                               id: appointment.id,
                               startsAt: appointment.starts_at,
@@ -314,6 +351,20 @@ export default async function AppointmentsPage({
                               canComplete,
                             }}
                             filters={filters}
+                            initiallyOpen={
+                              shouldResumeReschedule &&
+                              appointment.id === rescheduleAppointmentId
+                            }
+                            initialRescheduleDate={
+                              appointment.id === rescheduleAppointmentId
+                                ? rescheduleDate
+                                : undefined
+                            }
+                            initialRescheduleError={
+                              shouldResumeReschedule && appointment.id === rescheduleAppointmentId
+                                ? appointmentNotice.data.error
+                                : undefined
+                            }
                           />
                           <AppointmentActions
                             appointmentId={appointment.id}
@@ -335,8 +386,9 @@ export default async function AppointmentsPage({
 
   return (
     <div className="space-y-8">
-      {appointmentNotice.success && (
+      {appointmentNotice.success && !shouldResumeReschedule && (
         <AppointmentActionNotice
+          key={appointmentNotice.data.resultId}
           notice={appointmentNotice.data.notice}
           notification={appointmentNotice.data.notification}
           errorCode={appointmentNotice.data.error}

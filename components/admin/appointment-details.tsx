@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import {
   cancelAppointmentAction,
   completeAppointmentAction,
@@ -16,6 +16,7 @@ import {
 import { AppointmentDialog } from "@/components/admin/appointment-dialog";
 import { formatDateTime } from "@/lib/shared/datetime";
 import { formatPhone } from "@/lib/shared/phone";
+import { DB_ERROR_MESSAGES, type DbErrorCode } from "@/lib/shared/errors";
 import {
   getAppointmentStatusLabel,
   type AppointmentStatus,
@@ -53,22 +54,48 @@ function AppointmentDetailsContent({
   appointment,
   filters,
   onClose,
+  initialRescheduleDate,
+  initialRescheduleError,
 }: {
   appointment: AppointmentDetailData;
   filters: AppointmentFilters;
   onClose: () => void;
+  initialRescheduleDate?: string;
+  initialRescheduleError?: DbErrorCode;
 }) {
   const [noteState, saveNoteAction, isSavingNote] = useActionState(
     updateAdminNoteAction,
     initialNoteState,
   );
-  const [selectedDate, setSelectedDate] = useState(appointment.today);
+  const [selectedDate, setSelectedDate] = useState(
+    initialRescheduleDate ?? appointment.today,
+  );
   const [slots, setSlots] = useState<
     { slot_start: string; slot_end: string }[]
   >([]);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [slotError, setSlotError] = useState("");
+  const [rescheduleErrorOpen, setRescheduleErrorOpen] = useState(
+    Boolean(initialRescheduleError),
+  );
   const [isLoadingSlots, startLoadingSlots] = useTransition();
+
+  useEffect(() => {
+    if (!initialRescheduleError) return;
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("notice");
+    url.searchParams.delete("notification");
+    url.searchParams.delete("error");
+    url.searchParams.delete("resultId");
+    url.searchParams.delete("rescheduleAppointmentId");
+    url.searchParams.delete("rescheduleDate");
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, [initialRescheduleError]);
 
   function loadSlots(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -91,12 +118,13 @@ function AppointmentDetailsContent({
   }
 
   return (
-    <AppointmentDialog
-      open
-      onClose={onClose}
-      title="Randevu Detayı"
-      description={`${appointment.patientName} · ${formatDateTime(appointment.startsAt)}`}
-    >
+    <>
+      <AppointmentDialog
+        open
+        onClose={onClose}
+        title="Randevu Detayı"
+        description={`${appointment.patientName} · ${formatDateTime(appointment.startsAt)}`}
+      >
       <dl className="mt-6 grid gap-4 sm:grid-cols-2">
         <div>
           <dt className="text-sm text-foreground/60">Hasta</dt>
@@ -248,6 +276,11 @@ function AppointmentDetailsContent({
                   confirmationAction="Ertele"
                   className="mt-4 flex flex-wrap items-end gap-2"
                 >
+                  <input
+                    type="hidden"
+                    name="rescheduleDate"
+                    value={selectedDate}
+                  />
                   <label className="grid gap-1 text-sm font-medium">
                     Yeni saat
                     <select
@@ -307,18 +340,47 @@ function AppointmentDetailsContent({
           Kapat
         </button>
       </div>
-    </AppointmentDialog>
+      </AppointmentDialog>
+      {initialRescheduleError && (
+        <AppointmentDialog
+          open={rescheduleErrorOpen}
+          onClose={() => setRescheduleErrorOpen(false)}
+          title="Erteleme yapılamadı"
+          closeOnBackdrop={false}
+        >
+          <p role="alert" className="mt-4 rounded-lg bg-danger/10 p-4 text-danger">
+            {DB_ERROR_MESSAGES[initialRescheduleError]}
+          </p>
+          <div className="mt-5 flex justify-end">
+            <button
+              type="button"
+              autoFocus
+              onClick={() => setRescheduleErrorOpen(false)}
+              className="rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+            >
+              Tamam
+            </button>
+          </div>
+        </AppointmentDialog>
+      )}
+    </>
   );
 }
 
 export function AppointmentDetails({
   appointment,
   filters,
+  initiallyOpen = false,
+  initialRescheduleDate,
+  initialRescheduleError,
 }: {
   appointment: AppointmentDetailData;
   filters: AppointmentFilters;
+  initiallyOpen?: boolean;
+  initialRescheduleDate?: string;
+  initialRescheduleError?: DbErrorCode;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(initiallyOpen);
 
   return (
     <>
@@ -333,6 +395,8 @@ export function AppointmentDetails({
         <AppointmentDetailsContent
           appointment={appointment}
           filters={filters}
+          initialRescheduleDate={initialRescheduleDate}
+          initialRescheduleError={initialRescheduleError}
           onClose={() => setIsOpen(false)}
         />
       )}
