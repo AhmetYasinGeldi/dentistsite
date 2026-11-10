@@ -42,6 +42,7 @@ export function AppointmentActionNotice({
     url.searchParams.delete("notice");
     url.searchParams.delete("notification");
     url.searchParams.delete("error");
+    url.searchParams.delete("resultId");
     window.history.replaceState(
       window.history.state,
       "",

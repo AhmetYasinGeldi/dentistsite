@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/admin/login-form";
 import { createClient } from "@/lib/supabase/server";
@@ -22,23 +23,15 @@ export default async function AdminLoginPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-muted px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
-        {/* Logo ve Başlık */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-secondary text-primary shadow-sm mb-4">
-            <svg
-              className="w-8 h-8"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {/* Diş / Klinik Simgesi */}
-              <path d="M12 2C8 2 6 4.5 6 8c0 4 2 8 3.5 12 .5 1.5 2 2 2.5 2s2-.5 2.5-2C16 16 18 12 18 8c0-3.5-2-6-6-6z" />
-              <path d="M9.5 9c.5-1.5 1.5-2.5 2.5-2.5s2 1 2.5 2.5" />
-            </svg>
-          </div>
+          <Image
+            src="/logo/zb-dentist-logo-renkli.svg"
+            alt="ZB Dentist — Ağız ve Diş Sağlığı"
+            width={190}
+            height={53}
+            loading="eager"
+            className="mx-auto mb-6 h-auto w-[190px]"
+          />
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Klinik Yönetim Paneli
           </h1>
@@ -47,8 +40,7 @@ export default async function AdminLoginPage() {
           </p>
         </div>
 
-        {/* Giriş Kartı */}
-        <div className="bg-background rounded-2xl border border-foreground/10 p-8 shadow-sm">
+        <div className="rounded-brand border border-border bg-background p-8">
           <LoginForm />
         </div>
       </div>
