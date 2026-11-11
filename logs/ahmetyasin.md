@@ -169,3 +169,13 @@
 - **Nasıl test edildi:** PR dalında `npm run lint` hatasız, `npm run build` başarılı. Mobil header taşması genişlik hesabıyla tespit edildi, tarayıcıda denenmedi.
 - **Açık konular:** 56 ve 57 öncelikli. PR #44 birleşti, main bu dala alındı; site bölümündeki "Açık madde yok." satırı kaldırıldı.
 - **Başka ekipten istek:** Site ekibi: 52, 53, 54, 55, 56 ve 57.
+
+## 2026-11-11 06:06 — PR #39 main ile birleştirildi ve tamamlandı
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** fix/bot-gemini-dataset
+- **Ne yapıldı:** PR #39 iki inceleme sonrası main ile çakışık kaldığı için dal üzerinde main alınıp çakışmalar çözüldü. `tasks.md`'de main'deki hal korunup 25, 45 ve 47. maddeler silindi. `logs/ebru.md`'de Ebru'nun 8 Kasım 21:10 kaydında yapılan düzenleme geri alındı (eski kayıtlar değiştirilmez); o kayıttaki "Ebrar / Claude" doğrusu "Ebru / Claude"dur, PR #41-#42'de kapatılan maddeler 10, 26 ve 32'dir. Veri setine geçmiş tarih kuralını ölçen id 73 ("dün için randevu alabilir miyim" → `book`, `date: null`) eklendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ebru.md` (çakışma çözümü), `scripts/gemini-test/dataset.json`, `logs/ahmetyasin.md`
+- **Neden:** PR #39'un üçüncü kez geri gönderilmeden birleştirilmesi; `tasks.md` 25, 45 ve 47. maddeler.
+- **Nasıl test edildi:** `dataset.json` geçerli JSON, 73 vaka, id'ler 1-73 kesintisiz. Çakışma işareti kalmadı. `npm run lint` ve `npm run build` çalıştırıldı.
+- **Açık konular:** Veri seti Gemini ile çalıştırılmadı (`node scripts/gemini-test/run.mjs`).
+- **Başka ekipten istek:** Yok.
