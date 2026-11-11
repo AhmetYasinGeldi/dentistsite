@@ -29,11 +29,6 @@ Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21
 
 ## Bot ekibi (Sevde, Ebru)
 
-### 8. Adım isimlerini `steps.ts` ile eşleştirme
-- **Dosya:** `lib/bot/messages.ts` (PR #7)
-- **Sorun:** `steps` nesnesindeki anahtarlar Sevde'nin `lib/bot/steps.ts` dosyasıyla aynı olmalı, ancak `steps.ts` henüz main'de yok. İki ayrı listede aynı isimler elle tutulursa zamanla ayrışır.
-- **Yapılacak:** `steps.ts` gelince `steps` nesnesinin tipini oradaki adım listesine bağla (ör. `satisfies Partial<Record<Step, string>>`).
-
 ### 39. Klinik telefonu yokken "kliniği arayın" metni
 - **Dosya:** `lib/bot/flow.ts` (`checkChangeAllowed`), `lib/bot/messages.ts` (PR #35)
 - **Sorun:** Telefon boşken metin `cancelDeadlinePassed("").replace(/:\s*$/, ".")` ile kırpılıyor. `messages.ts`'teki cümle değişirse (ör. sonu iki nokta ile bitmezse) kırpma sessizce bozulur.
