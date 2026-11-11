@@ -179,3 +179,13 @@
 - **Nasıl test edildi:** `dataset.json` geçerli JSON, 73 vaka, id'ler 1-73 kesintisiz. Çakışma işareti kalmadı. `npm run lint` ve `npm run build` çalıştırıldı.
 - **Açık konular:** Veri seti Gemini ile çalıştırılmadı (`node scripts/gemini-test/run.mjs`).
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-11 06:07 — PR #46 ve PR #47 incelemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-39-46-inceleme
+- **Ne yapıldı:** Panel ekibinin PR #46'sı (randevu akışı düzeltmeleri ve panel logosu) ve test ekibinin PR #47'si (açık işler 48-49, B7-B9 ve P4/P7 sonuçları) incelendi. Birleştirmeyi engelleyen bulgu çıkmadı. Küçük düzeltmeler `tasks.md`'ye eklendi: masaüstünde çift logo (58), erteleme hata penceresinde marka ve biçim (59), `senaryolar.md` sonunda satır sonu (61). PR #39 için yazılan 60. madde, PR #39 dalında doğrudan yapıldığı için eklenmedi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #46 ve #47 incelemesinde birleştirmeyi engellemeyen düzeltmelerin takip edilmesi.
+- **Nasıl test edildi:** PR #46 dalında `npm run lint` hatasız, `npm run build` başarılı. PR #47 yalnızca Markdown dosyalarını değiştirdiği için build çalıştırılmadı.
+- **Açık konular:** PR #47'nin P3, P4 ve P7 sonuçları panelden gönderilen WhatsApp bildiriminin 24 saat penceresi içinde de gitmediğini gösteriyor; Trello'da kritik kart açık. Bu dal PR #39 ve #47'den sonra birleştirilmeli; `tasks.md`'de çakışma çıkarsa çözülecek.
+- **Başka ekipten istek:** Panel ekibi: 58, 59. Test ekibi: 61.

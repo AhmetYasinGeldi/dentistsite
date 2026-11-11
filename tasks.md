@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44 incelemesi)
+Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47 incelemesi)
 
 ---
 
@@ -16,6 +16,16 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
+
+### 58. Masaüstünde logo iki kez görünüyor
+- **Dosya:** `components/admin/header.tsx`, `components/admin/sidebar.tsx` (PR #46)
+- **Sorun:** `md` ve üstünde kenar çubuğu açık; orada işaret logosu ve klinik adı var. Üst bar da aynı genişlikte yatay logoyu (`hidden md:block`) gösteriyor, yan yana iki logo çıkıyor.
+- **Yapılacak:** Üst bardaki logoyu sadece mobilde göster (yatay logoyu kaldır, işaret logosu `md:hidden` kalsın) ya da kenar çubuğunda işaret + ad yerine yatay logoyu kullan; ikisinden biri yeterli.
+
+### 59. Erteleme hata penceresinde marka ve biçim
+- **Dosya:** `components/admin/appointment-details.tsx` (PR #46)
+- **Sorun:** Yeni "Erteleme yapılamadı" penceresinde mesaj kutusu `rounded-lg`, "Tamam" butonu `rounded` ve `py-2` (44 px'in altında). `AGENTS.md` bölüm 10 `rounded-brand` ve en az 44 px yükseklik istiyor. Bileşen `<>...</>` ile sarıldığında içerideki satırlar yeniden girintilenmemiş, `AppointmentDialog` ile çocukları aynı hizada duruyor. Log kaydında `npm run build` sonucu yok (PR açıklamasında var).
+- **Yapılacak:** Kutuyu ve butonu `rounded-brand`, butonu `min-h-11` yap. Fragment içini bir seviye girintile. Sonraki log kaydına build sonucunu yaz.
 
 ## Bot ekibi (Sevde, Ebru)
 
@@ -83,6 +93,10 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Test ekibi (Tuğba, Nezahat)
 
+### 61. `senaryolar.md` sonunda satır sonu yok
+- **Dosya:** `docs/test/senaryolar.md` (PR #47)
+- **Sorun:** 49. madde ve PR açıklaması dosya sonlarına satır sonu eklendiğini söylüyor; `logs/tugba.md`'de var, `senaryolar.md`'de hâlâ yok.
+- **Yapılacak:** `senaryolar.md` sonuna satır sonu ekle.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 
