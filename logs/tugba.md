@@ -40,3 +40,13 @@
 - **Nasıl test edildi:** Canlı sistemde test numarasından bota yazarak ve panelden durumu kontrol ederek. `npm run lint` ve `npm run build` hatasız bitti.
 - **Açık konular:** Bildirim gönderimi çalışmıyor (P3, P7, B7, B9): hastaya WhatsApp mesajı gitmiyor, Trello'daki kartta B7 ve B9 de eklendi. B4, B8, B13, B14 ve S2-S4 hâlâ denenmedi.
 - **Başka ekipten istek:** Bot ekibi: bildirim gönderimi (`notifyAppointmentUpdate`) hatası.
+
+## 2026-11-10 23:15 — Açık işler 48 ve 49, B7-B9 ve P4/P7 sonuçları
+- **Kişi / araç:** Tuğba / Claude (web sohbeti)
+- **Dal:** test-tugba
+- **Ne yapıldı:** Açık işler 48 ve 49'u kapattım. 48: 6 Kasım kaydındaki sebep yer tutucusunun karşılığı, denenemeyen senaryoların sebepleri `senaryolar.md` sonuç tablosunda satır satır yazılıdır. 7 Kasım kaydındaki lint/build yer tutucusunun karşılığı: `npm run lint` ve `npm run build` 7 Kasım'da ve 10 Kasım'da çalıştırıldı, hatasız bitti. 49: 8 Kasım kaydındaki "bildirim gönderilemedi" uyarısı B7/B9'dan değil, hazırlık için yapılan panel onayından (P3) geliyordu. B7 ve B9 bottan yapılan işlemlerdir, panel bildirimi bu senaryolarda devreye girmez. B7 ve B9'u bu açıdan tekrar denedim. B7'de bot iptalden sonra sohbette "Randevunuz iptal edildi." yazdı. B9'da bot "Erteleme talebiniz alındı, klinik onayladığında bilgilendirileceksiniz." yazdı. Panelde B7'de randevu "İptal edildi" (iptal eden hasta), B9'da eski randevu "İptal edildi", yeni randevu "Onay bekliyor" görüldü. B8'i 9 Kasım'da denedim: randevuya 2 saatten az kalınca bot iptali reddetti ve kliniği aramasını söyledi. Panel senaryolarından P4 (red) ve P7 (iptal) 24 saat içinde denendi: işlemler çalışıyor, hastaya bildirim gönderilemedi (P3 ile aynı hata).
+- **Değişen dosyalar:** `docs/test/senaryolar.md`, `logs/tugba.md`, `tasks.md`
+- **Neden:** Açık işler listesi: 48 ve 49 (PR #33 incelemesi).
+- **Nasıl test edildi:** Canlı sistemde test numarasından bota yazarak ve canlı panelde randevu işlemleri yaparak.
+- **Açık konular:** Panelin bildirim hatası P3, P4 ve P7'de sürüyor (Trello'da kart açık, Kritik). B4, B13, B14, P5, P6, P8-P11 ve S2-S4 denenmedi, sebepleri tabloda yazılı.
+- **Başka ekipten istek:** Bot ekibi: bildirim gönderimi (`notifyAppointmentUpdate`) hatası.
