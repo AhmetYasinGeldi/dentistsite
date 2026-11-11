@@ -64,3 +64,13 @@
 - **Nasıl test edildi:** `npm run build` başarılı.
 - **Açık konular:** Yok
 - **Başka ekipten istek:** Yok
+
+## 2026-11-10 00:15 — Gemini test veri seti güncellendi
+- **Kişi / araç:** Ebru / Codex
+- **Dal:** fix/bot-gemini-dataset
+- **Ne yapıldı:** Silinen 48–68 arası vakalar geri eklendi; dört yeni vaka 69–72 olarak sona eklendi. id 13 için işlem `Muayene`, id 24 için saat `null` yapıldı. “Menü” yerine Gemini’ye gönderilebilen “ana sayfaya dönmek istiyorum” örneği eklendi. Üç ay sonrası randevu örneğinin intent’i `book`, tarihi `null` yapıldı. Ayrıca 10. maddenin tamamlandığı ve PR #40 ile 26. maddenin kapatıldığı kaydedildi.
+- **Değişen dosyalar:** `scripts/gemini-test/dataset.json`, `tasks.md`, `logs/ebru.md`
+- **Neden:** PR #39 ve `tasks.md` 45. madde.
+- **Nasıl test edildi:** JSON’un geçerli olduğu, 72 kayıt içerdiği, id’lerin 1–72 arasında kesintisiz olduğu ve dosya sonunda satır sonu bulunduğu kontrol edildi. Gemini ile çalıştırılmadı.
+- **Açık konular:** Gemini test scriptiyle çalıştırma ve rapor oluşturma ayrıca tamamlanacak. 32. madde için Sevde’nin `flow.ts` entegrasyonu bekleniyor.
+- **Başka ekipten istek:** Yok.
