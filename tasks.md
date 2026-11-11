@@ -17,26 +17,6 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
-### 41. Saati geçmiş randevu iptalinde bildirim
-- **Dosya:** `app/admin/actions.ts` (`cancelAppointmentAction`) (PR #36)
-- **Sorun:** `starts_at` kontrolü kaldırıldığı için panel artık saati geçmiş aktif randevuyu da iptal edebiliyor. Bu durumda hastaya "klinik randevunuzu iptal etti" mesajı gidiyor; geçmiş bir randevu için anlamsız.
-- **Yapılacak:** Red işlemindeki gibi randevu saati geçmişse `notifyAndRefresh(..., "past")` ile bildirimi atla ve "randevu saati geçmiş" uyarısını göster.
-
-### 42. Erteleme hata mesajlarının denenmesi
-- **Dosya:** `app/admin/actions.ts` (`rescheduleAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #36)
-- **Sorun:** 23P01 / RD004 (saat doldu) ve RD003 (randevu artık aktif değil) mesajları elle tetiklenmedi.
-- **Yapılacak:** İki sekmede aynı randevunun erteleme penceresini aç, birinde saati seç ve ertele, diğerinde aynı saati seç: RD003 mesajını gör. Başka bir randevuyu bir sekmede seçilen saate ertele, diğerinde aynı saati seç: RD004 veya 23P01 mesajını gör. Sonucu log'a yaz.
-
-### 35. Geçmiş bekleyen randevu reddinin denenmesi
-- **Dosya:** `app/admin/actions.ts` (`rejectAppointmentAction`), `components/admin/appointment-action-notice.tsx` (PR #31)
-- **Sorun:** Saati geçmiş bekleyen randevu reddedildiğinde bildirimin atlanması ve "Bildirim gönderilmedi, randevu saati geçmiş" mesajı elle denenmedi. Test verisindeki bekleyen randevuların hepsi ileri tarihli.
-- **Yapılacak:** Saati geçmiş bekleyen bir sahte randevuyla reddetmeyi dene; bildirimin gitmediğini ve mesajın göründüğünü log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
-
-### 51. Panelde ZB Dentist logosu ve renk kontrolü
-- **Dosya:** `app/admin/`, `components/admin/` (marka PR'ı)
-- **Sorun:** Tema ZB Dentist'e geçti: `primary` petrol, `accent` gün batımı (turuncu), `muted`/`secondary` nane yeşili oldu. Onay bekleyen kutusu (`border-accent bg-accent/10`) artık turuncu görünüyor. Panelde logo yok.
-- **Yapılacak:** Paneli açıp ekranları kontrol et; okunmayan veya bozuk görünen yer varsa ortak renk adlarıyla düzelt (hex yazma). Giriş sayfasına ve üst/kenar çubuğuna `/logo/zb-dentist-isaret-renkli.svg` veya yatay logoyu ekle. Kurallar `AGENTS.md` bölüm 10, "Marka ve tema".
-
 ## Bot ekibi (Sevde, Ebru)
 
 ### 8. Adım isimlerini `steps.ts` ile eşleştirme
@@ -68,11 +48,6 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Dosya:** `lib/bot/flow.ts`, `lib/bot/messages.ts` (PR #42)
 - **Sorun:** PR #42, 32. maddeyi tamamen sildi ama maddenin sadece Ebru kısmı yapıldı. `flow.ts`'te geçici `MORE_OPTIONS_TITLE` sabiti duruyor, `errors.invalidName` ve `listRows.otherOptions` hiçbir yerde kullanılmıyor.
 - **Yapılacak:** Sevde: `MORE_OPTIONS_TITLE` yerine `listRows.otherOptions` kullan ve sabiti sil; geçersiz ad soyadda soruyu tekrarlamak yerine `errors.invalidName` gönder.
-
-### 47. Ebru'nun PR #40-#42 log kayıtları
-- **Dosya:** `logs/ebru.md` (PR #40, #41, #42; açık PR #39)
-- **Sorun:** PR #40 kaydı 26. maddeyi kapattığını yazmıyor, "Biçim bozuluğu" yazım hatası var. PR #42 kaydında kişi "Ebrar / Claude" yazıyor (Ebrar site ekibinde) ve 32. madde geçmiyor. PR #41 için log kaydı yok, 10. maddenin kapatıldığı hiçbir kayıtta geçmiyor. Dosya sonunda satır sonu yine yok.
-- **Yapılacak:** Sonraki kayıtta bu PR'larda kapatılan maddeleri (10, 26, 32) ve kişi adını düzelt, dosya sonuna satır sonu ekle. PR #39'daki kaydın başlığını da düzelt: `2026.11.08 20.35` yerine `2026-11-08 20:35`.
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 

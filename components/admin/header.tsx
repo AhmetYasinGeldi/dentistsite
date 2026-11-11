@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { LogoutButton } from "./logout-button";
 
 interface HeaderProps {
@@ -38,11 +40,26 @@ export function Header({
           </svg>
         </button>
 
-        <div className="flex items-center gap-2">
-          <span className="text-base sm:text-lg font-semibold text-foreground tracking-tight">
-            {clinicName}
-          </span>
-        </div>
+        <Link
+          href="/admin"
+          aria-label={`${clinicName} yönetim paneli ana sayfa`}
+          className="flex shrink-0 items-center rounded-sm focus-visible:outline-2 focus-visible:outline-primary"
+        >
+          <Image
+            src="/logo/zb-dentist-isaret-renkli.svg"
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 md:hidden"
+          />
+          <Image
+            src="/logo/zb-dentist-logo-renkli.svg"
+            alt=""
+            width={180}
+            height={50}
+            className="hidden h-auto w-[160px] md:block"
+          />
+        </Link>
       </div>
 
       {/* Sağ: Kullanıcı Profili ve Çıkış Butonu */}
@@ -57,4 +74,3 @@ export function Header({
     </header>
   );
 }
-

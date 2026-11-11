@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -106,22 +107,15 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
   };
 
   const navContent = (
-    <div className="flex flex-col h-full bg-background border-r border-foreground/10">
-      {/* Üst Logo ve Panel Başlığı */}
-      <div className="flex items-center gap-3 px-6 h-16 border-b border-foreground/10">
-        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-secondary text-primary font-bold shadow-xs">
-          <svg
-            className="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 2C8 2 6 4.5 6 8c0 4 2 8 3.5 12 .5 1.5 2 2 2.5 2s2-.5 2.5-2C16 16 18 12 18 8c0-3.5-2-6-6-6z" />
-          </svg>
-        </div>
+    <div className="flex flex-col h-full border-r border-border bg-background">
+      <div className="flex items-center gap-3 px-6 h-16 border-b border-border">
+        <Image
+          src="/logo/zb-dentist-isaret-renkli.svg"
+          alt=""
+          width={36}
+          height={36}
+          className="h-9 w-9 shrink-0"
+        />
         <div className="flex flex-col min-w-0">
           <span className="text-sm font-bold text-foreground truncate">
             {clinicName}
@@ -178,4 +172,3 @@ export function Sidebar({ clinicName = "Diş Kliniği", isOpen = false, onClose 
     </>
   );
 }
-

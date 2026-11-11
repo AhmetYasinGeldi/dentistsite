@@ -49,13 +49,12 @@
 - **Başka ekipten istek:** Yok.
 
 ## 2026-11-08 21:10 — Akış için eksik metinler eklendi
-- **Kişi / araç:** Ebru / Claude
+- **Kişi / araç:** Ebrar / Claude
 - **Dal:** fix/bot-akis-eksik-metinler
 - **Ne yapıldı:**  Akış için eksik metinler eklendi
 - **Değişen dosyalar:** `lib/bot/messages.ts`, `tasks.md`, `logs/ebru.md`
 - **Neden:** Geçersiz ad soyad yazıldığında ayrı bir uyarı metni yoktu. İşlem veya doktor listesi 10'u geçerse kullanılacak "Diğer" satırı için metin yoktu.
 - **Nasıl test edildi:** `npm run lint` hatasız
-
 ## 2026-11-08 20:50 — `messages.ts` biçim bozukluğu giderildi
 - **Kişi / araç:** Ebru / Codex
 - **Dal:** fix/bot-mesaj-bicim-duzeltme

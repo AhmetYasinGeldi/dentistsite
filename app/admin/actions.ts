@@ -1,8 +1,15 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import {
+  getErrorCode,
+  getErrorMessage,
+  isDbErrorCode,
+  type DbErrorCode,
+} from "@/lib/shared/errors";
 import { APPOINTMENT_STATUSES } from "@/lib/shared/appointment-status";
 import { createClient } from "@/lib/supabase/server";
 import { notifyAppointmentUpdate } from "@/lib/whatsapp/notify";
@@ -89,6 +96,9 @@ const appointmentIdSchema = z
   .refine(Number.isSafeInteger);
 
 const rejectionReasonSchema = z.string().trim().max(500).nullable();
+const adminNoteSchema = z.string().trim().max(2000);
+const rescheduleDateSchema = z.iso.date();
+const newStartsAtSchema = z.iso.datetime({ offset: true });
 
 const appointmentFiltersSchema = z.object({
   date: z.union([z.literal(""), z.iso.date()]).default(""),
@@ -121,13 +131,21 @@ function getAdminUrl(
   filters: AppointmentFilters,
   notice: string,
   notification?: "sent" | "failed" | "window_closed" | "past",
+  errorCode?: DbErrorCode,
+  rescheduleDetails?: { appointmentId: number; date: string },
 ): string {
   const params = new URLSearchParams();
   if (filters.date) params.set("date", filters.date);
   if (filters.doctorId) params.set("doctorId", filters.doctorId);
   if (filters.status) params.set("status", filters.status);
   params.set("notice", notice);
+  params.set("resultId", randomUUID());
   if (notification) params.set("notification", notification);
+  if (errorCode) params.set("error", errorCode);
+  if (rescheduleDetails) {
+    params.set("rescheduleAppointmentId", String(rescheduleDetails.appointmentId));
+    params.set("rescheduleDate", rescheduleDetails.date);
+  }
 
   return `/admin?${params.toString()}`;
 }
@@ -147,7 +165,7 @@ async function requireAdminClient() {
 
 async function notifyAndRefresh(
   appointmentId: number,
-  notice: "approved" | "rejected" | "cancelled",
+  notice: "approved" | "rejected" | "cancelled" | "rescheduled",
   filters: AppointmentFilters,
   skipNotification?: "past",
 ): Promise<void> {
@@ -258,9 +276,7 @@ export async function cancelAppointmentAction(
     formData.get("appointmentId"),
   );
   if (!parsedId.success) redirect(getAdminUrl(filters, "invalid"));
-
   const supabase = await requireAdminClient();
-  const now = new Date().toISOString();
   const { data, error } = await supabase
     .from("appointments")
     .update({
@@ -269,8 +285,7 @@ export async function cancelAppointmentAction(
     })
     .eq("id", parsedId.data)
     .in("status", ["pending", "approved"])
-    .gt("starts_at", now)
-    .select("id")
+    .select("id, starts_at")
     .maybeSingle();
 
   if (error) {
@@ -279,5 +294,210 @@ export async function cancelAppointmentAction(
   }
   if (!data) redirect(getAdminUrl(filters, "stale"));
 
-  await notifyAndRefresh(data.id, "cancelled", filters);
+  const appointmentHasPassed = Date.parse(data.starts_at) <= Date.now();
+  await notifyAndRefresh(
+    data.id,
+    "cancelled",
+    filters,
+    appointmentHasPassed ? "past" : undefined,
+  );
+}
+
+export async function completeAppointmentAction(
+  formData: FormData,
+): Promise<void> {
+  const filters = getAppointmentFilters(formData);
+  const parsedId = appointmentIdSchema.safeParse(
+    formData.get("appointmentId"),
+  );
+  if (!parsedId.success) redirect(getAdminUrl(filters, "invalid"));
+
+  const supabase = await requireAdminClient();
+  const { data, error } = await supabase
+    .from("appointments")
+    .update({ status: "completed" })
+    .eq("id", parsedId.data)
+    .eq("status", "approved")
+    .lte("ends_at", new Date().toISOString())
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    console.error("Randevu tamamlandı olarak işaretlenirken hata:", error);
+    redirect(getAdminUrl(filters, "update_failed"));
+  }
+  if (!data) redirect(getAdminUrl(filters, "stale"));
+
+  revalidatePath("/admin");
+  redirect(getAdminUrl(filters, "completed"));
+}
+
+export type AdminNoteActionState = {
+  success: boolean;
+  message: string;
+};
+
+export async function updateAdminNoteAction(
+  _previousState: AdminNoteActionState,
+  formData: FormData,
+): Promise<AdminNoteActionState> {
+  const parsed = z
+    .object({
+      appointmentId: appointmentIdSchema,
+      adminNote: adminNoteSchema,
+    })
+    .safeParse({
+      appointmentId: formData.get("appointmentId"),
+      adminNote: formData.get("adminNote"),
+    });
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Not bilgisi geçersiz. En fazla 2000 karakter yazabilirsiniz.",
+    };
+  }
+
+  const supabase = await requireAdminClient();
+  const { data, error } = await supabase
+    .from("appointments")
+    .update({ admin_note: parsed.data.adminNote || null })
+    .eq("id", parsed.data.appointmentId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    console.error("Admin randevu notu kaydedilirken hata:", error);
+    return { success: false, message: getErrorMessage(error) };
+  }
+  if (!data) {
+    return { success: false, message: "Randevu bulunamadı." };
+  }
+
+  revalidatePath("/admin");
+  return { success: true, message: "Klinik notu kaydedildi." };
+}
+
+type AvailableSlot = {
+  slot_start: string;
+  slot_end: string;
+};
+
+export async function getAvailableSlotsAction(
+  appointmentId: number,
+  date: string,
+): Promise<{ slots?: AvailableSlot[]; error?: string }> {
+  const parsed = z
+    .object({
+      appointmentId: z.number().int().positive().safe(),
+      date: rescheduleDateSchema,
+    })
+    .safeParse({ appointmentId, date });
+  if (!parsed.success) {
+    return { error: "Lütfen geçerli bir tarih seçin." };
+  }
+
+  const supabase = await requireAdminClient();
+  const { data: appointment, error: appointmentError } = await supabase
+    .from("appointments")
+    .select("doctor_id, procedure_id, status, ends_at")
+    .eq("id", parsed.data.appointmentId)
+    .maybeSingle();
+
+  if (appointmentError) {
+    console.error("Erteleme öncesi randevu okunamadı:", appointmentError);
+    return { error: getErrorMessage(appointmentError) };
+  }
+  if (!appointment) return { error: "Randevu bulunamadı." };
+  if (
+    !["pending", "approved"].includes(appointment.status) ||
+    Date.parse(appointment.ends_at) <= Date.now()
+  ) {
+    return { error: "Bu randevu artık aktif değil." };
+  }
+
+  const { data: slots, error } = await supabase.rpc("get_available_slots", {
+    p_doctor_id: appointment.doctor_id,
+    p_procedure_id: appointment.procedure_id,
+    p_date: parsed.data.date,
+  });
+
+  if (error) {
+    console.error("Müsait saatler alınırken Supabase hatası:", error);
+    return { error: getErrorMessage(error) };
+  }
+
+  return { slots };
+}
+
+export async function rescheduleAppointmentAction(
+  formData: FormData,
+): Promise<void> {
+  const filters = getAppointmentFilters(formData);
+  const parsed = z
+    .object({
+      appointmentId: appointmentIdSchema,
+      newStartsAt: newStartsAtSchema,
+      rescheduleDate: rescheduleDateSchema,
+    })
+    .safeParse({
+      appointmentId: formData.get("appointmentId"),
+      newStartsAt: formData.get("newStartsAt"),
+      rescheduleDate: formData.get("rescheduleDate"),
+    });
+
+  if (!parsed.success) redirect(getAdminUrl(filters, "invalid"));
+
+  const supabase = await requireAdminClient();
+  const { data: newAppointmentId, error } = await supabase.rpc(
+    "reschedule_appointment",
+    {
+      p_appointment_id: parsed.data.appointmentId,
+      p_new_starts_at: parsed.data.newStartsAt,
+      p_cancelled_by: "admin",
+    },
+  );
+
+  if (error) {
+    console.error("Randevu ertelenirken Supabase hatası:", error);
+    const code = getErrorCode(error);
+    const dbErrorCode = isDbErrorCode(code) ? code : undefined;
+    const shouldReopenDetails =
+      dbErrorCode === "RD004" || dbErrorCode === "23P01";
+    redirect(
+      getAdminUrl(
+        filters,
+        "operation_failed",
+        undefined,
+        dbErrorCode,
+        shouldReopenDetails
+          ? {
+              appointmentId: parsed.data.appointmentId,
+              date: parsed.data.rescheduleDate,
+            }
+          : undefined,
+      ),
+    );
+  }
+  if (!newAppointmentId) {
+    redirect(getAdminUrl(filters, "operation_failed"));
+  }
+
+  const { data: approvedAppointment, error: approvalError } = await supabase
+    .from("appointments")
+    .update({ status: "approved", decided_at: new Date().toISOString() })
+    .eq("id", newAppointmentId)
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
+
+  if (approvalError) {
+    console.error("Ertelenen randevu onaylanırken Supabase hatası:", approvalError);
+    redirect(getAdminUrl(filters, "reschedule_approval_failed"));
+  }
+  if (!approvedAppointment) {
+    redirect(getAdminUrl(filters, "reschedule_approval_failed"));
+  }
+
+  await notifyAndRefresh(approvedAppointment.id, "rescheduled", filters);
 }

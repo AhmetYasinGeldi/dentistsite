@@ -1,6 +1,6 @@
-# Diş Kliniği WhatsApp Randevu Sistemi
+# ZB Dentist — WhatsApp Randevu Sistemi
 
-Tek bir diş kliniği için WhatsApp üzerinden randevu alınan bir sistem. Hasta kliniğin sitesindeki butona basar, WhatsApp botuyla yazışarak randevu talep eder; sekreter admin panelinden talebi onaylar veya reddeder, hasta sonucu WhatsApp'tan öğrenir.
+ZB Dentist (Ağız ve Diş Sağlığı) için WhatsApp üzerinden randevu alınan bir sistem. ZB Dentist, proje kapsamında oluşturulmuş kurgusal bir kliniktir. Hasta kliniğin sitesindeki butona basar, WhatsApp botuyla yazışarak randevu talep eder; sekreter admin panelinden talebi onaylar veya reddeder, hasta sonucu WhatsApp'tan öğrenir.
 
 Kodun neredeyse tamamı yapay zeka ajanlarıyla yazılır. Bu yüzden bu dosyadaki kurallar, kodun kendisi kadar önemli.
 
@@ -8,7 +8,7 @@ Kodun neredeyse tamamı yapay zeka ajanlarıyla yazılır. Bu yüzden bu dosyada
 
 | Ekip | Kişiler | Çalıştığı yer |
 |---|---|---|
-| Lider, veritabanı, entegrasyon | Ahmet Yasin | ayar dosyaları, `supabase/`, `lib/supabase/`, `lib/shared/` |
+| Lider, veritabanı, entegrasyon | Ahmet Yasin | ayar dosyaları, `supabase/`, `lib/supabase/`, `lib/shared/`, tema (`app/globals.css`, `app/layout.tsx`), `public/logo/`, `docs/marka/` |
 | Bot (WhatsApp + sohbet + Gemini) | Sevde, Ebru | `app/api/whatsapp/`, `lib/whatsapp/`, `lib/bot/`, `lib/ai/`, `scripts/gemini-test/` |
 | Admin paneli | Esma, Merve | `app/admin/`, `components/admin/` |
 | Tanıtım sitesi | Ahmet Çiçek, Ebrar | `app/(site)/`, `components/site/` |
@@ -32,6 +32,17 @@ Ayrıntılı klasör yapısı `AGENTS.md` dosyasındadır.
 5. **Gerçek kişisel veri yok.** Testlerde sahte isimler kullanın. Bu bir sağlık verisi sistemi; gerçek hasta bilgisi kesinlikle girilmez.
 6. **Her işin sonunda log tutun.** `logs/<adınız>.md` dosyanıza ne yaptığınızı yazın (aşağıda nasıl).
 7. **Yeni paket eklemeden önce sorun.**
+
+## Marka ve tema
+
+Logo, renkler ve fontlar `docs/marka/` klasöründedir; tüm varyantları görmek için `docs/marka/onizleme.png` dosyasını açın.
+
+- **Renkler:** `app/globals.css`'te tanımlıdır. Bileşenlerde hex renk veya `bg-sky-600` gibi hazır Tailwind renkleri yazmayın; `bg-primary`, `text-muted-foreground`, `bg-surface`, `border-border` gibi ortak adları kullanın. Tam liste `AGENTS.md` bölüm 10'da.
+- **Fontlar:** Gövde metni Inter, başlıklar Outfit. İkisi de `app/layout.tsx`'te yüklü, ayrıca bir şey yapmanız gerekmez.
+- **Logo:** `public/logo/` altındaki SVG'leri kullanın. Açık zeminde `zb-dentist-logo-renkli.svg`, koyu zeminde `zb-dentist-logo-beyaz.svg`, dar alanlarda sadece işaret (`zb-dentist-isaret-*.svg`).
+- **WhatsApp butonu:** `bg-whatsapp text-whatsapp-foreground`. Yeşil üzerinde beyaz yazı okunmadığı için yazı koyu renktir.
+
+Yeni bir renk veya logo varyantı gerekirse Ahmet Yasin'e yazın.
 
 ## Yapay zeka ajanlarıyla çalışırken
 

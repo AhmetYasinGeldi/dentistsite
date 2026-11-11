@@ -72,6 +72,7 @@
     {"id": 69, "message": "ana sayfaya dönmek istiyorum", "expected": {"intent": "other", "procedure": null, "date": null, "time_of_day": null, "time": null}},
     {"id": 70, "message": "dün ağrım vardı gelemedim", "expected": {"intent": "other", "procedure": null, "date": null, "time_of_day": null, "time": null}},
     {"id": 71, "message": "3 ay sonra için randevu alabiliyor muyuz", "expected": {"intent": "book", "procedure": null, "date": null, "time_of_day": null, "time": null}},
-    {"id": 72, "message": "10-12 arası müsait misiniz", "expected": {"intent": "book", "procedure": null, "date": null, "time_of_day": null, "time": null}}
+    {"id": 72, "message": "10-12 arası müsait misiniz", "expected": {"intent": "book", "procedure": null, "date": null, "time_of_day": null, "time": null}},
+    {"id": 73, "message": "dün için randevu alabilir miyim", "expected": {"intent": "book", "procedure": null, "date": null, "time_of_day": null, "time": null}}
   ]
 }

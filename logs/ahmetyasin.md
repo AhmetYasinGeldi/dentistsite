@@ -119,3 +119,63 @@
 - **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #33 yalnızca .md dosyası değiştirdiği için lint ve build çalıştırılmadı.
 - **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları düzeltilmeden birleştirilmeyecek. Canlıda P3 ve P7 bildirimlerinin neden gitmediği Vercel loglarından incelenecek.
 - **Başka ekipten istek:** Test ekibi: 37 ve 38.
+
+## 2026-11-08 08:05 — PR #35 ve #36 inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr35-36
+- **Ne yapıldı:** PR #33 (tekrar), #35 (bot iptal/erteleme) ve #36 (panel randevu detay ve yönetim) incelendi. #35 ve #36'da birleşmeyi engelleyen bulgu çıkmadı; küçük bulgular `tasks.md`'ye Bot 39 (telefonsuz "kliniği arayın" metni), Bot 40 (panelden ertelemede bildirim metni), Panel 41 (geçmiş randevu iptalinde bildirim) ve Panel 42 (erteleme hata mesajlarının denenmesi) olarak eklendi. "Son güncelleme" satırı güncellendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #35 ve #36 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #36 dalıyla birleştirme denemesinde `tasks.md`'de çakışma çıkmadı. İnceleme sırasında PR #35 ve #36 dallarında `npm run lint` ve `npm run build` başarılı.
+- **Açık konular:** PR #33'te P8 bölümü ve doldurulmamış `[sebep]` alanları hâlâ düzeltilmedi, birleştirilmeyecek. Panel 35 için saati geçmiş bekleyen sahte randevu SQL Editor'den eklenecek. `clinic_settings.phone` canlıda dolu mu kontrol edilecek.
+- **Başka ekipten istek:** Bot ekibi: 39 ve 40. Panel ekibi: 41 ve 42.
+
+## 2026-11-08 14:20 — PR #37 inceleme maddeleri
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/tasks-pr35-36
+- **Ne yapıldı:** PR #37 (bot, Gemini ile serbest metin anlama) incelendi; birleşmeyi engelleyen bulgu çıkmadı. Küçük bulgular `tasks.md`'ye Bot 43 (fiyat/sağlık sorularında klinik telefonu) ve Bot 44 (mesajdan gelen gün kapalı veya aralık dışıyken uyarı metni) olarak eklendi. #37'nin Vercel önizleme hatasının nedeni bulundu: ortam değişkenleri Vercel'de sadece Production için tanımlı, Preview build'i `/` sayfasını önceden oluştururken `supabaseUrl is required` hatası veriyor. #35'ten beri bütün önizlemeler aynı nedenle düşüyor; main'in production deploy'u (#36) başarılı.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #37 incelemesinde çıkan küçük düzeltmelerin takibi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #37 dalında `npm run lint` ve `npm run build` başarılı. Vercel build log'ları ve ortam değişkeni listesi (sadece adlar ve hedef ortamlar) Vercel'den okundu.
+- **Açık konular:** Vercel'de en azından `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` Preview ortamına da eklenecek. Gemini test scripti gerçek anahtarla çalıştırılıp sonuç Sevde'ye iletilecek.
+- **Başka ekipten istek:** Bot ekibi: 43 ve 44.
+
+## 2026-11-09 22:00 — PR #33, #39, #40, #41, #42 incelemesi ve tasks.md toplu güncelleme
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-33-42-inceleme
+- **Ne yapıldı:** PR #33, #39, #40, #41 ve #42 incelendi. #39'da test setinden 21 vaka (id 48-68) silindiği için değişiklik istendi; diğerlerinde birleşmeyi engelleyen bulgu çıkmadı. Bu PR'lar `tasks.md` ve `logs/ebru.md`'de birbiriyle çakıştığı için `tasks.md`'nin son hali bu dalda toplandı: PR'ların kapattığı 10, 11, 12, 13, 26, 32, 37 ve 38. maddeler silindi (#39 değişiklik istendiği için açık kaldı, 25. madde duruyor), yeni bulgular Bot 45-47 ve Test 48-49 olarak eklendi. 32. maddenin yapılmayan Sevde kısmı 46. madde olarak korundu. Panel 35 ve 41 denemesi için 8 Kasım tarihli, saati geçmiş sahte bir bekleyen randevu SQL Editor'den eklendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR incelemelerinde çıkan küçük düzeltmelerin takibi ve PR'lar arası `tasks.md` çakışmalarının tek yerde çözülmesi.
+- **Nasıl test edildi:** Sadece doküman değişikliği; `git diff` ile kontrol edildi. PR #40 ve #42 dallarında `npm run lint` ve `npm run build` başarılı. PR'ların main ile birleşmesi `git merge-tree` ile denendi.
+- **Açık konular:** #33, #40, #41 ve #42 birleşti; main bu dala alındı ve `tasks.md` çakışmasında bu dalın hali tutuldu. #39 açık, düzeltilince 25 ve 45. maddeler kapanacak.
+- **Başka ekipten istek:** Bot ekibi: 45, 46 ve 47. Test ekibi: 48 ve 49.
+
+## 2026-11-09 23:00 — ZB Dentist logo paketi ve tema
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-33-42-inceleme
+- **Ne yapıldı:** ZB Dentist logo paketi `docs/marka/` klasörüne eklendi. Logo SVG'leri `public/logo/` altına, favicon, `icon.svg` ve `apple-icon.png` `app/` altına konuldu. `app/globals.css`'teki tema renkleri marka paletine çevrildi (mevcut token adları korundu; `surface`, `muted-foreground`, `border`, `olive`, `olive-dark`, `sea`, `whatsapp`, `whatsapp-foreground` ve `rounded-brand` eklendi). Fontlar Geist yerine Inter (gövde) ve Outfit (başlıklar) yapıldı, sayfa başlığı "ZB Dentist — Ağız ve Diş Sağlığı" oldu. `README.md` ve `AGENTS.md`'ye marka ve tema kuralları, yeni klasörlerin sahipliği yazıldı. Site (50) ve panel (51) için marka uyum maddeleri `tasks.md`'ye eklendi. Paket README'si sağ yaprağı yanlışlıkla "petrol" diye anlatıyordu; dosyalardaki gerçek renk (`#0E7C86`, deniz turkuazı) yazıldı ve iki logo varyantının renk tablosu eklendi, logo dosyaları değişmedi.
+- **Değişen dosyalar:** `docs/marka/*`, `public/logo/*`, `app/favicon.ico`, `app/icon.svg`, `app/apple-icon.png`, `app/globals.css`, `app/layout.tsx`, `README.md`, `AGENTS.md`, `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** Klinik kimliğinin (ZB Dentist) belirlenmesi; site ve panelin aynı renk, font ve logoyu kullanması.
+- **Nasıl test edildi:** `npm run lint` ve `npm run build` başarılı. `next start` ile ana sayfanın başlığı, favicon/icon/apple-icon etiketleri, `/logo/` dosyaları ve CSS'teki yeni renk değerleri kontrol edildi. Ekranlar gözle kontrol edilmedi (site 50 ve panel 51 maddelerinde).
+- **Açık konular:** Veritabanında `clinic_settings.clinic_name` "ZB Dentist" olarak SQL Editor'den güncellenecek.
+- **Başka ekipten istek:** Site ekibi: 50. Panel ekibi: 51.
+
+## 2026-11-09 17:47 — PR #44 incelemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-44-inceleme
+- **Ne yapıldı:** Site ekibinin PR #44'ü (ZB Dentist marka uyumu ve tanıtım sitesi) incelendi ve onaylandı. İncelemede çıkan düzeltmeler `tasks.md` site bölümüne 52-57 olarak eklendi: hero görsellerinin optimizasyonu (52), WhatsApp linkinin tek yardımcıya alınması (53), `QuickBookingCard` tipinin `Tables<"procedures">` olması (54), küçük arayüz tutarlılıkları (55), mobil header taşması (56) ve PR log kaydının düzeltilmesi (57).
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #44 incelemesinde birleştirmeyi engellemeyen düzeltmelerin takip edilmesi.
+- **Nasıl test edildi:** PR dalında `npm run lint` hatasız, `npm run build` başarılı. Mobil header taşması genişlik hesabıyla tespit edildi, tarayıcıda denenmedi.
+- **Açık konular:** 56 ve 57 öncelikli. PR #44 birleşti, main bu dala alındı; site bölümündeki "Açık madde yok." satırı kaldırıldı.
+- **Başka ekipten istek:** Site ekibi: 52, 53, 54, 55, 56 ve 57.
+
+## 2026-11-11 06:06 — PR #39 main ile birleştirildi ve tamamlandı
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** fix/bot-gemini-dataset
+- **Ne yapıldı:** PR #39 iki inceleme sonrası main ile çakışık kaldığı için dal üzerinde main alınıp çakışmalar çözüldü. `tasks.md`'de main'deki hal korunup 25, 45 ve 47. maddeler silindi. `logs/ebru.md`'de Ebru'nun 8 Kasım 21:10 kaydında yapılan düzenleme geri alındı (eski kayıtlar değiştirilmez); o kayıttaki "Ebrar / Claude" doğrusu "Ebru / Claude"dur, PR #41-#42'de kapatılan maddeler 10, 26 ve 32'dir. Veri setine geçmiş tarih kuralını ölçen id 73 ("dün için randevu alabilir miyim" → `book`, `date: null`) eklendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ebru.md` (çakışma çözümü), `scripts/gemini-test/dataset.json`, `logs/ahmetyasin.md`
+- **Neden:** PR #39'un üçüncü kez geri gönderilmeden birleştirilmesi; `tasks.md` 25, 45 ve 47. maddeler.
+- **Nasıl test edildi:** `dataset.json` geçerli JSON, 73 vaka, id'ler 1-73 kesintisiz. Çakışma işareti kalmadı. `npm run lint` ve `npm run build` çalıştırıldı.
+- **Açık konular:** Veri seti Gemini ile çalıştırılmadı (`node scripts/gemini-test/run.mjs`).
+- **Başka ekipten istek:** Yok.

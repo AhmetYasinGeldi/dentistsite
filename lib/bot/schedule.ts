@@ -32,6 +32,14 @@ export function upcomingOpenDates(
   return dates;
 }
 
+/** Bugünden başlayarak n gün: Gemini istemindeki takvim için. */
+export function nextDays(today: string, n: number): { date: string; isoWeekday: number }[] {
+  return Array.from({ length: n }, (_, i) => {
+    const date = addDays(today, i);
+    return { date, isoWeekday: isoDayOfWeek(date) };
+  });
+}
+
 export type TimePeriod = "morning" | "afternoon";
 
 /**
@@ -46,6 +54,18 @@ export function splitByPeriod<T>(
     morning: slots.filter((s) => localTime(s) < "12:00"),
     afternoon: slots.filter((s) => localTime(s) >= "12:00"),
   };
+}
+
+/**
+ * Hasta bot üzerinden iptal/erteleme yapabilir mi? Randevuya limitHours
+ * saatten az kaldıysa hayır (AGENTS.md iş kuralı 3).
+ */
+export function canPatientChange(
+  startsAt: string,
+  limitHours: number,
+  now: Date = new Date(),
+): boolean {
+  return Date.parse(startsAt) - now.getTime() >= limitHours * 60 * 60 * 1000;
 }
 
 /**
