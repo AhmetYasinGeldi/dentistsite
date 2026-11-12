@@ -74,3 +74,13 @@
 - **Nasıl test edildi:** JSON’un geçerli olduğu, 72 kayıt içerdiği, id’lerin 1–72 arasında kesintisiz olduğu ve dosya sonunda satır sonu bulunduğu kontrol edildi. Gemini ile çalıştırılmadı.
 - **Açık konular:** Gemini test scriptiyle çalıştırma ve rapor oluşturma ayrıca tamamlanacak. 32. madde için Sevde’nin `flow.ts` entegrasyonu bekleniyor.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-11 12:25 — Bot mesaj adımları Step tipine bağlandı
+- **Kişi / araç:** Ebru / Claude (web sohbeti)
+- **Dal:** feat/bot-steps-tip-baglama
+- **Ne yapıldı:** `lib/bot/messages.ts` içindeki `steps` nesnesi `Step` tipine bağlandı (`satisfies Partial<Record<Step, string>>`). Adım isimlerinin `steps.ts` ile ayrışması artık derleme hatası veriyor. `tasks.md` #8 kapatıldı ve maddesi silindi.
+- **Değişen dosyalar:** `lib/bot/messages.ts`, `tasks.md`, `logs/ebru.md`
+- **Neden:** `tasks.md` #8 (adım isimlerini `steps.ts` ile eşleştirme) kapatıldı.
+- **Nasıl test edildi:** `npm run lint` hatasız. `npm run build` bu makinede tamamlanamadı: `/(site)/page` üretilirken `createPublicClient` (`components/site/Treatments.tsx`) hata verdi; yerelde `NEXT_PUBLIC_SUPABASE_*` ortam değişkenleri eksik. Hata `messages.ts` ile ilgili değil. `npx tsc --noEmit` hatasız tamamlandı. WhatsApp üzerinden deneme yapılmadı.
+- **Açık konular:** Build yerelde ortam değişkenleri eksik olduğu için doğrulanamadı. #39, #43, #44 maddelerinin Ebru kısmı (telefonsuz metinler, tarih uyarı metni) sonraki PR'da yapılacak; Sevde kısmı `flow.ts`'te sürüyor.
+- **Başka ekipten istek:** Ahmet Yasin: yerelde build alabilmem için `.env.local` değerleri gerekiyor.

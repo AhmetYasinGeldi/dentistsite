@@ -8,6 +8,8 @@
 // Tarih biçimi: "5 Kasım 2026 Perşembe, 10:30". Bu biçimi çağıran taraf
 // hazırlar, buradaki fonksiyonlara hazır metin olarak verilir.
 
+import type { Step } from "./steps";
+
 // ---------- Ortak butonlar ----------
 export const buttons = {
   book: "Randevu al",
@@ -58,7 +60,7 @@ export const steps = {
   confirm_cancel: "Randevunuzu iptal etmek istediğinize emin misiniz?",
   reschedule_date: "Yeni randevunuz için hangi gün uygun?",
   reschedule_time: "Hangi saati tercih edersiniz?",
-} as const;
+} as const satisfies Partial<Record<Step, string>>;
 
 // confirm: özet + Onayla / Değiştir / Vazgeç
 export const confirmSummary = (p: {
