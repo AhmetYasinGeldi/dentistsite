@@ -6,11 +6,21 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47 incelemesi)
+Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47, #49, #50 incelemesi)
 
 ---
 
 ## Panel ekibi (Esma, Merve)
+
+### 62. Takvimden yapılan işlem sonrası randevu listesine dönülüyor
+- **Dosya:** `components/admin/calendar-grid.tsx`, `app/admin/actions.ts` (PR #50)
+- **Sorun:** Takvim kartından açılan detayda iptal, tamamla veya ertele yapılınca server action `getAdminUrl(filters, ...)` ile `/admin` listesine yönlendiriyor (takvim `filters` olarak boş değerler veriyor). Sekreter takvimdeki gün/haftayı kaybediyor. Ertelemede RD004 gibi bir hata çıkarsa hata penceresi takvimde değil listede açılıyor; randevu o listede yoksa hiç görünmeyebilir. `revalidatePath` da sadece `/admin` için çağrılıyor.
+- **Yapılacak:** Action'lara dönüş sayfası için gizli bir alan ekle (sadece `/admin` ve `/admin/takvim` kabul edilsin, zod ile doğrula); takvimden gelince `view` ve `date` korunarak `/admin/takvim`'e dön. Hata penceresinin takvimde de açıldığını dene.
+
+### 63. Takvimde küçük düzeltmeler
+- **Dosya:** `app/admin/(dashboard)/takvim/page.tsx`, `components/admin/calendar-grid.tsx` (PR #50)
+- **Sorun:** (1) Doktor sorgusu `is_active` filtrelemiyor; pasif doktorlar da boş sütun olarak çıkıyor. (2) Haftalık görünümdeki kartlarda `rounded-brand` yerine `rounded` var. (3) `page.tsx`'te aynı hata kutusu (başlık + `role="alert"` paragraf) dört kez kopyalanmış; durum kontrolü `find` ile yapıldıktan sonra `map` içinde tekrar `throw` ile yapılıyor.
+- **Yapılacak:** (1) Aktif doktorları göster, pasif doktoru sadece o aralıkta randevusu varsa ekle. (2) Kartları `rounded-brand` yap. (3) Hata kutusunu sayfa içinde küçük bir bileşene al, gereksiz ikinci kontrolü kaldır.
 
 ### 27. Durum filtrelerinin gerçek veriyle denenmesi
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)

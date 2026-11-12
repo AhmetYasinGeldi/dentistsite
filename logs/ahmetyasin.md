@@ -189,3 +189,13 @@
 - **Nasıl test edildi:** PR #46 dalında `npm run lint` hatasız, `npm run build` başarılı. PR #47 yalnızca Markdown dosyalarını değiştirdiği için build çalıştırılmadı.
 - **Açık konular:** PR #47'nin P3, P4 ve P7 sonuçları panelden gönderilen WhatsApp bildiriminin 24 saat penceresi içinde de gitmediğini gösteriyor; Trello'da kritik kart açık. Bu dal PR #39 ve #47'den sonra birleştirilmeli; `tasks.md`'de çakışma çıkarsa çözülecek.
 - **Başka ekipten istek:** Panel ekibi: 58, 59. Test ekibi: 61.
+
+## 2026-11-12 11:11 — PR #49 ve PR #50 incelemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-49-50-inceleme
+- **Ne yapıldı:** Bot ekibinin PR #49'u (`messages.ts` adım isimlerinin `Step` tipine bağlanması) ve panel ekibinin PR #50'si (günlük ve haftalık randevu takvimi, 58 ve 59. maddeler) incelendi; birleştirmeyi engelleyen bulgu çıkmadı ve ikisi de birleştirildi. Küçük düzeltmeler `tasks.md`'ye eklendi: takvimden yapılan işlem sonrası listeye dönülmesi (62), takvimde pasif doktor sütunları, köşe yuvarlaklığı ve tekrarlanan hata kutusu (63).
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #49 ve #50 incelemesinde birleştirmeyi engellemeyen düzeltmelerin takip edilmesi.
+- **Nasıl test edildi:** PR #49 ve PR #50 dallarında `npm run lint` hatasız, `npm run build` başarılı. `tasks.md` değişikliğinin iki PR ile çakışmadığı `git merge-tree` ile denendi.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Panel ekibi: 62, 63. Ebru, yerelde build alabilmek için `.env.local` değerlerini istiyor.
