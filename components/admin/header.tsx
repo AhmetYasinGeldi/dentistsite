@@ -43,21 +43,14 @@ export function Header({
         <Link
           href="/admin"
           aria-label={`${clinicName} yönetim paneli ana sayfa`}
-          className="flex shrink-0 items-center rounded-sm focus-visible:outline-2 focus-visible:outline-primary"
+          className="flex shrink-0 items-center rounded-sm focus-visible:outline-2 focus-visible:outline-primary md:hidden"
         >
           <Image
             src="/logo/zb-dentist-isaret-renkli.svg"
             alt=""
             width={36}
             height={36}
-            className="h-9 w-9 md:hidden"
-          />
-          <Image
-            src="/logo/zb-dentist-logo-renkli.svg"
-            alt=""
-            width={180}
-            height={50}
-            className="hidden h-auto w-[160px] md:block"
+            className="h-9 w-9"
           />
         </Link>
       </div>

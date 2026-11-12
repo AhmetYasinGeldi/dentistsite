@@ -6,11 +6,21 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44 incelemesi)
+Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47, #49, #50 incelemesi)
 
 ---
 
 ## Panel ekibi (Esma, Merve)
+
+### 62. Takvimden yapılan işlem sonrası randevu listesine dönülüyor
+- **Dosya:** `components/admin/calendar-grid.tsx`, `app/admin/actions.ts` (PR #50)
+- **Sorun:** Takvim kartından açılan detayda iptal, tamamla veya ertele yapılınca server action `getAdminUrl(filters, ...)` ile `/admin` listesine yönlendiriyor (takvim `filters` olarak boş değerler veriyor). Sekreter takvimdeki gün/haftayı kaybediyor. Ertelemede RD004 gibi bir hata çıkarsa hata penceresi takvimde değil listede açılıyor; randevu o listede yoksa hiç görünmeyebilir. `revalidatePath` da sadece `/admin` için çağrılıyor.
+- **Yapılacak:** Action'lara dönüş sayfası için gizli bir alan ekle (sadece `/admin` ve `/admin/takvim` kabul edilsin, zod ile doğrula); takvimden gelince `view` ve `date` korunarak `/admin/takvim`'e dön. Hata penceresinin takvimde de açıldığını dene.
+
+### 63. Takvimde küçük düzeltmeler
+- **Dosya:** `app/admin/(dashboard)/takvim/page.tsx`, `components/admin/calendar-grid.tsx` (PR #50)
+- **Sorun:** (1) Doktor sorgusu `is_active` filtrelemiyor; pasif doktorlar da boş sütun olarak çıkıyor. (2) Haftalık görünümdeki kartlarda `rounded-brand` yerine `rounded` var. (3) `page.tsx`'te aynı hata kutusu (başlık + `role="alert"` paragraf) dört kez kopyalanmış; durum kontrolü `find` ile yapıldıktan sonra `map` içinde tekrar `throw` ile yapılıyor.
+- **Yapılacak:** (1) Aktif doktorları göster, pasif doktoru sadece o aralıkta randevusu varsa ekle. (2) Kartları `rounded-brand` yap. (3) Hata kutusunu sayfa içinde küçük bir bileşene al, gereksiz ikinci kontrolü kaldır.
 
 ### 27. Durum filtrelerinin gerçek veriyle denenmesi
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
@@ -18,17 +28,6 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
 ## Bot ekibi (Sevde, Ebru)
-
-### 8. Adım isimlerini `steps.ts` ile eşleştirme
-- **Dosya:** `lib/bot/messages.ts` (PR #7)
-- **Sorun:** `steps` nesnesindeki anahtarlar Sevde'nin `lib/bot/steps.ts` dosyasıyla aynı olmalı, ancak `steps.ts` henüz main'de yok. İki ayrı listede aynı isimler elle tutulursa zamanla ayrışır.
-- **Yapılacak:** `steps.ts` gelince `steps` nesnesinin tipini oradaki adım listesine bağla (ör. `satisfies Partial<Record<Step, string>>`).
-
-### 25. Gemini test setinde belirsiz beklentiler ve eksik senaryolar
-- **Dosya:** `scripts/gemini-test/dataset.json` (PR #14)
-- **Sorun:** id 24 ("17 den sonra uygun musunuz") için `time: "17:00"` bekleniyor; mesaj bir saat değil alt sınır veriyor. id 13 ("diş çekimi") için `Basit Diş Çekimi` bekleniyor; basit mi gömülü mü olduğu belli değil. "menü", geçmiş tarih ("dün"), randevu penceresi dışı tarih ("3 ay sonra") ve saat aralığı ("10-12 arası") senaryoları yok. Dosya sonunda satır sonu yok.
-- **Yapılacak:** id 24 ve 13'ün beklenen değerini netleştir (ör. `time: null`, `procedure: null` veya `Muayene`), eksik senaryoları ekle.
-- **Durum:** PR #39'da yapıldı ama o PR 68 vakanın 21'ini (id 48-68) sildiği için değişiklik istendi. Silinen vakalar geri konunca ve 45. madde de yapılınca birleşecek.
 
 ### 39. Klinik telefonu yokken "kliniği arayın" metni
 - **Dosya:** `lib/bot/flow.ts` (`checkChangeAllowed`), `lib/bot/messages.ts` (PR #35)
@@ -50,20 +49,10 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 - **Sorun:** Gemini'nin verdiği `date` doğrudan `get_available_slots`'a gidiyor. Gün klinik tatili, doktorun çalışmadığı gün veya `booking_window_days` dışındaysa da hastaya "o gün boş saat kalmadı" deniyor; gün aslında hiç açık değil. Ayrıca `time` alanı ("14 gibi") okunuyor ama akışta kullanılmıyor.
 - **Yapılacak:** `hintDate`, `upcomingOpenDates` listesinde yoksa "boş saat kalmadı" yerine "Bu tarihte randevu verilemiyor" gibi bir metinle gün listesini göster (metin Ebru'dan). `time` için şimdilik bir şey yapılmayacaksa PR açıklamasına/log'a not düş; kullanılacaksa o saate en yakın slotu listenin başına almak yeterli.
 
-### 45. Gemini test setinde iki beklenen değer
-- **Dosya:** `scripts/gemini-test/dataset.json` (PR #39, açık)
-- **Sorun:** PR #39'da eklenen vakalardan id 50 ("3 ay sonra için randevu alabiliyor muyuz") için `intent: "other"` bekleniyor; `lib/ai/intent.ts`'teki tanıma göre müsaitlik soran mesaj `book`, `date: null` olmalı (pencere dışı olduğuna Gemini değil kod karar verir). id 48 ("menü") Gemini'ye hiç gitmiyor; `flow.ts` bu kelimeyi önce yakalıyor, bu vaka botun gerçek davranışını ölçmüyor. Dosya sonunda satır sonu hâlâ yok.
-- **Yapılacak:** PR #39'u düzeltirken bunu da yap: id 50'yi `book` yap. "menü" vakasını sil ya da yerine "ana sayfaya dönmek istiyorum" gibi Gemini'ye giden bir mesaj koy. Dosya sonuna satır sonu ekle. Silinen 21 vaka geri gelince id'ler değişeceği için yeni vakaları sona ekle.
-
 ### 46. Akış metinlerinin `flow.ts`'te kullanılması (32. maddenin Sevde kısmı)
 - **Dosya:** `lib/bot/flow.ts`, `lib/bot/messages.ts` (PR #42)
 - **Sorun:** PR #42, 32. maddeyi tamamen sildi ama maddenin sadece Ebru kısmı yapıldı. `flow.ts`'te geçici `MORE_OPTIONS_TITLE` sabiti duruyor, `errors.invalidName` ve `listRows.otherOptions` hiçbir yerde kullanılmıyor.
 - **Yapılacak:** Sevde: `MORE_OPTIONS_TITLE` yerine `listRows.otherOptions` kullan ve sabiti sil; geçersiz ad soyadda soruyu tekrarlamak yerine `errors.invalidName` gönder.
-
-### 47. Ebru'nun PR #40-#42 log kayıtları
-- **Dosya:** `logs/ebru.md` (PR #40, #41, #42; açık PR #39)
-- **Sorun:** PR #40 kaydı 26. maddeyi kapattığını yazmıyor, "Biçim bozuluğu" yazım hatası var. PR #42 kaydında kişi "Ebrar / Claude" yazıyor (Ebrar site ekibinde) ve 32. madde geçmiyor. PR #41 için log kaydı yok, 10. maddenin kapatıldığı hiçbir kayıtta geçmiyor. Dosya sonunda satır sonu yine yok.
-- **Yapılacak:** Sonraki kayıtta bu PR'larda kapatılan maddeleri (10, 26, 32) ve kişi adını düzelt, dosya sonuna satır sonu ekle. PR #39'daki kaydın başlığını da düzelt: `2026.11.08 20.35` yerine `2026-11-08 20:35`.
 
 ## Site ekibi (Ahmet Çiçek, Ebrar)
 
@@ -99,6 +88,10 @@ Son güncelleme: 9 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21,
 
 ## Test ekibi (Tuğba, Nezahat)
 
+### 61. `senaryolar.md` sonunda satır sonu yok
+- **Dosya:** `docs/test/senaryolar.md` (PR #47)
+- **Sorun:** 49. madde ve PR açıklaması dosya sonlarına satır sonu eklendiğini söylüyor; `logs/tugba.md`'de var, `senaryolar.md`'de hâlâ yok.
+- **Yapılacak:** `senaryolar.md` sonuna satır sonu ekle.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 

@@ -64,3 +64,23 @@
 - **Nasıl test edildi:** `npm run build` başarılı.
 - **Açık konular:** Yok
 - **Başka ekipten istek:** Yok
+
+## 2026-11-10 00:15 — Gemini test veri seti güncellendi
+- **Kişi / araç:** Ebru / Codex
+- **Dal:** fix/bot-gemini-dataset
+- **Ne yapıldı:** Silinen 48–68 arası vakalar geri eklendi; dört yeni vaka 69–72 olarak sona eklendi. id 13 için işlem `Muayene`, id 24 için saat `null` yapıldı. “Menü” yerine Gemini’ye gönderilebilen “ana sayfaya dönmek istiyorum” örneği eklendi. Üç ay sonrası randevu örneğinin intent’i `book`, tarihi `null` yapıldı. Ayrıca 10. maddenin tamamlandığı ve PR #40 ile 26. maddenin kapatıldığı kaydedildi.
+- **Değişen dosyalar:** `scripts/gemini-test/dataset.json`, `tasks.md`, `logs/ebru.md`
+- **Neden:** PR #39 ve `tasks.md` 45. madde.
+- **Nasıl test edildi:** JSON’un geçerli olduğu, 72 kayıt içerdiği, id’lerin 1–72 arasında kesintisiz olduğu ve dosya sonunda satır sonu bulunduğu kontrol edildi. Gemini ile çalıştırılmadı.
+- **Açık konular:** Gemini test scriptiyle çalıştırma ve rapor oluşturma ayrıca tamamlanacak. 32. madde için Sevde’nin `flow.ts` entegrasyonu bekleniyor.
+- **Başka ekipten istek:** Yok.
+
+## 2026-11-11 12:25 — Bot mesaj adımları Step tipine bağlandı
+- **Kişi / araç:** Ebru / Claude (web sohbeti)
+- **Dal:** feat/bot-steps-tip-baglama
+- **Ne yapıldı:** `lib/bot/messages.ts` içindeki `steps` nesnesi `Step` tipine bağlandı (`satisfies Partial<Record<Step, string>>`). Adım isimlerinin `steps.ts` ile ayrışması artık derleme hatası veriyor. `tasks.md` #8 kapatıldı ve maddesi silindi.
+- **Değişen dosyalar:** `lib/bot/messages.ts`, `tasks.md`, `logs/ebru.md`
+- **Neden:** `tasks.md` #8 (adım isimlerini `steps.ts` ile eşleştirme) kapatıldı.
+- **Nasıl test edildi:** `npm run lint` hatasız. `npm run build` bu makinede tamamlanamadı: `/(site)/page` üretilirken `createPublicClient` (`components/site/Treatments.tsx`) hata verdi; yerelde `NEXT_PUBLIC_SUPABASE_*` ortam değişkenleri eksik. Hata `messages.ts` ile ilgili değil. `npx tsc --noEmit` hatasız tamamlandı. WhatsApp üzerinden deneme yapılmadı.
+- **Açık konular:** Build yerelde ortam değişkenleri eksik olduğu için doğrulanamadı. #39, #43, #44 maddelerinin Ebru kısmı (telefonsuz metinler, tarih uyarı metni) sonraki PR'da yapılacak; Sevde kısmı `flow.ts`'te sürüyor.
+- **Başka ekipten istek:** Ahmet Yasin: yerelde build alabilmem için `.env.local` değerleri gerekiyor.

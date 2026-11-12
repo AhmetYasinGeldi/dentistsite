@@ -169,3 +169,33 @@
 - **Nasıl test edildi:** PR dalında `npm run lint` hatasız, `npm run build` başarılı. Mobil header taşması genişlik hesabıyla tespit edildi, tarayıcıda denenmedi.
 - **Açık konular:** 56 ve 57 öncelikli. PR #44 birleşti, main bu dala alındı; site bölümündeki "Açık madde yok." satırı kaldırıldı.
 - **Başka ekipten istek:** Site ekibi: 52, 53, 54, 55, 56 ve 57.
+
+## 2026-11-11 06:06 — PR #39 main ile birleştirildi ve tamamlandı
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** fix/bot-gemini-dataset
+- **Ne yapıldı:** PR #39 iki inceleme sonrası main ile çakışık kaldığı için dal üzerinde main alınıp çakışmalar çözüldü. `tasks.md`'de main'deki hal korunup 25, 45 ve 47. maddeler silindi. `logs/ebru.md`'de Ebru'nun 8 Kasım 21:10 kaydında yapılan düzenleme geri alındı (eski kayıtlar değiştirilmez); o kayıttaki "Ebrar / Claude" doğrusu "Ebru / Claude"dur, PR #41-#42'de kapatılan maddeler 10, 26 ve 32'dir. Veri setine geçmiş tarih kuralını ölçen id 73 ("dün için randevu alabilir miyim" → `book`, `date: null`) eklendi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ebru.md` (çakışma çözümü), `scripts/gemini-test/dataset.json`, `logs/ahmetyasin.md`
+- **Neden:** PR #39'un üçüncü kez geri gönderilmeden birleştirilmesi; `tasks.md` 25, 45 ve 47. maddeler.
+- **Nasıl test edildi:** `dataset.json` geçerli JSON, 73 vaka, id'ler 1-73 kesintisiz. Çakışma işareti kalmadı. `npm run lint` ve `npm run build` çalıştırıldı.
+- **Açık konular:** Veri seti Gemini ile çalıştırılmadı (`node scripts/gemini-test/run.mjs`).
+- **Başka ekipten istek:** Yok.
+
+## 2026-11-11 06:07 — PR #46 ve PR #47 incelemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-39-46-inceleme
+- **Ne yapıldı:** Panel ekibinin PR #46'sı (randevu akışı düzeltmeleri ve panel logosu) ve test ekibinin PR #47'si (açık işler 48-49, B7-B9 ve P4/P7 sonuçları) incelendi. Birleştirmeyi engelleyen bulgu çıkmadı. Küçük düzeltmeler `tasks.md`'ye eklendi: masaüstünde çift logo (58), erteleme hata penceresinde marka ve biçim (59), `senaryolar.md` sonunda satır sonu (61). PR #39 için yazılan 60. madde, PR #39 dalında doğrudan yapıldığı için eklenmedi.
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #46 ve #47 incelemesinde birleştirmeyi engellemeyen düzeltmelerin takip edilmesi.
+- **Nasıl test edildi:** PR #46 dalında `npm run lint` hatasız, `npm run build` başarılı. PR #47 yalnızca Markdown dosyalarını değiştirdiği için build çalıştırılmadı.
+- **Açık konular:** PR #47'nin P3, P4 ve P7 sonuçları panelden gönderilen WhatsApp bildiriminin 24 saat penceresi içinde de gitmediğini gösteriyor; Trello'da kritik kart açık. Bu dal PR #39 ve #47'den sonra birleştirilmeli; `tasks.md`'de çakışma çıkarsa çözülecek.
+- **Başka ekipten istek:** Panel ekibi: 58, 59. Test ekibi: 61.
+
+## 2026-11-12 11:11 — PR #49 ve PR #50 incelemesi
+- **Kişi / araç:** Ahmet Yasin / Claude Code
+- **Dal:** docs/pr-49-50-inceleme
+- **Ne yapıldı:** Bot ekibinin PR #49'u (`messages.ts` adım isimlerinin `Step` tipine bağlanması) ve panel ekibinin PR #50'si (günlük ve haftalık randevu takvimi, 58 ve 59. maddeler) incelendi; birleştirmeyi engelleyen bulgu çıkmadı ve ikisi de birleştirildi. Küçük düzeltmeler `tasks.md`'ye eklendi: takvimden yapılan işlem sonrası listeye dönülmesi (62), takvimde pasif doktor sütunları, köşe yuvarlaklığı ve tekrarlanan hata kutusu (63).
+- **Değişen dosyalar:** `tasks.md`, `logs/ahmetyasin.md`
+- **Neden:** PR #49 ve #50 incelemesinde birleştirmeyi engellemeyen düzeltmelerin takip edilmesi.
+- **Nasıl test edildi:** PR #49 ve PR #50 dallarında `npm run lint` hatasız, `npm run build` başarılı. `tasks.md` değişikliğinin iki PR ile çakışmadığı `git merge-tree` ile denendi.
+- **Açık konular:** Yok.
+- **Başka ekipten istek:** Panel ekibi: 62, 63. Ebru, yerelde build alabilmek için `.env.local` değerlerini istiyor.
