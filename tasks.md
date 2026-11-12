@@ -17,16 +17,6 @@ Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
-### 58. Masaüstünde logo iki kez görünüyor
-- **Dosya:** `components/admin/header.tsx`, `components/admin/sidebar.tsx` (PR #46)
-- **Sorun:** `md` ve üstünde kenar çubuğu açık; orada işaret logosu ve klinik adı var. Üst bar da aynı genişlikte yatay logoyu (`hidden md:block`) gösteriyor, yan yana iki logo çıkıyor.
-- **Yapılacak:** Üst bardaki logoyu sadece mobilde göster (yatay logoyu kaldır, işaret logosu `md:hidden` kalsın) ya da kenar çubuğunda işaret + ad yerine yatay logoyu kullan; ikisinden biri yeterli.
-
-### 59. Erteleme hata penceresinde marka ve biçim
-- **Dosya:** `components/admin/appointment-details.tsx` (PR #46)
-- **Sorun:** Yeni "Erteleme yapılamadı" penceresinde mesaj kutusu `rounded-lg`, "Tamam" butonu `rounded` ve `py-2` (44 px'in altında). `AGENTS.md` bölüm 10 `rounded-brand` ve en az 44 px yükseklik istiyor. Bileşen `<>...</>` ile sarıldığında içerideki satırlar yeniden girintilenmemiş, `AppointmentDialog` ile çocukları aynı hizada duruyor. Log kaydında `npm run build` sonucu yok (PR açıklamasında var).
-- **Yapılacak:** Kutuyu ve butonu `rounded-brand`, butonu `min-h-11` yap. Fragment içini bir seviye girintile. Sonraki log kaydına build sonucunu yaz.
-
 ## Bot ekibi (Sevde, Ebru)
 
 ### 39. Klinik telefonu yokken "kliniği arayın" metni

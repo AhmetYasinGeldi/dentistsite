@@ -41,6 +41,7 @@ const filtersSchema = z.object({
 const MAX_STATUS_FILTER_RESULTS = 100;
 const APPOINTMENT_LIST_SELECT = `
   id,
+  doctor_id,
   starts_at,
   ends_at,
   status,
@@ -330,6 +331,7 @@ export default async function AppointmentsPage({
                             key={`${appointment.id}-${shouldResumeReschedule && appointment.id === rescheduleAppointmentId}`}
                             appointment={{
                               id: appointment.id,
+                              doctorId: appointment.doctor_id,
                               startsAt: appointment.starts_at,
                               endsAt: appointment.ends_at,
                               status: appointmentStatus,

@@ -194,3 +194,13 @@
 - **Nasıl test edildi:** Kullanıcı #35'te “Randevu reddedildi. Bildirim gönderilmedi, randevu saati geçmiş.” mesajını, #41'de geçmiş saat bildiriminin atlandığı uyarıyı gördüğünü bildirdi. #42'de RD003 “Bu randevu artık aktif değil.” ve RD004 “Seçilen saat müsait değil.” mesajları ve randevunun korunması doğrulandı; RD004 modalı detay penceresi açık kalacak şekilde gösterildi ve kullanıcı çalıştığını onayladı. #51 için kullanıcı tarafından paylaşılan panel ekran görüntüsünde logolar, vurgu ve metin okunabilirliği kontrol edildi; giriş ekranı entegre tarayıcıda görsel olarak incelendi. Yenileme sonrasında logo `loading="eager"` ile yüklendi ve konsol uyarısı görülmedi. ESLint, `npx.cmd tsc --noEmit` ve `git diff --check` başarılı.
 - **Açık konular:** Panel ekibinde yalnızca #27 gerçek Supabase verisiyle filtre testi olarak açık. Diğer ekiplerin açık maddeleri kendi bölümlerinde korunmuştur.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-11 13:10 — Takvim görünümü ve panel takip işleri
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `feat/admin-calendar-weekly-grid`
+- **Ne yapıldı:** Günlük ve haftalık doktor bazlı takvim görünümleri tamamlandı; günlük görünümde doktor sütun ayraçları tüm saat satırları boyunca uzatıldı. Takvimde onaylı randevular yeşil, reddedilenler kırmızı, iptal edilenler gri gösteriliyor. #58 masaüstü yinelenen logo düzeltmesi ve #59 erteleme hata penceresindeki marka köşeleri ile en az 44 px düğme yüksekliği tamamlanıp `tasks.md`'den kaldırıldı. #27 gerçek filtre verisiyle doğrulama gerektiği için açık bırakıldı.
+- **Değişen dosyalar:** `app/admin/(dashboard)/page.tsx`, `app/admin/(dashboard)/takvim/page.tsx`, `components/admin/appointment-details.tsx`, `components/admin/calendar-grid.tsx`, `components/admin/header.tsx`, `tasks.md`, `logs/esmabetul.md`
+- **Neden:** Günlük/haftalık takvim görevini tamamlamak ve Panel ekibinin #58 ile #59 maddelerini kapatmak.
+- **Nasıl test edildi:** ESLint, `npx.cmd tsc --noEmit` ve `git diff --check` başarılı. Günlük ve haftalık görünümler tarayıcıda incelendi; doktor sütun çizgileri, randevu renkleri ve karttan detay açılması doğrulandı. İki sahte randevuyla aynı doktorda aynı saate erteleme çakışması oluşturularak RD004 hata penceresi görüntülendi; mesaj kutusunda `rounded-brand`, “Tamam” düğmesinde `rounded-brand` ve 44 px yükseklik doğrulandı. Kullanıcı kendi ortamında build'i başarıyla alabildiğini bildirdi.
+- **Açık konular:** Panel ekibinde #27 gerçek Supabase filtre verisiyle test bekliyor.
+- **Başka ekipten istek:** Yok.
