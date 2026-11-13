@@ -204,3 +204,13 @@
 - **Nasıl test edildi:** ESLint, `npx.cmd tsc --noEmit` ve `git diff --check` başarılı. Günlük ve haftalık görünümler tarayıcıda incelendi; doktor sütun çizgileri, randevu renkleri ve karttan detay açılması doğrulandı. İki sahte randevuyla aynı doktorda aynı saate erteleme çakışması oluşturularak RD004 hata penceresi görüntülendi; mesaj kutusunda `rounded-brand`, “Tamam” düğmesinde `rounded-brand` ve 44 px yükseklik doğrulandı. Kullanıcı kendi ortamında build'i başarıyla alabildiğini bildirdi.
 - **Açık konular:** Panel ekibinde #27 gerçek Supabase filtre verisiyle test bekliyor.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-13 15:06 — Takvim dönüş akışları ve doğrulama
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `fix/admin-calendar-followups`
+- **Ne yapıldı:** #62 kapsamında takvimden randevuyu tamamlandı olarak işaretleme, erteleme, çakışma hatası ve iptal akışları doğrulandı. Haftalık görünümde tamamlanan randevu griye döndü ve aynı haftada kalındı; günlük görünümde 14 Kasım'daki randevu 16 Kasım'a ertelendikten sonra takvim 14 Kasım'da kaldı. İki sekmede aynı doktor ve hedef saatle yapılan erteleme yarışında ikinci işlem “Seçilen saat müsait değil” hatası verdi; hata penceresi, randevu detayı ve takvim bağlamı korundu. İptal işleminden sonra da takvimde kalındı. #62 `tasks.md`'den kaldırıldı. #63'teki aktif/pasif doktor davranışının kodu mevcut ancak pasif doktorun seçili aralıkta randevulu/randevusuz olduğu gerçek veri bulunmadığından manuel doğrulama yapılamadı.
+- **Değişen dosyalar:** `app/admin/actions.ts`, `app/admin/(dashboard)/takvim/page.tsx`, `components/admin/appointment-actions.tsx`, `components/admin/appointment-details.tsx`, `components/admin/calendar-grid.tsx`, `tasks.md`, `logs/esmabetul.md`
+- **Neden:** Panel takvimindeki işlem sonrası dönüşü ve erteleme çakışma hata akışını doğrulamak; #62'yi tamamlamak ve #63'ün doğrulanamayan veri senaryosunu açıkça kaydetmek.
+- **Nasıl test edildi:** Kullanıcı test randevularıyla tarayıcıda manuel olarak tamamlandı, günlük/haftalık görünümde erteleme, iki sekmede aynı doktora aynı saati seçerek çakışma ve iptal akışlarını denedi. Çakışma hata penceresi ekran görüntüsünde kontrol edildi. #63 için gerçek pasif doktor kaydı ve ilgili randevu durumu doğrulanamadı.
+- **Açık konular:** #63 pasif doktorun seçili aralıkta randevusu varken ve yokken gösterilme davranışının veriyle doğrulanması bekliyor. #27 gerçek Supabase filtre verisiyle test bekliyor.
+- **Başka ekipten istek:** Yok.
