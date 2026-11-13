@@ -50,3 +50,13 @@
 - **Nasıl test edildi:** Canlı sistemde test numarasından bota yazarak ve canlı panelde randevu işlemleri yaparak.
 - **Açık konular:** Panelin bildirim hatası P3, P4 ve P7'de sürüyor (Trello'da kart açık, Kritik). B4, B13, B14, P5, P6, P8-P11 ve S2-S4 denenmedi, sebepleri tabloda yazılı.
 - **Başka ekipten istek:** Bot ekibi: bildirim gönderimi (`notifyAppointmentUpdate`) hatası.
+
+## 2026-11-12 22:50 — Açık iş: senaryolar.md satır sonu, P8 testi
+- **Kişi / araç:** Tuğba / Claude (web sohbeti)
+- **Dal:** test-tugba
+- **Ne yapıldı:** PR #47 incelemesindeki açık işi kapattım: `senaryolar.md`'nin sonuna satır sonu ekledim. `main`'i çekerken `tasks.md`'de çakışma çıktı, `main`'in sürümünü alıp birleştirmeyi tamamladım. P8'i (panelden erteleme) canlı sistemde 24 saat içinde denedim: eski randevu "İptal edildi", yeni randevu "Onaylandı" açıldı, hastaya WhatsApp bildirimi gönderilemedi (P3, P4, P7'deki hatayla aynı). Sonuç tablosundaki P8 satırını güncelledim. B13'ün (aynı mesajın iki kez gelmesi) telefondan tetiklenemediğini, aynı webhook isteğinin tekrar gönderilmesi gerektiğini not ettim.
+- **Değişen dosyalar:** `docs/test/senaryolar.md`, `logs/tugba.md`, `tasks.md`
+- **Neden:** Açık işler listesi, PR #47 incelemesi.
+- **Nasıl test edildi:** Canlı panelde P8 denendi. `npm run lint` ve `npm run build` hatasız bitti.
+- **Açık konular:** Bildirim hatası P3, P4, P7 ve P8'de sürüyor. B4, B13, B14, P5, P6, P9, P10, P11 ve S2-S4 denenmedi, sebepleri tabloda yazılı. Trello çalışma alanı 10 katılımcı sınırını aştığı için panolar yalnızca görüntülenebiliyor, kartlara yorum yazılamıyor ve kartlar taşınamıyor, bu yüzden kart güncellemeleri beklemede.
+- **Başka ekipten istek:** Bot ekibi: bildirim gönderimi (`notifyAppointmentUpdate`) hatası ve B13'ü test etme yöntemi. Ahmet Yasin: Trello katılımcı sınırı.
