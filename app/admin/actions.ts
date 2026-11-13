@@ -116,6 +116,18 @@ const appointmentFiltersSchema = z.object({
 });
 
 export type AppointmentFilters = z.infer<typeof appointmentFiltersSchema>;
+export type AppointmentReturnContext =
+  | { returnTo: "/admin" }
+  | { returnTo: "/admin/takvim"; view: "day" | "week"; date: string };
+
+const appointmentReturnContextSchema = z.discriminatedUnion("returnTo", [
+  z.object({ returnTo: z.literal("/admin") }),
+  z.object({
+    returnTo: z.literal("/admin/takvim"),
+    returnView: z.enum(["day", "week"]),
+    returnDate: z.iso.date(),
+  }),
+]);
 
 function getAppointmentFilters(formData: FormData): AppointmentFilters {
   const parsed = appointmentFiltersSchema.safeParse({
@@ -127,17 +139,42 @@ function getAppointmentFilters(formData: FormData): AppointmentFilters {
   return parsed.success ? parsed.data : appointmentFiltersSchema.parse({});
 }
 
+function getAppointmentReturnContext(
+  formData: FormData,
+): AppointmentReturnContext | null {
+  const parsed = appointmentReturnContextSchema.safeParse({
+    returnTo: formData.get("returnTo") ?? "/admin",
+    returnView: formData.get("returnView") || undefined,
+    returnDate: formData.get("returnDate") || undefined,
+  });
+
+  if (!parsed.success) return null;
+  if (parsed.data.returnTo === "/admin") return parsed.data;
+
+  return {
+    returnTo: "/admin/takvim",
+    view: parsed.data.returnView,
+    date: parsed.data.returnDate,
+  };
+}
+
 function getAdminUrl(
   filters: AppointmentFilters,
   notice: string,
   notification?: "sent" | "failed" | "window_closed" | "past",
   errorCode?: DbErrorCode,
   rescheduleDetails?: { appointmentId: number; date: string },
+  returnContext: AppointmentReturnContext = { returnTo: "/admin" },
 ): string {
   const params = new URLSearchParams();
-  if (filters.date) params.set("date", filters.date);
-  if (filters.doctorId) params.set("doctorId", filters.doctorId);
-  if (filters.status) params.set("status", filters.status);
+  if (returnContext.returnTo === "/admin/takvim") {
+    params.set("view", returnContext.view);
+    params.set("date", returnContext.date);
+  } else {
+    if (filters.date) params.set("date", filters.date);
+    if (filters.doctorId) params.set("doctorId", filters.doctorId);
+    if (filters.status) params.set("status", filters.status);
+  }
   params.set("notice", notice);
   params.set("resultId", randomUUID());
   if (notification) params.set("notification", notification);
@@ -147,7 +184,7 @@ function getAdminUrl(
     params.set("rescheduleDate", rescheduleDetails.date);
   }
 
-  return `/admin?${params.toString()}`;
+  return `${returnContext.returnTo}?${params.toString()}`;
 }
 
 async function requireAdminClient() {
@@ -167,6 +204,7 @@ async function notifyAndRefresh(
   appointmentId: number,
   notice: "approved" | "rejected" | "cancelled" | "rescheduled",
   filters: AppointmentFilters,
+  returnContext: AppointmentReturnContext,
   skipNotification?: "past",
 ): Promise<void> {
   let notification: "sent" | "failed" | "window_closed" | "past" =
@@ -186,17 +224,20 @@ async function notifyAndRefresh(
   }
 
   revalidatePath("/admin");
-  redirect(getAdminUrl(filters, notice, notification));
+  revalidatePath("/admin/takvim");
+  redirect(getAdminUrl(filters, notice, notification, undefined, undefined, returnContext));
 }
 
 export async function approveAppointmentAction(
   formData: FormData,
 ): Promise<void> {
   const filters = getAppointmentFilters(formData);
+  const returnContext = getAppointmentReturnContext(formData);
+  if (!returnContext) redirect(getAdminUrl(filters, "invalid"));
   const parsedId = appointmentIdSchema.safeParse(
     formData.get("appointmentId"),
   );
-  if (!parsedId.success) redirect(getAdminUrl(filters, "invalid"));
+  if (!parsedId.success) redirect(getAdminUrl(filters, "invalid", undefined, undefined, undefined, returnContext));
 
   const supabase = await requireAdminClient();
   const now = new Date().toISOString();
@@ -216,17 +257,19 @@ export async function approveAppointmentAction(
 
   if (error) {
     console.error("Randevu onaylanırken Supabase hatası:", error);
-    redirect(getAdminUrl(filters, "update_failed"));
+    redirect(getAdminUrl(filters, "update_failed", undefined, undefined, undefined, returnContext));
   }
-  if (!data) redirect(getAdminUrl(filters, "stale"));
+  if (!data) redirect(getAdminUrl(filters, "stale", undefined, undefined, undefined, returnContext));
 
-  await notifyAndRefresh(data.id, "approved", filters);
+  await notifyAndRefresh(data.id, "approved", filters, returnContext);
 }
 
 export async function rejectAppointmentAction(
   formData: FormData,
 ): Promise<void> {
   const filters = getAppointmentFilters(formData);
+  const returnContext = getAppointmentReturnContext(formData);
+  if (!returnContext) redirect(getAdminUrl(filters, "invalid"));
   const parsed = z
     .object({
       appointmentId: appointmentIdSchema,
@@ -237,7 +280,7 @@ export async function rejectAppointmentAction(
       rejectionReason: formData.get("rejectionReason"),
     });
 
-  if (!parsed.success) redirect(getAdminUrl(filters, "invalid"));
+  if (!parsed.success) redirect(getAdminUrl(filters, "invalid", undefined, undefined, undefined, returnContext));
 
   const supabase = await requireAdminClient();
   const { data, error } = await supabase
@@ -255,15 +298,16 @@ export async function rejectAppointmentAction(
 
   if (error) {
     console.error("Randevu reddedilirken Supabase hatası:", error);
-    redirect(getAdminUrl(filters, "update_failed"));
+    redirect(getAdminUrl(filters, "update_failed", undefined, undefined, undefined, returnContext));
   }
-  if (!data) redirect(getAdminUrl(filters, "stale"));
+  if (!data) redirect(getAdminUrl(filters, "stale", undefined, undefined, undefined, returnContext));
 
   const appointmentHasPassed = Date.parse(data.starts_at) <= Date.now();
   await notifyAndRefresh(
     data.id,
     "rejected",
     filters,
+    returnContext,
     appointmentHasPassed ? "past" : undefined,
   );
 }
@@ -272,10 +316,12 @@ export async function cancelAppointmentAction(
   formData: FormData,
 ): Promise<void> {
   const filters = getAppointmentFilters(formData);
+  const returnContext = getAppointmentReturnContext(formData);
+  if (!returnContext) redirect(getAdminUrl(filters, "invalid"));
   const parsedId = appointmentIdSchema.safeParse(
     formData.get("appointmentId"),
   );
-  if (!parsedId.success) redirect(getAdminUrl(filters, "invalid"));
+  if (!parsedId.success) redirect(getAdminUrl(filters, "invalid", undefined, undefined, undefined, returnContext));
   const supabase = await requireAdminClient();
   const { data, error } = await supabase
     .from("appointments")
@@ -290,15 +336,16 @@ export async function cancelAppointmentAction(
 
   if (error) {
     console.error("Randevu iptal edilirken Supabase hatası:", error);
-    redirect(getAdminUrl(filters, "update_failed"));
+    redirect(getAdminUrl(filters, "update_failed", undefined, undefined, undefined, returnContext));
   }
-  if (!data) redirect(getAdminUrl(filters, "stale"));
+  if (!data) redirect(getAdminUrl(filters, "stale", undefined, undefined, undefined, returnContext));
 
   const appointmentHasPassed = Date.parse(data.starts_at) <= Date.now();
   await notifyAndRefresh(
     data.id,
     "cancelled",
     filters,
+    returnContext,
     appointmentHasPassed ? "past" : undefined,
   );
 }
@@ -307,10 +354,12 @@ export async function completeAppointmentAction(
   formData: FormData,
 ): Promise<void> {
   const filters = getAppointmentFilters(formData);
+  const returnContext = getAppointmentReturnContext(formData);
+  if (!returnContext) redirect(getAdminUrl(filters, "invalid"));
   const parsedId = appointmentIdSchema.safeParse(
     formData.get("appointmentId"),
   );
-  if (!parsedId.success) redirect(getAdminUrl(filters, "invalid"));
+  if (!parsedId.success) redirect(getAdminUrl(filters, "invalid", undefined, undefined, undefined, returnContext));
 
   const supabase = await requireAdminClient();
   const { data, error } = await supabase
@@ -324,12 +373,13 @@ export async function completeAppointmentAction(
 
   if (error) {
     console.error("Randevu tamamlandı olarak işaretlenirken hata:", error);
-    redirect(getAdminUrl(filters, "update_failed"));
+    redirect(getAdminUrl(filters, "update_failed", undefined, undefined, undefined, returnContext));
   }
-  if (!data) redirect(getAdminUrl(filters, "stale"));
+  if (!data) redirect(getAdminUrl(filters, "stale", undefined, undefined, undefined, returnContext));
 
   revalidatePath("/admin");
-  redirect(getAdminUrl(filters, "completed"));
+  revalidatePath("/admin/takvim");
+  redirect(getAdminUrl(filters, "completed", undefined, undefined, undefined, returnContext));
 }
 
 export type AdminNoteActionState = {
@@ -350,6 +400,14 @@ export async function updateAdminNoteAction(
       appointmentId: formData.get("appointmentId"),
       adminNote: formData.get("adminNote"),
     });
+
+  const returnContext = getAppointmentReturnContext(formData);
+  if (!returnContext) {
+    return {
+      success: false,
+      message: "İşlem bilgileri geçersiz. Lütfen tekrar deneyin.",
+    };
+  }
 
   if (!parsed.success) {
     return {
@@ -375,6 +433,7 @@ export async function updateAdminNoteAction(
   }
 
   revalidatePath("/admin");
+  revalidatePath("/admin/takvim");
   return { success: true, message: "Klinik notu kaydedildi." };
 }
 
@@ -434,6 +493,8 @@ export async function rescheduleAppointmentAction(
   formData: FormData,
 ): Promise<void> {
   const filters = getAppointmentFilters(formData);
+  const returnContext = getAppointmentReturnContext(formData);
+  if (!returnContext) redirect(getAdminUrl(filters, "invalid"));
   const parsed = z
     .object({
       appointmentId: appointmentIdSchema,
@@ -446,7 +507,7 @@ export async function rescheduleAppointmentAction(
       rescheduleDate: formData.get("rescheduleDate"),
     });
 
-  if (!parsed.success) redirect(getAdminUrl(filters, "invalid"));
+  if (!parsed.success) redirect(getAdminUrl(filters, "invalid", undefined, undefined, undefined, returnContext));
 
   const supabase = await requireAdminClient();
   const { data: newAppointmentId, error } = await supabase.rpc(
@@ -476,11 +537,12 @@ export async function rescheduleAppointmentAction(
               date: parsed.data.rescheduleDate,
             }
           : undefined,
+        returnContext,
       ),
     );
   }
   if (!newAppointmentId) {
-    redirect(getAdminUrl(filters, "operation_failed"));
+    redirect(getAdminUrl(filters, "operation_failed", undefined, undefined, undefined, returnContext));
   }
 
   const { data: approvedAppointment, error: approvalError } = await supabase
@@ -493,11 +555,11 @@ export async function rescheduleAppointmentAction(
 
   if (approvalError) {
     console.error("Ertelenen randevu onaylanırken Supabase hatası:", approvalError);
-    redirect(getAdminUrl(filters, "reschedule_approval_failed"));
+    redirect(getAdminUrl(filters, "reschedule_approval_failed", undefined, undefined, undefined, returnContext));
   }
   if (!approvedAppointment) {
-    redirect(getAdminUrl(filters, "reschedule_approval_failed"));
+    redirect(getAdminUrl(filters, "reschedule_approval_failed", undefined, undefined, undefined, returnContext));
   }
 
-  await notifyAndRefresh(approvedAppointment.id, "rescheduled", filters);
+  await notifyAndRefresh(approvedAppointment.id, "rescheduled", filters, returnContext);
 }

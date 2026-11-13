@@ -7,6 +7,7 @@ import {
   cancelAppointmentAction,
   rejectAppointmentAction,
   type AppointmentFilters,
+  type AppointmentReturnContext,
 } from "@/app/admin/actions";
 import type { AppointmentStatus } from "@/lib/shared/appointment-status";
 import { AppointmentDialog } from "@/components/admin/appointment-dialog";
@@ -49,6 +50,7 @@ export function AppointmentActionForm({
   action,
   appointmentId,
   filters,
+  returnContext = { returnTo: "/admin" },
   confirmation,
   confirmationAction,
   children,
@@ -57,6 +59,7 @@ export function AppointmentActionForm({
   action: AppointmentAction;
   appointmentId: number;
   filters: AppointmentFilters;
+  returnContext?: AppointmentReturnContext;
   confirmation: string;
   confirmationAction: string;
   children: React.ReactNode;
@@ -98,6 +101,13 @@ export function AppointmentActionForm({
         name="appointmentId"
         value={appointmentId}
       />
+      <input type="hidden" name="returnTo" value={returnContext.returnTo} />
+      {returnContext.returnTo === "/admin/takvim" && (
+        <>
+          <input type="hidden" name="returnView" value={returnContext.view} />
+          <input type="hidden" name="returnDate" value={returnContext.date} />
+        </>
+      )}
       <FilterFields filters={filters} />
       {children}
       <AppointmentDialog
