@@ -6,7 +6,7 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47, #49, #50 incelemesi)
+Son güncelleme: 13 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47, #49, #50, #52 incelemesi)
 
 ---
 
@@ -88,10 +88,10 @@ Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21
 
 ## Test ekibi (Tuğba, Nezahat)
 
-### 61. `senaryolar.md` sonunda satır sonu yok
-- **Dosya:** `docs/test/senaryolar.md` (PR #47)
-- **Sorun:** 49. madde ve PR açıklaması dosya sonlarına satır sonu eklendiğini söylüyor; `logs/tugba.md`'de var, `senaryolar.md`'de hâlâ yok.
-- **Yapılacak:** `senaryolar.md` sonuna satır sonu ekle.
+### 64. S2 ve S3 için "Özellik henüz yok" notu yanlış
+- **Dosya:** `docs/test/senaryolar.md` (PR #52)
+- **Sorun:** Sonuç tablosunda S2 ve S3'e "Özellik henüz yok" yazıldı. Doktorlar ve Tedaviler bölümleri (`Doctors.tsx`, `Treatments.tsx`) ve iletişim bölümündeki haftalık çalışma saatleri (`ContactFaqSection.tsx`, `working_hours` tablosundan) sitede var. Ayrıca PR #52 açıklaması 61. maddenin `tasks.md`'den silindiğini söylüyor ama `main` ile birleştirmede silme kayboldu (61. madde bu incelemede silindi).
+- **Yapılacak:** S2'yi (aktif doktor/işlem listesi, panelden doktor pasifleştirince listeden kalkması) ve S3'ü (sitedeki saatlerin panelde tanımlı saatlerle uyumu) canlı sitede dene, tabloya sonucu yaz. S4'ü de (360 ve 375 px genişlikte yatay kaydırma) aynı turda dene; Site ekibinin 56. maddesiyle ilgili.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 
