@@ -315,7 +315,7 @@ Genel notlar:
 | P5 | Denenemedi | Elle randevu özelliği yok |
 | P6 | Denenemedi | Elle randevu özelliği yok |
 | P7 | Kaldı | İptal çalışıyor (panel "Randevu iptal edildi" dedi), ama hastaya WhatsApp bildirimi gönderilemedi (24 saat içinde denendi). Bildirim hata kartında takip ediliyor. |
-| P8 | Denenemedi | Özellik henüz yok |
+| P8 | Kaldı | Erteleme çalışıyor: eski randevu "İptal edildi", yeni randevu "Onaylandı" açıldı. Hastaya WhatsApp bildirimi gönderilemedi (24 saat içinde denendi), P3/P4/P7'deki hatayla aynı. |
 | P9 | Denenemedi | Özellik henüz yok |
 | P10 | Denenemedi | Özellik henüz yok |
 | P11 | Denenemedi | Özellik henüz yok |
@@ -324,6 +324,6 @@ Genel notlar:
 | # | Sonuç | Not |
 |---|---|---|
 | S1 | Geçti | Butona basınca WhatsApp açıldı, numara doğru, hazır mesaj "Merhaba, randevu almak istiyorum. |
-| S2 | Denenemedi | |
-| S3 | Denenemedi | |
+| S2 | Denenemedi | Özellik henüz yok |
+| S3 | Denenemedi | Özellik henüz yok |
 | S4 | Denenemedi | |

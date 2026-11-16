@@ -9,6 +9,7 @@ import {
   updateAdminNoteAction,
   type AdminNoteActionState,
   type AppointmentFilters,
+  type AppointmentReturnContext,
 } from "@/app/admin/actions";
 import {
   AppointmentActionForm,
@@ -54,12 +55,14 @@ const initialNoteState: AdminNoteActionState = {
 function AppointmentDetailsContent({
   appointment,
   filters,
+  returnContext,
   onClose,
   initialRescheduleDate,
   initialRescheduleError,
 }: {
   appointment: AppointmentDetailData;
   filters: AppointmentFilters;
+  returnContext: AppointmentReturnContext;
   onClose: () => void;
   initialRescheduleDate?: string;
   initialRescheduleError?: DbErrorCode;
@@ -215,6 +218,7 @@ function AppointmentDetailsContent({
                 action={cancelAppointmentAction}
                 appointmentId={appointment.id}
                 filters={filters}
+                returnContext={returnContext}
                 confirmation="Randevuyu iptal etmek istediğinize emin misiniz?"
                 confirmationAction="İptal Et"
               >
@@ -273,6 +277,7 @@ function AppointmentDetailsContent({
                     action={rescheduleAppointmentAction}
                     appointmentId={appointment.id}
                     filters={filters}
+                    returnContext={returnContext}
                     confirmation="Randevuyu seçilen yeni saate ertelemek istediğinize emin misiniz?"
                     confirmationAction="Ertele"
                     className="mt-4 flex flex-wrap items-end gap-2"
@@ -319,6 +324,7 @@ function AppointmentDetailsContent({
               action={completeAppointmentAction}
               appointmentId={appointment.id}
               filters={filters}
+              returnContext={returnContext}
               confirmation="Randevuyu tamamlandı olarak işaretlemek istediğinize emin misiniz?"
               confirmationAction="Tamamlandı"
             >
@@ -371,6 +377,7 @@ function AppointmentDetailsContent({
 export function AppointmentDetails({
   appointment,
   filters,
+  returnContext = { returnTo: "/admin" },
   initiallyOpen = false,
   initialRescheduleDate,
   initialRescheduleError,
@@ -380,6 +387,7 @@ export function AppointmentDetails({
 }: {
   appointment: AppointmentDetailData;
   filters: AppointmentFilters;
+  returnContext?: AppointmentReturnContext;
   initiallyOpen?: boolean;
   initialRescheduleDate?: string;
   initialRescheduleError?: DbErrorCode;
@@ -406,6 +414,7 @@ export function AppointmentDetails({
         <AppointmentDetailsContent
           appointment={appointment}
           filters={filters}
+          returnContext={returnContext}
           initialRescheduleDate={initialRescheduleDate}
           initialRescheduleError={initialRescheduleError}
           onClose={() => setIsOpen(false)}
