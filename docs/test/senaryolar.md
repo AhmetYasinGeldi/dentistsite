@@ -324,6 +324,6 @@ Genel notlar:
 | # | Sonuç | Not |
 |---|---|---|
 | S1 | Geçti | Butona basınca WhatsApp açıldı, numara doğru, hazır mesaj "Merhaba, randevu almak istiyorum. |
-| S2 | Denenemedi | Özellik henüz yok |
-| S3 | Denenemedi | Özellik henüz yok |
-| S4 | Denenemedi | |
+| S2 | Denenemedi | Sitede aktif doktor ve tedavi listesi görünüyor; ancak admin panelinde doktor pasifleştirme özelliği/butonu henüz olmadığı (P9) için pasifleştirme adımı denenemedi. |
+| S3 | Geçti | Sitedeki iletişim bölümünde yer alan haftalık çalışma saatleri panelde tanımlı çalışma saatleriyle birebir uyumlu. |
+| S4 | Geçti | 360px ve 375px mobil genişliklerde test edildi; yatay kaydırma veya taşma yok, WhatsApp butonu görünür ve yazılar okunaklı. |
