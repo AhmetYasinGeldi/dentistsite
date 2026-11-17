@@ -88,10 +88,7 @@ Son güncelleme: 16 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21
 
 ## Test ekibi (Tuğba, Nezahat)
 
-### 64. S2 ve S3 için "Özellik henüz yok" notu yanlış
-- **Dosya:** `docs/test/senaryolar.md` (PR #52)
-- **Sorun:** Sonuç tablosunda S2 ve S3'e "Özellik henüz yok" yazıldı. Doktorlar ve Tedaviler bölümleri (`Doctors.tsx`, `Treatments.tsx`) ve iletişim bölümündeki haftalık çalışma saatleri (`ContactFaqSection.tsx`, `working_hours` tablosundan) sitede var. Ayrıca PR #52 açıklaması 61. maddenin `tasks.md`'den silindiğini söylüyor ama `main` ile birleştirmede silme kayboldu (61. madde bu incelemede silindi).
-- **Yapılacak:** S2'yi (aktif doktor/işlem listesi, panelden doktor pasifleştirince listeden kalkması) ve S3'ü (sitedeki saatlerin panelde tanımlı saatlerle uyumu) canlı sitede dene, tabloya sonucu yaz. S4'ü de (360 ve 375 px genişlikte yatay kaydırma) aynı turda dene; Site ekibinin 56. maddesiyle ilgili.
+
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 

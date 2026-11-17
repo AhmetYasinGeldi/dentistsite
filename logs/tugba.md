@@ -60,3 +60,13 @@
 - **Nasıl test edildi:** Canlı panelde P8 denendi. `npm run lint` ve `npm run build` hatasız bitti.
 - **Açık konular:** Bildirim hatası P3, P4, P7 ve P8'de sürüyor. B4, B13, B14, P5, P6, P9, P10, P11 ve S2-S4 denenmedi, sebepleri tabloda yazılı. Trello çalışma alanı 10 katılımcı sınırını aştığı için panolar yalnızca görüntülenebiliyor, kartlara yorum yazılamıyor ve kartlar taşınamıyor, bu yüzden kart güncellemeleri beklemede.
 - **Başka ekipten istek:** Bot ekibi: bildirim gönderimi (`notifyAppointmentUpdate`) hatası ve B13'ü test etme yöntemi. Ahmet Yasin: Trello katılımcı sınırı.
+
+## 2026-11-17 22:40 — Site test senaryoları (S2, S3, S4) ve hata takip dosyası
+- **Kişi / araç:** Tuğba / Gemini
+- **Dal:** <calistigin-branch-adi>
+- **Ne yapıldı:** Canlı sitede S2, S3 ve S4 senaryoları test edilerek sonuçlar `docs/test/senaryolar.md` tablosuna işlendi (S3 ve S4 geçti; S2'de panelde doktor pasifleştirme butonu bulunmadığı için pasifleştirme adımı denenemedi). `tasks.md` üzerinde 61. maddenin silindiği doğrulandı ve Trello yerine hataları takip etmek üzere `docs/test/hatalar.md` dosyası oluşturuldu.
+- **Değişen dosyalar:** `docs/test/senaryolar.md`, `docs/test/hatalar.md`, `tasks.md`, `logs/tugba.md`
+- **Neden:** PR #52 incelemesi, `tasks.md` açık iş maddesinin tamamlanması ve Trello erişim kısıtı nedeniyle repo içi hata takibinin başlatılması.
+- **Nasıl test edildi:** Canlı site (`https://dentistsite-ayg5.vercel.app`) ve `/admin` paneli üzerinden elle doğrulandı; tarayıcı cihaz modunda 360px ve 375px genişliklerde yatay kaydırma kontrol edildi; `npm run lint` ve `npm run build` çalıştırıldı.
+- **Açık konular:** S2 senaryosunun pasifleştirme adımı, Panel ekibi P9 (doktor pasifleştirme) özelliğini tamamladığında tekrar denenecek.
+- **Başka ekipten istek:** Ahmet Yasin'den Trello yerine açılan `docs/test/hatalar.md` dosyasının `AGENTS.md` (Bölüm 3) ve `README.md` klasör yapısına eklenmesi; Panel ekibinden S2 ve P9 testleri için admin paneline doktor pasifleştirme işlevinin eklenmesi.
