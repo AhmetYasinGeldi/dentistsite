@@ -22,11 +22,6 @@ Son güncelleme: 16 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
 
-### 65. Takvim dönüş akışında küçük temizlikler
-- **Dosya:** `app/admin/actions.ts`, `tasks.md` (PR #53)
-- **Sorun:** (1) `getAdminUrl` altı sıralı parametre aldı; çağrıların çoğu `getAdminUrl(filters, "stale", undefined, undefined, undefined, returnContext)` biçiminde, okuması ve yanlış sıraya parametre vermesi kolay. Bu satırlar Prettier genişliğini de aşıyor. (2) `updateAdminNoteAction` dönüş bağlamını doğruluyor ama hiç kullanmıyor; not formu `returnTo` göndermediği için kontrol hep `/admin` varsayılanına düşüyor. (3) 63. maddenin kod kısımları ((1) aktif doktor filtresi, (2) `rounded-brand`, (3) `CalendarError` bileşeni) PR #53'te yapıldı ama madde olduğu gibi duruyor; açık kalan sadece pasif doktorun gerçek veriyle denenmesi.
-- **Yapılacak:** (1) `getAdminUrl`'in isteğe bağlı parametrelerini tek bir seçenek nesnesine al (`{ notification, errorCode, rescheduleDetails, returnContext }`). (2) Not action'ındaki kullanılmayan kontrolü kaldır ya da formdan bağlamı gönderip gerçekten kullan. (3) 63. maddeyi "pasif doktorun seçili aralıkta randevusu varken ve yokken takvimde denenmesi" olarak kısalt; denedikten sonra sil.
-
 ## Bot ekibi (Sevde, Ebru)
 
 ### 39. Klinik telefonu yokken "kliniği arayın" metni

@@ -214,3 +214,13 @@
 - **Nasıl test edildi:** Kullanıcı test randevularıyla tarayıcıda manuel olarak tamamlandı, günlük/haftalık görünümde erteleme, iki sekmede aynı doktora aynı saati seçerek çakışma ve iptal akışlarını denedi. Çakışma hata penceresi ekran görüntüsünde kontrol edildi. #63 için gerçek pasif doktor kaydı ve ilgili randevu durumu doğrulanamadı.
 - **Açık konular:** #63 pasif doktorun seçili aralıkta randevusu varken ve yokken gösterilme davranışının veriyle doğrulanması bekliyor. #27 gerçek Supabase filtre verisiyle test bekliyor.
 - **Başka ekipten istek:** Yok.
+
+## 2026-11-17 19:21 — Takvim dönüş action temizliği
+- **Kişi / araç:** Esma / Copilot SDK in VS Code
+- **Dal:** `fix/admin-followup-cleanups`
+- **Ne yapıldı:** #65 uygulandı: `getAdminUrl` opsiyonel parametreleri anlamlı alan adlarına sahip seçenek nesnesiyle alıyor ve çağrılar bu yapıya taşındı. `updateAdminNoteAction` içinde not akışında kullanılmayan dönüş bağlamı doğrulaması kaldırıldı. #65 maddesi `tasks.md`'den tamamen silindi. #63'te istenen kod düzeltmeleri tamamlandı; madde yalnızca pasif doktor senaryosunu doğrulamaya uygun test verisi bulunana kadar açık bırakıldı. #27 de gerçek test verisiyle doğrulama bekliyor.
+- **Değişen dosyalar:** `app/admin/actions.ts`, `tasks.md`, `logs/esmabetul.md`
+- **Neden:** Panel görevindeki yönlendirme yardımcı çağrılarını okunur hale getirmek, not action'ındaki gereksiz doğrulamayı kaldırmak ve #63'ün tamamlanmamış test kapsamını doğru takip etmek.
+- **Nasıl test edildi:** `npx.cmd eslint app/admin/actions.ts`, `npx.cmd tsc --noEmit` ve `git diff --check` başarılı.
+- **Açık konular:** #63'ün kod değişiklikleri tamamlandı; pasif doktorun seçili aralıkta randevulu/randevusuz görünümünü doğrulayacak test verisi bekleniyor. #27 gerçek Supabase filtre verisiyle test bekliyor.
+- **Başka ekipten istek:** Yok.
