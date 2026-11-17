@@ -46,9 +46,6 @@ Mobil cihazda sayfa ekran genişliğinden daha geniş render ediliyor.
 
 ## 4. Önerilen Çözüm
 - Header butonuna mobilde `max-width: 100%`, daha küçük padding ve font-size verilmesi veya sadece ikon gösterilmesi.
-- Hero görselinde `100vw` yerine `100%` kullanılması.
-- Geçici çözüm olarak `body { overflow-x: hidden; }`.
-- Düzeltme sonrası 360px, 390px ve 412px genişliklerde tekrar test edilmesi.
 
 ## 5. Sonuç
 İşlevsel olarak sistem çalışıyor. Mobil taşma hatası giderildikten sonra tekrar test yapılacaktır.
