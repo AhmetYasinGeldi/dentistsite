@@ -6,16 +6,11 @@ Açık işler ve PR incelemelerinde çıkan, birleştirmeyi engellemeyen küçü
 - Her madde: başlık, dosya (ve varsa PR numarası), sorun, yapılacak.
 - İşi alan kişi kendi dalında düzeltir, aynı dalda maddeyi bu dosyadan siler ve log kaydında hangi maddeyi kapattığını yazar.
 
-Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47, #49, #50 incelemesi)
+Son güncelleme: 16 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21, #22, #25, #31, #33, #35, #36, #37, #39, #40, #41, #42, #44, #46, #47, #49, #50, #52, #53 incelemesi)
 
 ---
 
 ## Panel ekibi (Esma, Merve)
-
-### 62. Takvimden yapılan işlem sonrası randevu listesine dönülüyor
-- **Dosya:** `components/admin/calendar-grid.tsx`, `app/admin/actions.ts` (PR #50)
-- **Sorun:** Takvim kartından açılan detayda iptal, tamamla veya ertele yapılınca server action `getAdminUrl(filters, ...)` ile `/admin` listesine yönlendiriyor (takvim `filters` olarak boş değerler veriyor). Sekreter takvimdeki gün/haftayı kaybediyor. Ertelemede RD004 gibi bir hata çıkarsa hata penceresi takvimde değil listede açılıyor; randevu o listede yoksa hiç görünmeyebilir. `revalidatePath` da sadece `/admin` için çağrılıyor.
-- **Yapılacak:** Action'lara dönüş sayfası için gizli bir alan ekle (sadece `/admin` ve `/admin/takvim` kabul edilsin, zod ile doğrula); takvimden gelince `view` ve `date` korunarak `/admin/takvim`'e dön. Hata penceresinin takvimde de açıldığını dene.
 
 ### 63. Takvimde küçük düzeltmeler
 - **Dosya:** `app/admin/(dashboard)/takvim/page.tsx`, `components/admin/calendar-grid.tsx` (PR #50)
@@ -26,6 +21,11 @@ Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21
 - **Dosya:** `app/admin/(dashboard)/page.tsx` (PR #21)
 - **Sorun:** "Tamamlandı", "İptal edildi" ve "Reddedildi" filtrelerinde geçmiş randevuların listelendiği, sıralama ve 100 kayıt uyarısı gerçek veriyle doğrulanmadı. Denemede veritabanında eşleşen kayıt olmadığı için ekran boş kaldı.
 - **Yapılacak:** Sahte hasta ve geçmiş tarihli randevularla (farklı durumlarda) filtreleri dene, sonucu log'a yaz. Test verisi lazımsa Ahmet Yasin'den iste.
+
+### 65. Takvim dönüş akışında küçük temizlikler
+- **Dosya:** `app/admin/actions.ts`, `tasks.md` (PR #53)
+- **Sorun:** (1) `getAdminUrl` altı sıralı parametre aldı; çağrıların çoğu `getAdminUrl(filters, "stale", undefined, undefined, undefined, returnContext)` biçiminde, okuması ve yanlış sıraya parametre vermesi kolay. Bu satırlar Prettier genişliğini de aşıyor. (2) `updateAdminNoteAction` dönüş bağlamını doğruluyor ama hiç kullanmıyor; not formu `returnTo` göndermediği için kontrol hep `/admin` varsayılanına düşüyor. (3) 63. maddenin kod kısımları ((1) aktif doktor filtresi, (2) `rounded-brand`, (3) `CalendarError` bileşeni) PR #53'te yapıldı ama madde olduğu gibi duruyor; açık kalan sadece pasif doktorun gerçek veriyle denenmesi.
+- **Yapılacak:** (1) `getAdminUrl`'in isteğe bağlı parametrelerini tek bir seçenek nesnesine al (`{ notification, errorCode, rescheduleDetails, returnContext }`). (2) Not action'ındaki kullanılmayan kontrolü kaldır ya da formdan bağlamı gönderip gerçekten kullan. (3) 63. maddeyi "pasif doktorun seçili aralıkta randevusu varken ve yokken takvimde denenmesi" olarak kısalt; denedikten sonra sil.
 
 ## Bot ekibi (Sevde, Ebru)
 
@@ -88,10 +88,10 @@ Son güncelleme: 11 Kasım 2026 (PR #4, #5, #6, #7, #11, #12, #14, #15, #17, #21
 
 ## Test ekibi (Tuğba, Nezahat)
 
-### 61. `senaryolar.md` sonunda satır sonu yok
-- **Dosya:** `docs/test/senaryolar.md` (PR #47)
-- **Sorun:** 49. madde ve PR açıklaması dosya sonlarına satır sonu eklendiğini söylüyor; `logs/tugba.md`'de var, `senaryolar.md`'de hâlâ yok.
-- **Yapılacak:** `senaryolar.md` sonuna satır sonu ekle.
+### 64. S2 ve S3 için "Özellik henüz yok" notu yanlış
+- **Dosya:** `docs/test/senaryolar.md` (PR #52)
+- **Sorun:** Sonuç tablosunda S2 ve S3'e "Özellik henüz yok" yazıldı. Doktorlar ve Tedaviler bölümleri (`Doctors.tsx`, `Treatments.tsx`) ve iletişim bölümündeki haftalık çalışma saatleri (`ContactFaqSection.tsx`, `working_hours` tablosundan) sitede var. Ayrıca PR #52 açıklaması 61. maddenin `tasks.md`'den silindiğini söylüyor ama `main` ile birleştirmede silme kayboldu (61. madde bu incelemede silindi).
+- **Yapılacak:** S2'yi (aktif doktor/işlem listesi, panelden doktor pasifleştirince listeden kalkması) ve S3'ü (sitedeki saatlerin panelde tanımlı saatlerle uyumu) canlı sitede dene, tabloya sonucu yaz. S4'ü de (360 ve 375 px genişlikte yatay kaydırma) aynı turda dene; Site ekibinin 56. maddesiyle ilgili.
 
 ## Karar verilen konular (Ahmet Yasin, 31 Ekim 2026)
 

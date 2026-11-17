@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { z } from "zod";
 import type { AppointmentDetailData } from "@/components/admin/appointment-details";
+import { AppointmentActionNotice } from "@/components/admin/appointment-action-notice";
 import { CalendarGrid } from "@/components/admin/calendar-grid";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/lib/shared/datetime";
 import {
   isAppointmentStatus,
+  type AppointmentStatus,
 } from "@/lib/shared/appointment-status";
 
 export const metadata: Metadata = {
@@ -22,6 +24,34 @@ export const instant = false;
 const calendarParamsSchema = z.object({
   date: z.iso.date().optional(),
   view: z.enum(["day", "week"]).default("week"),
+});
+const calendarNoticeSchema = z.object({
+  notice: z.enum([
+    "approved",
+    "rejected",
+    "cancelled",
+    "rescheduled",
+    "completed",
+    "invalid",
+    "update_failed",
+    "stale",
+    "operation_failed",
+    "reschedule_approval_failed",
+  ]),
+  notification: z
+    .enum(["sent", "failed", "window_closed", "past"])
+    .optional(),
+  error: z.enum(["RD002", "RD003", "RD004", "23P01"]).optional(),
+  resultId: z.uuid().optional(),
+});
+const rescheduleDetailsSchema = z.object({
+  appointmentId: z
+    .string()
+    .regex(/^[1-9]\d*$/)
+    .transform(Number)
+    .refine(Number.isSafeInteger)
+    .optional(),
+  date: z.iso.date().optional(),
 });
 
 const APPOINTMENT_SELECT = `
@@ -63,6 +93,19 @@ function isFuture(value: string): boolean {
   return Date.parse(value) > Date.now();
 }
 
+function CalendarError({ message }: { message: string }) {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        Takvim
+      </h1>
+      <p role="alert" className="rounded-brand bg-danger/10 p-4 text-danger">
+        {message}
+      </p>
+    </div>
+  );
+}
+
 export default async function CalendarPage({
   searchParams,
 }: {
@@ -70,6 +113,16 @@ export default async function CalendarPage({
 }) {
   await connection();
   const params = await searchParams;
+  const actionNotice = calendarNoticeSchema.safeParse({
+    notice: firstValue(params.notice),
+    notification: firstValue(params.notification),
+    error: firstValue(params.error),
+    resultId: firstValue(params.resultId),
+  });
+  const requestedRescheduleDetails = rescheduleDetailsSchema.safeParse({
+    appointmentId: firstValue(params.rescheduleAppointmentId),
+    date: firstValue(params.rescheduleDate),
+  });
   const parsedParams = calendarParamsSchema.safeParse({
     date: firstValue(params.date),
     view: firstValue(params.view) ?? "week",
@@ -77,14 +130,7 @@ export default async function CalendarPage({
 
   if (!parsedParams.success) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Takvim
-        </h1>
-        <p role="alert" className="rounded-brand bg-danger/10 p-4 text-danger">
-          Takvim bilgileri geçersiz. Lütfen tarihi ve görünümü yeniden seçin.
-        </p>
-      </div>
+      <CalendarError message="Takvim bilgileri geçersiz. Lütfen tarihi ve görünümü yeniden seçin." />
     );
   }
 
@@ -104,7 +150,11 @@ export default async function CalendarPage({
   const supabase = await createClient();
 
   const [doctorsResult, appointmentsResult, hoursResult] = await Promise.all([
-    supabase.from("doctors").select("id, full_name").order("full_name"),
+    supabase
+      .from("doctors")
+      .select("id, full_name")
+      .eq("is_active", true)
+      .order("full_name"),
     supabase
       .from("appointments")
       .select(APPOINTMENT_SELECT)
@@ -122,41 +172,38 @@ export default async function CalendarPage({
   if (queryError) {
     console.error("Takvim verileri alınırken Supabase hatası:", queryError);
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Takvim
-        </h1>
-        <p role="alert" className="rounded-brand bg-danger/10 p-4 text-danger">
-          Takvim verileri alınamadı. Lütfen daha sonra tekrar deneyin.
-        </p>
-      </div>
+      <CalendarError message="Takvim verileri alınamadı. Lütfen daha sonra tekrar deneyin." />
     );
   }
 
   const appointmentRows = appointmentsResult.data ?? [];
-  const invalidAppointment = appointmentRows.find(
-    (appointment) => !isAppointmentStatus(appointment.status),
-  );
+  type AppointmentRow = (typeof appointmentRows)[number];
+  const validAppointmentRows: (AppointmentRow & {
+    status: AppointmentStatus;
+  })[] = [];
+  let invalidAppointment: AppointmentRow | undefined;
+  for (const appointment of appointmentRows) {
+    if (isAppointmentStatus(appointment.status)) {
+      validAppointmentRows.push({
+        ...appointment,
+        status: appointment.status,
+      });
+    } else if (!invalidAppointment) {
+      invalidAppointment = appointment;
+    }
+  }
   if (invalidAppointment) {
     console.error("Takvimde bilinmeyen randevu durumu:", {
       appointmentId: invalidAppointment.id,
       status: invalidAppointment.status,
     });
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Takvim
-        </h1>
-        <p role="alert" className="rounded-brand bg-danger/10 p-4 text-danger">
-          Randevu durum bilgileri okunamadı. Lütfen daha sonra tekrar deneyin.
-        </p>
-      </div>
+      <CalendarError message="Randevu durum bilgileri okunamadı. Lütfen daha sonra tekrar deneyin." />
     );
   }
-
   const previousAppointmentIds = [
     ...new Set(
-      appointmentRows
+      validAppointmentRows
         .map((appointment) => appointment.rescheduled_from)
         .filter((id): id is number => id !== null),
     ),
@@ -177,14 +224,7 @@ export default async function CalendarPage({
         previousAppointmentsResult.error,
       );
       return (
-        <div className="space-y-6">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Takvim
-          </h1>
-          <p role="alert" className="rounded-brand bg-danger/10 p-4 text-danger">
-            Takvim verileri alınamadı. Lütfen daha sonra tekrar deneyin.
-          </p>
-        </div>
+        <CalendarError message="Takvim verileri alınamadı. Lütfen daha sonra tekrar deneyin." />
       );
     }
 
@@ -193,12 +233,27 @@ export default async function CalendarPage({
     }
   }
 
+  const calendarDoctorsById = new Map(
+    (doctorsResult.data ?? []).map((doctor) => [
+      doctor.id,
+      { id: doctor.id, name: doctor.full_name },
+    ]),
+  );
+  for (const appointment of validAppointmentRows) {
+    if (!calendarDoctorsById.has(appointment.doctor_id)) {
+      calendarDoctorsById.set(appointment.doctor_id, {
+        id: appointment.doctors.id,
+        name: appointment.doctors.full_name,
+      });
+    }
+  }
+  const calendarDoctors = [...calendarDoctorsById.values()].sort((left, right) =>
+    left.name.localeCompare(right.name, "tr"),
+  );
+
   const today = todayInIstanbul();
-  const appointments: AppointmentDetailData[] = appointmentRows.map(
+  const appointments: AppointmentDetailData[] = validAppointmentRows.map(
     (appointment) => {
-      if (!isAppointmentStatus(appointment.status)) {
-        throw new Error("Takvim randevusunun durumu doğrulanamadı.");
-      }
       const previousAppointment =
         appointment.rescheduled_from === null
           ? null
@@ -279,9 +334,31 @@ export default async function CalendarPage({
 
   const previousDate = addDays(rangeStart, -dayCount);
   const nextDate = addDays(rangeStart, dayCount);
+  const rescheduleError =
+    actionNotice.success &&
+    actionNotice.data.notice === "operation_failed" &&
+    (actionNotice.data.error === "RD004" ||
+      actionNotice.data.error === "23P01") &&
+    requestedRescheduleDetails.success &&
+    requestedRescheduleDetails.data.appointmentId !== undefined &&
+    requestedRescheduleDetails.data.date !== undefined
+      ? {
+          appointmentId: requestedRescheduleDetails.data.appointmentId,
+          date: requestedRescheduleDetails.data.date,
+          code: actionNotice.data.error,
+        }
+      : undefined;
 
   return (
     <div className="space-y-6">
+      {actionNotice.success && !rescheduleError && (
+        <AppointmentActionNotice
+          key={actionNotice.data.resultId}
+          notice={actionNotice.data.notice}
+          notification={actionNotice.data.notification}
+          errorCode={actionNotice.data.error}
+        />
+      )}
       <div className="border-b border-border pb-5">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Takvim
@@ -352,11 +429,14 @@ export default async function CalendarPage({
 
       <CalendarGrid
         days={days}
-        doctors={(doctorsResult.data ?? []).map((doctor) => ({
-          id: doctor.id,
-          name: doctor.full_name,
-        }))}
+        doctors={calendarDoctors}
         appointments={appointments}
+        returnContext={{
+          returnTo: "/admin/takvim",
+          view,
+          date: selectedDate,
+        }}
+        rescheduleError={rescheduleError}
         visibleStartMinutes={visibleStartMinutes}
         visibleEndMinutes={visibleEndMinutes}
       />

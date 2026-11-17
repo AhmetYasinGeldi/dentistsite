@@ -7,6 +7,8 @@ import {
   getAppointmentStatusLabel,
 } from "@/lib/shared/appointment-status";
 import { formatDate, formatTime } from "@/lib/shared/datetime";
+import type { AppointmentReturnContext } from "@/app/admin/actions";
+import type { DbErrorCode } from "@/lib/shared/errors";
 
 type CalendarDoctor = {
   id: number;
@@ -104,12 +106,20 @@ function DayCalendar({
   date,
   doctors,
   appointments,
+  returnContext,
+  rescheduleError,
   visibleStartMinutes,
   visibleEndMinutes,
 }: {
   date: string;
   doctors: CalendarDoctor[];
   appointments: AppointmentDetailData[];
+  returnContext: AppointmentReturnContext;
+  rescheduleError?: {
+    appointmentId: number;
+    date: string;
+    code: DbErrorCode;
+  };
   visibleStartMinutes: number;
   visibleEndMinutes: number;
 }) {
@@ -237,6 +247,20 @@ function DayCalendar({
                       key={event.appointment.id}
                       appointment={event.appointment}
                       filters={{ date: "", doctorId: "", status: "" }}
+                      returnContext={returnContext}
+                      initiallyOpen={
+                        rescheduleError?.appointmentId === event.appointment.id
+                      }
+                      initialRescheduleDate={
+                        rescheduleError?.appointmentId === event.appointment.id
+                          ? rescheduleError.date
+                          : undefined
+                      }
+                      initialRescheduleError={
+                        rescheduleError?.appointmentId === event.appointment.id
+                          ? rescheduleError.code
+                          : undefined
+                      }
                       triggerContent={triggerContent}
                       triggerClassName={`z-10 m-1 min-h-0 overflow-hidden rounded-brand border px-2 py-1 text-left text-xs leading-4 ${statusClasses}`}
                       triggerStyle={{
@@ -262,10 +286,18 @@ function WeekCalendar({
   days,
   doctors,
   appointments,
+  returnContext,
+  rescheduleError,
 }: {
   days: string[];
   doctors: CalendarDoctor[];
   appointments: AppointmentDetailData[];
+  returnContext: AppointmentReturnContext;
+  rescheduleError?: {
+    appointmentId: number;
+    date: string;
+    code: DbErrorCode;
+  };
 }) {
   const gridTemplateColumns = `5rem repeat(${doctors.length}, minmax(0, 1fr))`;
   const gridStyle = {
@@ -310,6 +342,20 @@ function WeekCalendar({
                         key={event.appointment.id}
                         appointment={event.appointment}
                         filters={{ date: "", doctorId: "", status: "" }}
+                        returnContext={returnContext}
+                        initiallyOpen={
+                          rescheduleError?.appointmentId === event.appointment.id
+                        }
+                        initialRescheduleDate={
+                          rescheduleError?.appointmentId === event.appointment.id
+                            ? rescheduleError.date
+                            : undefined
+                        }
+                        initialRescheduleError={
+                          rescheduleError?.appointmentId === event.appointment.id
+                            ? rescheduleError.code
+                            : undefined
+                        }
                         triggerContent={
                           <>
                             <span className="block truncate font-semibold">
@@ -321,7 +367,7 @@ function WeekCalendar({
                             </span>
                           </>
                         }
-                        triggerClassName={`w-full min-w-0 rounded border px-1 py-0.5 text-left text-[10px] leading-3 sm:text-xs sm:leading-4 ${getCalendarStatusClasses(
+                        triggerClassName={`w-full min-w-0 rounded-brand border px-1 py-0.5 text-left text-[10px] leading-3 sm:text-xs sm:leading-4 ${getCalendarStatusClasses(
                           event.appointment.status,
                         )}`}
                       />
@@ -341,12 +387,20 @@ export function CalendarGrid({
   days,
   doctors,
   appointments,
+  returnContext,
+  rescheduleError,
   visibleStartMinutes,
   visibleEndMinutes,
 }: {
   days: string[];
   doctors: CalendarDoctor[];
   appointments: AppointmentDetailData[];
+  returnContext: AppointmentReturnContext;
+  rescheduleError?: {
+    appointmentId: number;
+    date: string;
+    code: DbErrorCode;
+  };
   visibleStartMinutes: number;
   visibleEndMinutes: number;
 }) {
@@ -364,6 +418,8 @@ export function CalendarGrid({
         days={days}
         doctors={doctors}
         appointments={appointments}
+        returnContext={returnContext}
+        rescheduleError={rescheduleError}
       />
     );
   }
@@ -373,6 +429,8 @@ export function CalendarGrid({
       date={days[0]}
       doctors={doctors}
       appointments={appointments}
+      returnContext={returnContext}
+      rescheduleError={rescheduleError}
       visibleStartMinutes={visibleStartMinutes}
       visibleEndMinutes={visibleEndMinutes}
     />
